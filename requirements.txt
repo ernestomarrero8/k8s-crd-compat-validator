@@ -1,0 +1,2 @@
+# No runtime dependencies. Only needed for development/tests.
+pytest>=8.3,<10

@@ -1,0 +1,135 @@
+import argparse
+from pathlib import Path
+import sys
+from .collector import Collector, CollectionError, read_json, crd_items
+from .version import Version, upgrade_path
+from .rule_engine import RuleEngine
+from .operator_validator import OperatorCatalog
+from .crd_analyzer import analyze
+from .models import finding, STATES
+from .report_generator import build_report, write_reports
+
+
+def positive(value):
+    try:
+        number = int(value)
+    except ValueError as exc:
+        raise argparse.ArgumentTypeError("Debe ser un entero positivo.") from exc
+    if number <= 0:
+        raise argparse.ArgumentTypeError("Debe ser un entero positivo.")
+    return number
+
+
+def parser():
+    p = argparse.ArgumentParser(description="Analiza riesgos de CRDs durante un upgrade Kubernetes; solo lectura.")
+    p.add_argument("--target", required=True, help="Versión Kubernetes objetivo, por ejemplo 1.35.9")
+    p.add_argument("--current", help="Versión actual; obligatoria en offline, validada contra servidor en LIVE")
+    p.add_argument("--context", help="Contexto de origen; por defecto el activo")
+    p.add_argument("--input", type=Path, help="Exportación JSON de CRDs; activa modo offline sin red")
+    p.add_argument("--output", type=Path, default=Path("reports"), help="Directorio de reportes (default: reports)")
+    p.add_argument("--format", choices=("json", "markdown", "md", "html", "all"), default="all")
+    p.add_argument("--include-instances", action="store_true", help="Lectura limitada de Custom Resources")
+    p.add_argument("--rules-path", type=Path, help="Archivo/directorio JSON; agrega reglas a las incluidas")
+    p.add_argument("--operator-catalog", type=Path, help="Matriz de soporte revisada con fuentes y versiones exactas")
+    p.add_argument("--verify-sources", action="store_true", help="Consulta documentos HTTPS del catálogo y verifica SHA256; solo LIVE")
+    p.add_argument("--target-context", help="Clúster objetivo: comparar CRDs preinstalados y discovery, sin escrituras")
+    p.add_argument("--verbose", action="store_true", help="Mostrar conteos y reglas; nunca salida cruda de kubectl")
+    p.add_argument("--timeout", type=positive, default=30, help="Timeout por consulta, segundos (default: 30)")
+    p.add_argument("--max-queries", type=positive, default=200, help="Máximo de invocaciones por contexto (default: 200)")
+    p.add_argument("--page-size", type=positive, default=100)
+    p.add_argument("--max-pages", type=positive, default=5, help="Páginas por CRD y versión")
+    p.add_argument("--max-instances", type=positive, default=500, help="Objetos por CRD y versión")
+    p.add_argument("--fail-on", default="FAIL,ERROR", help="Estados exactos separados por coma, o NONE; default FAIL,ERROR. ERROR siempre devuelve 2.")
+    return p
+
+
+def exit_code(report, fail_on):
+    findings = report["global_findings"] + [f for c in report["crds"] for f in c["findings"]]
+    states = {f["status"] for f in findings}
+    if "ERROR" in states:
+        return 2
+    return 1 if states.intersection(fail_on) else 0
+
+
+def main(argv=None):
+    p = parser()
+    args = p.parse_args(argv)
+    try:
+        target = Version.parse(args.target)
+        declared_current = Version.parse(args.current) if args.current else None
+        fail_on = set(args.fail_on.upper().split(","))
+        if fail_on == {"NONE"}:
+            fail_on = set()
+        elif not fail_on <= set(STATES):
+            raise ValueError("--fail-on acepta PASS,WARN,FAIL,UNKNOWN,ERROR o NONE.")
+        if args.input and (args.context or args.target_context or args.verify_sources):
+            raise ValueError("Offline no permite --context, --target-context ni --verify-sources; no se usa red.")
+        if args.input and not declared_current:
+            raise ValueError("El modo offline requiere --current.")
+        if args.verify_sources and not args.operator_catalog:
+            raise ValueError("--verify-sources requiere --operator-catalog.")
+        engine = RuleEngine(args.rules_path)
+        catalog = OperatorCatalog(args.operator_catalog, args.verify_sources, args.timeout)
+        collector = None
+        if args.input:
+            current = declared_current
+            cluster = "offline:" + args.input.name
+            crds = crd_items(read_json(args.input))
+        else:
+            collector = Collector(args.context, args.timeout, args.max_queries)
+            cluster = collector.current_context()
+            current = collector.version()
+            if declared_current and declared_current != current:
+                raise ValueError("--current no coincide con la versión del servidor detectada.")
+            crds = collector.crds()
+        path = upgrade_path(current, target)
+        global_findings = []
+        if path["skips_minors"]:
+            global_findings.append(finding("UPGRADE-MINOR-JUMP", "upgrade_path", "WARN", "El objetivo salta versiones minor.",
+                evidence=path, relation="upgrade", recommendation="Planificar y validar cada salto y las restricciones del proveedor del clúster."))
+        if not (current.minor == 34 and target.minor == 35):
+            global_findings.append(finding("RULE-COVERAGE", "rules", "UNKNOWN", "Fuera del trayecto minor revisado 1.34 → 1.35.",
+                relation="limitation", recommendation="Agregar reglas documentadas para todas las versiones intermedias."))
+        global_findings.append(finding("PATCH-COVERAGE", "rules", "UNKNOWN", "El catálogo no acredita cobertura exhaustiva de parches, feature gates o cambios del proveedor.",
+            relation="limitation", evidence={"reviewed_transition": "1.34 → 1.35", "rules_loaded": len(engine.rules)},
+            recommendation="Revisar notas de los parches exactos y configuración del API Server junto con este informe."))
+        if not crds:
+            global_findings.append(finding("CRD-INVENTORY-EMPTY", "inventory", "UNKNOWN", "No se encontraron CRDs en la entrada.", relation="limitation"))
+        target_collector, target_crds, target_error = None, {}, None
+        if args.target_context:
+            if args.target_context == cluster:
+                raise ValueError("--target-context debe ser distinto del contexto de origen.")
+            target_collector = Collector(args.target_context, args.timeout, args.max_queries)
+            # A version mismatch aborts: observations of another version cannot validate the requested target.
+            detected = target_collector.version()
+            if detected != target:
+                raise ValueError("El servidor de --target-context no ejecuta exactamente la versión objetivo.")
+            try:
+                target_crds = {c["metadata"]["name"]: c for c in target_collector.crds()}
+            except CollectionError as exc:
+                target_error = exc
+        options = {"page_size": args.page_size, "max_pages": args.max_pages, "max_instances": args.max_instances}
+        results = []
+        for crd in crds:
+            result = analyze(crd, current, target, engine, collector, catalog, args.include_instances,
+                             options, target_collector, target_crds, target_error)
+            results.append(result)
+            if args.verbose:
+                print(f"CRD {len(results)}/{len(crds)}: {result['status']} ({len(result['findings'])} hallazgos)", file=sys.stderr)
+        queries = (collector.queries if collector else 0) + (target_collector.queries if target_collector else 0)
+        report = build_report(cluster, current, target, path, results, global_findings, queries, args.target_context)
+        written = write_reports(report, args.output, "markdown" if args.format == "md" else args.format)
+        print(f"Kubernetes {current} -> {target} | CRDs: {len(results)} | Estado: {report['overall_status']}")
+        print(" | ".join(f"{s}: {n}" for s, n in report["summary"]["states"].items()))
+        print("PASS acredita comprobaciones realizadas; no garantiza compatibilidad completa.")
+        for file in written:
+            print(f"Reporte: {file.resolve()}")
+        return exit_code(report, fail_on)
+    except CollectionError as exc:
+        print(f"ERROR [{exc.code}]: {exc}", file=sys.stderr)
+        return 2
+    except (ValueError, OSError, RecursionError) as exc:
+        # OSError filenames may include sensitive paths; avoid dumping the exception.
+        message = str(exc) if isinstance(exc, ValueError) else "No se pudo leer/escribir el archivo o se excedió la profundidad de entrada."
+        print(f"ERROR: {message}", file=sys.stderr)
+        return 2
