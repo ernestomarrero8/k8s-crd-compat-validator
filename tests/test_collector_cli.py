@@ -35,6 +35,8 @@ def response(data, code=0, error=""):
 def test_detect_server_not_client_version():
     calls = []
     def runner(cmd, **kwargs):
+        if cmd[0] == "pluto":
+            return SimpleNamespace(returncode=0, stdout="No output to display", stderr="")
         calls.append(cmd)
         assert kwargs["shell"] is False
         return response({"clientVersion": {"gitVersion": "v1.36.0"}, "serverVersion": {"gitVersion": "v1.34.8"}})
@@ -46,6 +48,8 @@ def test_detect_server_not_client_version():
 def test_pin_active_context():
     calls = []
     def runner(cmd, **kwargs):
+        if cmd[0] == "pluto":
+            return SimpleNamespace(returncode=0, stdout="No output to display", stderr="")
         calls.append(cmd)
         if "current-context" in cmd:
             return SimpleNamespace(returncode=0, stdout="production\n", stderr="")
@@ -81,6 +85,8 @@ def test_timeout():
 def test_pagination_and_limit_and_versions():
     calls = []
     def runner(cmd, **kwargs):
+        if cmd[0] == "pluto":
+            return SimpleNamespace(returncode=0, stdout="No output to display", stderr="")
         calls.append(cmd)
         return response({"items": [{"apiVersion": "example.com/v1", "spec": {"private": "hidden"}}],
                          "metadata": {"continue": "a+b/="}})
@@ -140,6 +146,8 @@ def test_utf16_export(tmp_path, crd):
 def test_live_cli_uses_only_read_commands(tmp_path, crd, monkeypatch):
     calls = []
     def runner(cmd, **kwargs):
+        if cmd[0] == "pluto":
+            return SimpleNamespace(returncode=0, stdout="No output to display", stderr="")
         calls.append(cmd)
         if "version" in cmd:
             return response({"serverVersion": {"gitVersion": "v1.34.8"}})
@@ -156,6 +164,8 @@ def test_live_cli_uses_only_read_commands(tmp_path, crd, monkeypatch):
 
 def test_target_context_mismatch_aborts(tmp_path, crd, monkeypatch):
     def runner(cmd, **kwargs):
+        if cmd[0] == "pluto":
+            return SimpleNamespace(returncode=0, stdout="No output to display", stderr="")
         if "version" in cmd:
             return response({"serverVersion": {"gitVersion": "v1.34.8"}})
         return response({"kind": "List", "items": [crd]})
@@ -173,6 +183,8 @@ def test_mixed_fixture_exercises_all_intended_categories(tmp_path):
 def test_target_context_and_instances_full_cli(tmp_path, crd, monkeypatch):
     calls = []
     def runner(cmd, **kwargs):
+        if cmd[0] == "pluto":
+            return SimpleNamespace(returncode=0, stdout="No output to display", stderr="")
         calls.append(cmd)
         context = cmd[cmd.index("--context") + 1]
         if "version" in cmd:
@@ -199,6 +211,8 @@ def test_target_context_and_instances_full_cli(tmp_path, crd, monkeypatch):
 def test_no_credentials_in_any_generated_report(tmp_path, crd, monkeypatch):
     crd["metadata"]["annotations"] = {"private-api-key": "DO_NOT_EXPOSE"}
     def runner(cmd, **kwargs):
+        if cmd[0] == "pluto":
+            return SimpleNamespace(returncode=0, stdout="No output to display", stderr="")
         if "version" in cmd:
             return response({"serverVersion": {"gitVersion": "v1.34.8"}})
         if "crds" in cmd:
@@ -210,3 +224,25 @@ def test_no_credentials_in_any_generated_report(tmp_path, crd, monkeypatch):
     assert main(["--context", "test", "--target", "1.35.9", "--include-instances", "--output", str(tmp_path)]) == 0
     for path in tmp_path.iterdir():
         assert "DO_NOT_EXPOSE" not in path.read_text(encoding="utf-8")
+
+
+@pytest.mark.parametrize("pluto_code,expected", [(3, 1), (1, 2)])
+def test_live_pluto_result_affects_cli_and_preserves_crd_report(tmp_path, crd, monkeypatch, pluto_code, expected):
+    def runner(cmd, **kwargs):
+        if cmd[0] == "pluto":
+            assert cmd[cmd.index("--kube-context") + 1] == "source"
+            assert cmd[cmd.index("--target-versions") + 1] == "k8s=v1.35.9"
+            return SimpleNamespace(returncode=pluto_code, stdout="NAME NAMESPACE\nold-resource default", stderr="")
+        if "version" in cmd:
+            return response({"serverVersion": {"gitVersion": "v1.34.8"}})
+        if "crds" in cmd:
+            return response({"kind": "List", "items": [crd]})
+        return response({"items": []})
+    monkeypatch.setattr(subprocess, "run", runner)
+    assert main(["--context", "source", "--target", "1.35.9", "--output", str(tmp_path)]) == expected
+    report = read_json(tmp_path / "report.json")
+    assert report["summary"]["total_crds"] == 1
+    assert report["pluto"]["exit_code"] == pluto_code
+    assert report["knowledge"]["coverage_catalog_version"]
+    if pluto_code == 3:
+        assert "old-resource" in (tmp_path / "report.html").read_text(encoding="utf-8")

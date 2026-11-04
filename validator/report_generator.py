@@ -14,7 +14,7 @@ def build_report(cluster, current, target, path, crds, global_findings, queries=
     counts = Counter(c["status"] for c in crds)
     risk_counts = Counter(f["severity"] for f in all_findings if f["status"] in ("WARN", "FAIL", "ERROR"))
     states = [f["status"] for f in all_findings]
-    return {"schema_version": "1.0", "tool": "k8s-crd-compat-validator", "tool_version": "0.1.0",
+    return {"schema_version": "1.1", "tool": "k8s-crd-compat-validator", "tool_version": "0.2.0",
             "analyzed_at": datetime.now(timezone.utc).isoformat(), "cluster": cluster,
             "current_version": str(current), "target_version": str(target), "upgrade_path": path,
             "target_context": target_context, "read_only": True, "kubectl_queries": queries,
@@ -23,9 +23,9 @@ def build_report(cluster, current, target, path, crds, global_findings, queries=
                         "risks_by_severity": {s: risk_counts[s] for s in reversed(SEVERITIES)},
                         "unknown_findings": sum(f["status"] == "UNKNOWN" for f in all_findings)},
             "limitations": ["PASS solo acredita las comprobaciones realizadas, no garantiza el upgrade.",
-                            "No se detectan APIs nativas deprecadas ni se ejecuta Pluto.",
+                            "La detección de APIs nativas se delega en Pluto; consultar su sección y estado.",
                             "No se prueban escrituras, reconciliación, CEL completo ni versiones persistidas por objeto.",
-                            "Las reglas de 1.35 son una selección verificada, no una auditoría exhaustiva de parches o distribuciones.",
+                            "La cobertura documental y los hashes del catálogo se registran en este informe.",
                             "No se exportan cuerpos de Custom Resources, annotations completas, kubeconfig, certificados ni stderr de kubectl."],
             "global_findings": [f.to_dict() for f in global_findings], "crds": crds}
 
@@ -45,6 +45,9 @@ def markdown(report):
     lines += ["", "| Severidad de riesgos | Hallazgos |", "|---|---:|"]
     lines += [f"| {s} | {n} |" for s, n in report["summary"]["risks_by_severity"].items()]
     lines += ["", "## Alcance y limitaciones", ""] + ["- " + md(x) for x in report["limitations"]]
+    lines += ["", "## Catálogos utilizados", "", md(json.dumps(report.get("knowledge", {}), ensure_ascii=False)), "", "## Pluto", ""]
+    scan = report.get("pluto", {})
+    lines += [md(scan.get("status", "UNKNOWN")) + ": " + md(scan.get("message", "Sin resultado")), "", "Comando: " + md(" ".join(scan.get("command", [])) or "No ejecutado"), "", "<pre>" + escape(scan.get("stdout", "")) + "</pre>", ""]
     groups = [("Hallazgos globales", report["global_findings"])] + [(f"{c['name']} — {c['status']} / {c['severity']}", c["findings"]) for c in report["crds"]]
     for title, findings in groups:
         lines += ["", "## " + md(title), ""]
@@ -64,7 +67,9 @@ def html(report):
     rows = "".join(f"<tr><td>{esc(c['name'])}</td><td>{c['status']}</td><td>{c['severity']}</td></tr>" for c in report["crds"])
     summary = " · ".join(f"{s}: {n}" for s, n in report["summary"]["states"].items())
     risks = " · ".join(f"{s}: {n}" for s, n in report["summary"]["risks_by_severity"].items())
-    content = []
+    scan = report.get("pluto", {})
+    content = ["<section><h2>Catálogos utilizados</h2><pre>" + esc(json.dumps(report.get("knowledge", {}), ensure_ascii=False, indent=2)) + "</pre></section>",
+               "<section><h2>Pluto</h2><p>" + esc(scan.get("status", "UNKNOWN")) + ": " + esc(scan.get("message", "Sin resultado")) + "</p><pre>" + esc(" ".join(scan.get("command", []))) + "</pre><pre>" + esc(scan.get("stdout", "")) + "</pre></section>"]
     groups = [("Hallazgos globales", report["global_findings"])] + [(c["name"], c["findings"]) for c in report["crds"]]
     for title, findings in groups:
         content.append(f"<section><h2>{esc(title)}</h2>")

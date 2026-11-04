@@ -2,6 +2,8 @@ import argparse
 from pathlib import Path
 import sys
 from .collector import Collector, CollectionError, read_json, crd_items
+from .coverage import CoverageCatalog
+from . import pluto
 from .version import Version, upgrade_path
 from .rule_engine import RuleEngine
 from .operator_validator import OperatorCatalog
@@ -29,6 +31,8 @@ def parser():
     p.add_argument("--output", type=Path, default=Path("reports"), help="Directorio de reportes (default: reports)")
     p.add_argument("--format", choices=("json", "markdown", "md", "html", "all"), default="all")
     p.add_argument("--include-instances", action="store_true", help="Lectura limitada de Custom Resources")
+    p.add_argument("--coverage-path", type=Path, help="Catálogo JSON de cobertura y protocolos revisados")
+    p.add_argument("--pluto-timeout", type=positive, default=120, help="Timeout total de Pluto en segundos")
     p.add_argument("--rules-path", type=Path, help="Archivo/directorio JSON; agrega reglas a las incluidas")
     p.add_argument("--operator-catalog", type=Path, help="Matriz de soporte revisada con fuentes y versiones exactas")
     p.add_argument("--verify-sources", action="store_true", help="Consulta documentos HTTPS del catálogo y verifica SHA256; solo LIVE")
@@ -68,6 +72,7 @@ def main(argv=None):
             raise ValueError("El modo offline requiere --current.")
         if args.verify_sources and not args.operator_catalog:
             raise ValueError("--verify-sources requiere --operator-catalog.")
+        coverage = CoverageCatalog(args.coverage_path)
         engine = RuleEngine(args.rules_path)
         catalog = OperatorCatalog(args.operator_catalog, args.verify_sources, args.timeout)
         collector = None
@@ -87,12 +92,7 @@ def main(argv=None):
         if path["skips_minors"]:
             global_findings.append(finding("UPGRADE-MINOR-JUMP", "upgrade_path", "WARN", "El objetivo salta versiones minor.",
                 evidence=path, relation="upgrade", recommendation="Planificar y validar cada salto y las restricciones del proveedor del clúster."))
-        if not (current.minor == 34 and target.minor == 35):
-            global_findings.append(finding("RULE-COVERAGE", "rules", "UNKNOWN", "Fuera del trayecto minor revisado 1.34 → 1.35.",
-                relation="limitation", recommendation="Agregar reglas documentadas para todas las versiones intermedias."))
-        global_findings.append(finding("PATCH-COVERAGE", "rules", "UNKNOWN", "El catálogo no acredita cobertura exhaustiva de parches, feature gates o cambios del proveedor.",
-            relation="limitation", evidence={"reviewed_transition": "1.34 → 1.35", "rules_loaded": len(engine.rules)},
-            recommendation="Revisar notas de los parches exactos y configuración del API Server junto con este informe."))
+        global_findings.append(coverage.assess(current, target))
         if not crds:
             global_findings.append(finding("CRD-INVENTORY-EMPTY", "inventory", "UNKNOWN", "No se encontraron CRDs en la entrada.", relation="limitation"))
         target_collector, target_crds, target_error = None, {}, None
@@ -112,12 +112,16 @@ def main(argv=None):
         results = []
         for crd in crds:
             result = analyze(crd, current, target, engine, collector, catalog, args.include_instances,
-                             options, target_collector, target_crds, target_error)
+                             options, target_collector, target_crds, target_error, coverage)
             results.append(result)
             if args.verbose:
                 print(f"CRD {len(results)}/{len(crds)}: {result['status']} ({len(result['findings'])} hallazgos)", file=sys.stderr)
         queries = (collector.queries if collector else 0) + (target_collector.queries if target_collector else 0)
+        pluto_result, pluto_finding = pluto.run(cluster, target, args.pluto_timeout, offline=bool(args.input))
+        global_findings.append(pluto_finding)
         report = build_report(cluster, current, target, path, results, global_findings, queries, args.target_context)
+        report["pluto"] = pluto_result
+        report["knowledge"] = {"coverage_catalog_version": coverage.data["catalog_version"], "coverage_sha256": coverage.sha256, "rule_catalogs": engine.provenance()}
         written = write_reports(report, args.output, "markdown" if args.format == "md" else args.format)
         print(f"Kubernetes {current} -> {target} | CRDs: {len(results)} | Estado: {report['overall_status']}")
         print(" | ".join(f"{s}: {n}" for s, n in report["summary"]["states"].items()))

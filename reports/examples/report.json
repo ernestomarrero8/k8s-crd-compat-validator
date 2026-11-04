@@ -1,8 +1,8 @@
 {
-  "schema_version": "1.0",
+  "schema_version": "1.1",
   "tool": "k8s-crd-compat-validator",
-  "tool_version": "0.1.0",
-  "analyzed_at": "2026-10-29T15:20:06.119659+00:00",
+  "tool_version": "0.2.0",
+  "analyzed_at": "2026-11-04T13:35:38.716062+00:00",
   "cluster": "offline:mixed-crds.json",
   "current_version": "1.34.8",
   "target_version": "1.35.9",
@@ -31,31 +31,80 @@
       "LOW": 1,
       "INFO": 0
     },
-    "unknown_findings": 15
+    "unknown_findings": 16
   },
   "limitations": [
     "PASS solo acredita las comprobaciones realizadas, no garantiza el upgrade.",
-    "No se detectan APIs nativas deprecadas ni se ejecuta Pluto.",
+    "La detección de APIs nativas se delega en Pluto; consultar su sección y estado.",
     "No se prueban escrituras, reconciliación, CEL completo ni versiones persistidas por objeto.",
-    "Las reglas de 1.35 son una selección verificada, no una auditoría exhaustiva de parches o distribuciones.",
+    "La cobertura documental y los hashes del catálogo se registran en este informe.",
     "No se exportan cuerpos de Custom Resources, annotations completas, kubeconfig, certificados ni stderr de kubectl."
   ],
   "global_findings": [
     {
-      "rule_id": "PATCH-COVERAGE",
+      "rule_id": "RULE-COVERAGE",
       "category": "rules",
       "status": "UNKNOWN",
       "severity": "INFO",
-      "description": "El catálogo no acredita cobertura exhaustiva de parches, feature gates o cambios del proveedor.",
+      "description": "Cobertura documental del trayecto solicitado; el alcance se limita a las categorías registradas.",
       "evidence": {
-        "reviewed_transition": "1.34 → 1.35",
-        "rules_loaded": 3
+        "catalog_version": "2026.11.04.1",
+        "sha256": "01c7959a428e1d9bd32229cc54106f3c99561db1d83601b8558cb8108c6b16fb",
+        "reviews": [
+          {
+            "current_min": "1.34.0",
+            "current_max": "1.34.999",
+            "target_min": "1.35.0",
+            "target_max": "1.35.999",
+            "status": "partial",
+            "categories": [
+              "schema",
+              "structure",
+              "conversion_webhook",
+              "storage"
+            ],
+            "reviewed_on": "2026-10-29",
+            "reviewer": "Initial project implementation",
+            "source": "https://github.com/kubernetes/kubernetes/blob/v1.35.0/CHANGELOG/CHANGELOG-1.35.md",
+            "limitations": [
+              "Selección de cambios minor; parches exactos, backports, feature gates y proveedores no revisados exhaustivamente."
+            ]
+          }
+        ],
+        "steps": [
+          {
+            "current": "1.34.8",
+            "target": "1.35.9",
+            "status": "partial"
+          }
+        ]
       },
-      "recommendation": "Revisar notas de los parches exactos y configuración del API Server junto con este informe.",
+      "recommendation": "Revisar categorías, parches y distribuciones pendientes antes del upgrade.",
       "source": "https://v1-35.docs.kubernetes.io/docs/tasks/extend-kubernetes/custom-resources/custom-resource-definitions/",
-      "relation": "limitation",
+      "relation": "documented",
       "validation_type": "static",
-      "limitations": []
+      "limitations": [
+        "Una revisión sin cambios relevantes no equivale a ausencia de revisión ni certifica compatibilidad completa."
+      ]
+    },
+    {
+      "rule_id": "PLUTO-SCAN",
+      "category": "native_api_deprecations",
+      "status": "UNKNOWN",
+      "severity": "INFO",
+      "description": "Pluto no se ejecuta en modo offline.",
+      "evidence": {
+        "exit_code": null,
+        "executed": false
+      },
+      "recommendation": "Revisar la sección Pluto y mantener actualizado el binario y su catálogo de APIs.",
+      "source": "https://pluto.docs.fairwinds.com/advanced/",
+      "relation": "limitation",
+      "validation_type": "external_tool",
+      "limitations": [
+        "Pluto tiene su propio catálogo de APIs; un resultado limpio no prueba cobertura de versiones futuras.",
+        "La detección depende de los objetos y metadatos disponibles para Pluto."
+      ]
     }
   ],
   "crds": [
@@ -176,8 +225,7 @@
           "evidence": {
             "basis": "Cambio aditivo documentado en las notas 1.35, PR 134984.",
             "applicability": {
-              "crosses": "1.35.0",
-              "target_max": "1.35.999"
+              "crosses": "1.35.0"
             },
             "condition_matched": true
           },
@@ -186,7 +234,7 @@
           "relation": "release_change",
           "validation_type": "static",
           "limitations": [
-            "No se inspecciona el código del operador; este cambio no es un bloqueo por sí mismo."
+            "No se inspecciona el cÃ³digo del operador; este cambio no es un bloqueo por sÃ­ mismo."
           ]
         },
         {
@@ -319,8 +367,7 @@
           "evidence": {
             "basis": "Cambio aditivo documentado en las notas 1.35, PR 134984.",
             "applicability": {
-              "crosses": "1.35.0",
-              "target_max": "1.35.999"
+              "crosses": "1.35.0"
             },
             "condition_matched": true
           },
@@ -329,7 +376,7 @@
           "relation": "release_change",
           "validation_type": "static",
           "limitations": [
-            "No se inspecciona el código del operador; este cambio no es un bloqueo por sí mismo."
+            "No se inspecciona el cÃ³digo del operador; este cambio no es un bloqueo por sÃ­ mismo."
           ]
         },
         {
@@ -485,8 +532,7 @@
           "evidence": {
             "basis": "Cambio aditivo documentado en las notas 1.35, PR 134984.",
             "applicability": {
-              "crosses": "1.35.0",
-              "target_max": "1.35.999"
+              "crosses": "1.35.0"
             },
             "condition_matched": true
           },
@@ -495,7 +541,7 @@
           "relation": "release_change",
           "validation_type": "static",
           "limitations": [
-            "No se inspecciona el código del operador; este cambio no es un bloqueo por sí mismo."
+            "No se inspecciona el cÃ³digo del operador; este cambio no es un bloqueo por sÃ­ mismo."
           ]
         },
         {
@@ -576,11 +622,19 @@
           "category": "conversion_webhook",
           "status": "FAIL",
           "severity": "HIGH",
-          "description": "No hay protocolo ConversionReview reconocido en la configuración.",
-          "evidence": {},
+          "description": "Ningún protocolo declarado coincide con los documentados para el objetivo.",
+          "evidence": {
+            "declared": [
+              "v9"
+            ],
+            "supported": [
+              "v1",
+              "v1beta1"
+            ]
+          },
           "recommendation": "Revisar la evidencia antes del upgrade.",
           "source": "https://v1-35.docs.kubernetes.io/docs/tasks/extend-kubernetes/custom-resources/custom-resource-definition-versioning/",
-          "relation": "preexisting",
+          "relation": "upgrade",
           "validation_type": "static",
           "limitations": []
         },
@@ -671,8 +725,7 @@
           "evidence": {
             "basis": "Cambio aditivo documentado en las notas 1.35, PR 134984.",
             "applicability": {
-              "crosses": "1.35.0",
-              "target_max": "1.35.999"
+              "crosses": "1.35.0"
             },
             "condition_matched": true
           },
@@ -681,7 +734,7 @@
           "relation": "release_change",
           "validation_type": "static",
           "limitations": [
-            "No se inspecciona el código del operador; este cambio no es un bloqueo por sí mismo."
+            "No se inspecciona el cÃ³digo del operador; este cambio no es un bloqueo por sÃ­ mismo."
           ]
         },
         {
@@ -812,21 +865,20 @@
           "category": "schema",
           "status": "WARN",
           "severity": "LOW",
-          "description": "Kubernetes 1.35 puede incluir valores simples en errores de validación CEL.",
+          "description": "Kubernetes 1.35 puede incluir valores simples en errores de validaciÃ³n CEL.",
           "evidence": {
-            "basis": "PR 132798 modifica los errores CEL; la definición contiene reglas CEL.",
+            "basis": "PR 132798 modifica los errores CEL; la definiciÃ³n contiene reglas CEL.",
             "applicability": {
-              "crosses": "1.35.0",
-              "target_max": "1.35.999"
+              "crosses": "1.35.0"
             },
             "condition_matched": true
           },
-          "recommendation": "Revisar consumidores que comparen mensajes textuales y la redacción de datos sensibles en logs.",
+          "recommendation": "Revisar consumidores que comparen mensajes textuales y la redacciÃ³n de datos sensibles en logs.",
           "source": "https://github.com/kubernetes/kubernetes/pull/132798",
           "relation": "upgrade",
           "validation_type": "static",
           "limitations": [
-            "Es un cambio de diagnóstico, no una incompatibilidad de la expresión CEL demostrada."
+            "Es un cambio de diagnÃ³stico, no una incompatibilidad de la expresiÃ³n CEL demostrada."
           ]
         },
         {
@@ -838,8 +890,7 @@
           "evidence": {
             "basis": "Cambio aditivo documentado en las notas 1.35, PR 134984.",
             "applicability": {
-              "crosses": "1.35.0",
-              "target_max": "1.35.999"
+              "crosses": "1.35.0"
             },
             "condition_matched": true
           },
@@ -848,7 +899,7 @@
           "relation": "release_change",
           "validation_type": "static",
           "limitations": [
-            "No se inspecciona el código del operador; este cambio no es un bloqueo por sí mismo."
+            "No se inspecciona el cÃ³digo del operador; este cambio no es un bloqueo por sÃ­ mismo."
           ]
         },
         {
@@ -997,8 +1048,7 @@
           "evidence": {
             "basis": "Cambio aditivo documentado en las notas 1.35, PR 134984.",
             "applicability": {
-              "crosses": "1.35.0",
-              "target_max": "1.35.999"
+              "crosses": "1.35.0"
             },
             "condition_matched": true
           },
@@ -1007,7 +1057,7 @@
           "relation": "release_change",
           "validation_type": "static",
           "limitations": [
-            "No se inspecciona el código del operador; este cambio no es un bloqueo por sí mismo."
+            "No se inspecciona el cÃ³digo del operador; este cambio no es un bloqueo por sÃ­ mismo."
           ]
         },
         {
@@ -1025,5 +1075,34 @@
         }
       ]
     }
-  ]
+  ],
+  "pluto": {
+    "executed": false,
+    "command": [],
+    "context": "offline:mixed-crds.json",
+    "target_version": "1.35.9",
+    "exit_code": null,
+    "stdout": "",
+    "stderr_omitted": true,
+    "limitations": [
+      "Pluto tiene su propio catálogo de APIs; un resultado limpio no prueba cobertura de versiones futuras.",
+      "La detección depende de los objetos y metadatos disponibles para Pluto."
+    ],
+    "status": "UNKNOWN",
+    "message": "Pluto no se ejecuta en modo offline."
+  },
+  "knowledge": {
+    "coverage_catalog_version": "2026.11.04.1",
+    "coverage_sha256": "01c7959a428e1d9bd32229cc54106f3c99561db1d83601b8558cb8108c6b16fb",
+    "rule_catalogs": {
+      "files": [
+        {
+          "file": "kubernetes.json",
+          "sha256": "cce532134940543b129e563ec8b27f20a2fea82d72553738d4193731bd9fca78",
+          "catalog_version": "2026.11.04.1"
+        }
+      ],
+      "rules_sha256": "84bf20919b949d4bb9141c0fb86710f5147ecd1e00116d18e9b0a7654936ff5e"
+    }
+  }
 }

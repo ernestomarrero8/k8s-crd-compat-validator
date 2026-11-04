@@ -6,24 +6,37 @@
     {
       "rule_id": "K135-CEL-ERROR-VALUES",
       "category": "schema",
-      "description": "Kubernetes 1.35 puede incluir valores simples en errores de validación CEL.",
-      "applicability": {"crosses": "1.35.0", "target_max": "1.35.999"},
-      "condition": {"path": "spec.versions.*.schema.openAPIV3Schema.**.x-kubernetes-validations.*", "op": "count_gt", "value": 0},
+      "description": "Kubernetes 1.35 puede incluir valores simples en errores de validaciÃ³n CEL.",
+      "applicability": {
+        "crosses": "1.35.0"
+      },
+      "condition": {
+        "path": "spec.versions.*.schema.openAPIV3Schema.**.x-kubernetes-validations.*",
+        "op": "count_gt",
+        "value": 0
+      },
       "status": "WARN",
       "severity": "LOW",
       "relation": "upgrade",
       "validation_type": "static",
-      "evidence": "PR 132798 modifica los errores CEL; la definición contiene reglas CEL.",
-      "recommendation": "Revisar consumidores que comparen mensajes textuales y la redacción de datos sensibles en logs.",
+      "evidence": "PR 132798 modifica los errores CEL; la definiciÃ³n contiene reglas CEL.",
+      "recommendation": "Revisar consumidores que comparen mensajes textuales y la redacciÃ³n de datos sensibles en logs.",
       "source": "https://github.com/kubernetes/kubernetes/pull/132798",
-      "limitations": ["Es un cambio de diagnóstico, no una incompatibilidad de la expresión CEL demostrada."]
+      "limitations": [
+        "Es un cambio de diagnÃ³stico, no una incompatibilidad de la expresiÃ³n CEL demostrada."
+      ]
     },
     {
       "rule_id": "K135-CONDITION-GENERATION",
       "category": "structure",
       "description": "1.35 incorpora observedGeneration en condiciones de CRDs.",
-      "applicability": {"crosses": "1.35.0", "target_max": "1.35.999"},
-      "condition": {"path": "status.conditions", "op": "exists"},
+      "applicability": {
+        "crosses": "1.35.0"
+      },
+      "condition": {
+        "path": "status.conditions",
+        "op": "exists"
+      },
       "status": "PASS",
       "severity": "INFO",
       "relation": "release_change",
@@ -31,22 +44,32 @@
       "evidence": "Cambio aditivo documentado en las notas 1.35, PR 134984.",
       "recommendation": "Revisar deserializadores estrictos en clientes propios que consuman condiciones de CRDs.",
       "source": "https://github.com/kubernetes/kubernetes/blob/master/CHANGELOG/CHANGELOG-1.35.md",
-      "limitations": ["No se inspecciona el código del operador; este cambio no es un bloqueo por sí mismo."]
+      "limitations": [
+        "No se inspecciona el cÃ³digo del operador; este cambio no es un bloqueo por sÃ­ mismo."
+      ]
     },
     {
       "rule_id": "K135-STATUS-SCHEMA-FIX",
       "category": "schema",
-      "description": "1.35 incluye una corrección de validación cuando hay subresource status sin propiedad status en el esquema.",
-      "applicability": {"crosses": "1.35.0", "target_max": "1.35.999"},
-      "condition": {"path": "spec.versions.*.subresources.status", "op": "exists"},
+      "description": "1.35 incluye una correcciÃ³n de validaciÃ³n cuando hay subresource status sin propiedad status en el esquema.",
+      "applicability": {
+        "crosses": "1.35.0"
+      },
+      "condition": {
+        "path": "spec.versions.*.subresources.status",
+        "op": "exists"
+      },
       "status": "PASS",
       "severity": "INFO",
       "relation": "release_change",
       "validation_type": "static",
-      "evidence": "PR 133721 corrige un posible panic; se detectó uso del subresource status.",
-      "recommendation": "Revisar la definición de status y las pruebas del operador si depende de ese subresource.",
+      "evidence": "PR 133721 corrige un posible panic; se detectÃ³ uso del subresource status.",
+      "recommendation": "Revisar la definiciÃ³n de status y las pruebas del operador si depende de ese subresource.",
       "source": "https://github.com/kubernetes/kubernetes/pull/133721",
-      "limitations": ["No implica que la versión actual sea vulnerable; la corrección puede estar incluida por backport."]
+      "limitations": [
+        "No implica que la versiÃ³n actual sea vulnerable; la correcciÃ³n puede estar incluida por backport."
+      ]
     }
-  ]
+  ],
+  "catalog_version": "2026.11.04.1"
 }

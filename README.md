@@ -1,6 +1,6 @@
 # k8s-crd-compat-validator
 
-CLI de solo lectura para evaluar CRDs y sus dependencias antes de un upgrade Kubernetes. Python 3.12+, Windows y Linux; biblioteca estándar en ejecución. No instala servicios, no modifica el clúster y no ejecuta Pluto.
+CLI de solo lectura para evaluar CRDs y sus dependencias antes de un upgrade Kubernetes. Python 3.12+, Windows y Linux; biblioteca estándar en ejecución. No instala servicios, no modifica el clúster. En LIVE también ejecuta Pluto como detector externo de APIs deprecadas.
 
 El repositorio incluye validaciones estáticas, consultas LIVE acotadas, un motor de reglas JSON, reportes JSON/Markdown/HTML y pruebas con kubectl simulado. La transición revisada inicialmente es **1.34 → 1.35**. Los números de parche se comparan, pero el catálogo no promete cubrir todos los cambios de cada parche o distribución, incluido AKS.
 
@@ -40,7 +40,7 @@ Se usa directamente el intérprete del entorno para evitar depender de scripts d
 
 ### LIVE
 
-Requiere `kubectl` en PATH, un kubeconfig ya configurado y permisos de lectura. La herramienta toma **serverVersion.gitVersion**, nunca la versión del cliente. Fija el contexto activo al inicio para que un cambio posterior de contexto no redirija consultas.
+Requiere `kubectl` y `pluto` en PATH, un kubeconfig ya configurado y permisos de lectura. La herramienta toma **serverVersion.gitVersion**, nunca la versión del cliente. Fija el contexto activo al inicio para que un cambio posterior de contexto no redirija consultas.
 
 ```sh
 python main.py --target 1.35.9
@@ -58,7 +58,7 @@ kubectl get crds -o json > crds.json
 python main.py --input crds.json --current 1.34.8 --target 1.35.9
 ```
 
-Admite un CRD individual, `List` o `CustomResourceDefinitionList`, en UTF-8 (con o sin BOM) y UTF-16 con BOM para exportaciones de Windows PowerShell 5. No ejecuta kubectl ni accede a Internet. `--include-instances` registra `UNKNOWN` en este modo. No permite combinar offline con contextos o `--verify-sources`.
+Admite un CRD individual, `List` o `CustomResourceDefinitionList`, en UTF-8 (con o sin BOM) y UTF-16 con BOM para exportaciones de Windows PowerShell 5. No ejecuta kubectl ni Pluto, ni accede a Internet. `--include-instances` registra `UNKNOWN` en este modo. No permite combinar offline con contextos o `--verify-sources`.
 
 ### TARGET VALIDATION: observaciones de lectura
 
@@ -113,7 +113,7 @@ Por defecto se bloquea por `FAIL,ERROR`. `--fail-on` selecciona estados **exacto
 python main.py --context production --target 1.35.9 --fail-on FAIL,WARN,UNKNOWN,ERROR --format json
 ```
 
-La política anterior será estricta también con la cobertura de parches no acreditada. Es intencional: la versión inicial no puede certificar exhaustividad. Para gates de hallazgos demostrados, use la política predeterminada y revise los UNKNOWN mediante el informe.
+La política anterior será estricta también con cobertura parcial o no revisada y Pluto no ejecutado en offline. Es intencional: la versión inicial no puede certificar exhaustividad. Para gates de hallazgos demostrados, use la política predeterminada y revise los UNKNOWN mediante el informe.
 
 ## Límites de consultas y datos
 
@@ -186,13 +186,13 @@ Bases técnicas adicionales:
 - [Semántica CEL en Kubernetes](https://kubernetes.io/docs/reference/using-api/cel/).
 - [Ownership de CRDs en OLM](https://olm.operatorframework.io/docs/concepts/crds/clusterserviceversion/).
 
-No se incluye una matriz de feature gates ni diferencias entre versiones efectivas de emulación del API Server. Los reportes explicitan esa limitación aunque el número de servidor coincida con el objetivo.
+No se incluye una matriz de feature gates ni diferencias entre versiones efectivas de emulación del API Server. El catálogo de cobertura explicita las áreas pendientes aunque el número de servidor coincida con el objetivo.
 
 ## Permisos y seguridad
 
-Lecturas esenciales: GET de versión del servidor y LIST de `customresourcedefinitions.apiextensions.k8s.io`. Según las opciones y CRDs encontrados, se necesitan GET de Services, LIST de EndpointSlices, CSVs OLM, Deployments y recursos personalizados; las listas globales requieren permisos en los namespaces correspondientes. Discovery del objetivo requiere GET sobre `/apis/...`. No se requiere acceso a Secrets ni a nodos.
+Lecturas esenciales: GET de versión del servidor y LIST de `customresourcedefinitions.apiextensions.k8s.io`. Según las opciones y CRDs encontrados, se necesitan GET de Services, LIST de EndpointSlices, CSVs OLM, Deployments y recursos personalizados; las listas globales requieren permisos en los namespaces correspondientes. Discovery del objetivo requiere GET sobre `/apis/...`. El análisis propio de CRDs no requiere Secrets ni nodos. Pluto puede necesitar leer Secrets de releases Helm y otros recursos para completar detect-all-in-cluster; sus permisos deben corresponder al alcance de la evaluación.
 
-Solo existen comandos `get`, `version` y `config current-context`. No hay apply, delete, patch, migraciones, reinicios o actualizaciones. Las herramientas de autenticación exec de kubectl pueden ejecutarse conforme al kubeconfig del usuario; utilice un kubeconfig de confianza.
+Para kubectl solo existen comandos `get`, `version` y `config current-context`; adicionalmente se ejecuta `pluto detect-all-in-cluster`. No hay apply, delete, patch, migraciones, reinicios o actualizaciones. Las herramientas de autenticación exec de kubectl pueden ejecutarse conforme al kubeconfig del usuario; utilice un kubeconfig de confianza.
 
 Se omiten kubeconfig, tokens, bundles CA, cuerpos de CRs, mensajes del servidor y annotations completas. Se conservan contexto, nombres de CRDs, versiones, rutas de campos e indicios de identidad de operadores, por lo que el informe sigue siendo información operativa. HTML escapa contenido, usa una CSP sin scripts y no carga recursos remotos. Los informes se escriben como UTF-8 y reemplazan `report.json`, `report.md` y `report.html` en el directorio elegido.
 
@@ -229,3 +229,52 @@ Las pruebas automatizadas no requieren ni validan un clúster real. Antes de apr
 El 29 de octubre de 2026 se ejecutaron **93 pruebas, todas aprobadas**, en Windows con Python 3.13.6 y pytest 8.3.4. Se desactivó la carga automática de plugins pytest instalados globalmente mediante `PYTEST_DISABLE_PLUGIN_AUTOLOAD=1`; el proyecto no necesita plugins. Las pruebas incluyen rutas completas de CLI LIVE y TARGET con subprocess simulado, aislamiento offline, reglas externas, redacción de datos sensibles y generación de los tres formatos.
 
 El comando del fixture mixto generó los reportes incluidos y terminó con código 1 esperado: **3 FAIL, 2 WARN, 1 UNKNOWN, 0 ERROR**. Se verificó también la ayuda CLI. No se consultó ningún clúster real ni se ejecutaron escrituras. La portabilidad Linux se basa en biblioteca estándar y comandos sin shell; no se ejecutó una prueba de integración en Linux durante esta entrega.
+
+
+## Cambios de v0.2: mantenimiento y Pluto
+
+No se agrega CI automático. Las pruebas se ejecutan localmente con `python -m pytest -q`.
+
+### Pluto en el reporte
+
+En LIVE se ejecuta automáticamente este comando, fijando el mismo contexto de origen y el objetivo de la CLI:
+
+```sh
+pluto detect-all-in-cluster -o wide --kube-context production --target-versions k8s=v1.35.9 --ignore-deprecations=false --ignore-removals=false --ignore-unavailable-replacements=false
+```
+
+Las opciones adicionales impiden evaluar accidentalmente otro contexto/objetivo u ocultar resultados. Se eliminan las variables heredadas `PLUTO_*` del proceso para evitar filtros implícitos; se conservan KUBECONFIG y las variables de autenticación habituales. El programa no cambia el contexto activo. `--pluto-timeout 120` controla el tiempo total del proceso; el presupuesto de consultas kubectl no limita las lecturas internas de Pluto.
+
+La sección **Pluto** en JSON, Markdown y HTML contiene el comando, contexto, objetivo, código de salida, estado y tabla wide con saltos de línea preservados. Los resultados son globales, no se atribuyen artificialmente a un CRD. El JSON conserva también si hubo stderr y si la salida fue truncada. Se omite stderr y la salida de procesos fallidos para evitar publicar diagnósticos con credenciales; se redactan patrones comunes de secretos en stdout. La tabla puede contener nombres operativos y debe tratarse como información del clúster. Se limita el texto publicado a 200000 caracteres, pero la captura de subprocess se realiza en memoria.
+
+Según los [códigos documentados de Pluto](https://pluto.docs.fairwinds.com/advanced/): 0 se registra PASS, 2 WARN (deprecadas), 3 FAIL (eliminadas), 4 WARN (reemplazo no disponible). Otros códigos, binario ausente o timeout producen ERROR. Siempre se genera el reporte de CRDs si Pluto falla; la CLI devuelve 2. `--fail-on` considera el hallazgo de Pluto junto a los demás. En offline no se inicia el proceso y se informa UNKNOWN.
+
+Mantener Pluto actualizado es parte del mantenimiento: su catálogo de APIs es independiente de nuestras reglas. La detección basada en metadatos tiene las [limitaciones descritas por Fairwinds](https://pluto.docs.fairwinds.com/faq/). Un código 0 no certifica la cobertura de una versión futura.
+
+### Catálogo de cobertura
+
+`rules/coverage.json` contiene una versión de catálogo, revisiones por rangos de origen/objetivo y protocolos ConversionReview documentados. `--coverage-path archivo.json` permite reemplazarlo por un catálogo revisado, sin cambiar Python. Los rangos son inclusivos. Cada registro exige fecha, revisor y fuente HTTPS.
+
+Los registros `reviews` enumeran categorías, limitaciones y uno de estos estados:
+
+- `partial`: hay revisión, pero queda alcance pendiente; se emite UNKNOWN.
+- `reviewed_changes`: se revisaron cambios relevantes para las categorías declaradas.
+- `reviewed_no_changes`: se revisó el alcance declarado y no se encontraron cambios relevantes.
+
+La ausencia de registro significa **unreviewed**, nunca PASS. En saltos minor se evalúa cada tramo intermedio; un tramo ausente o parcial mantiene UNKNOWN. PASS en cobertura solo acredita revisión documental de las categorías indicadas. No acredita operadores, distribución ni ejecución del upgrade. La cobertura inicial sigue siendo parcial: no se amplió ficticiamente a versiones futuras.
+
+`conversion_protocols` define `target_min`, `target_max` y `versions`, además de fuente y revisión. Si no hay un único registro aplicable, la comprobación del protocolo devuelve UNKNOWN en lugar de asumir compatibilidad. Se conservaron las comprobaciones independientes de sintaxis, TLS y endpoints.
+
+Las reglas de transición usan `crosses` para indicar cuándo se introduce un cambio. Sus efectos pueden seguir siendo relevantes al saltar a versiones posteriores: las reglas incluidas ya no expiran al acabar 1.35. Un `target_max` en futuras reglas solo debe expresar un fin de aplicabilidad demostrado; la falta de investigación se registra en cobertura. Para correcciones y backports, definir rangos precisos y probar sus límites. Cambios que excedan los predicados disponibles siguen requiriendo un nuevo validador Python.
+
+Los tres reportes incluyen versión de herramienta, versión y SHA256 del archivo de cobertura, versión/hash de cada archivo de reglas y hash de las reglas efectivas. Se conserva el soporte para reglas externas anteriores, identificadas como `unversioned` si no declaran `catalog_version`. El esquema JSON del informe es ahora 1.1 (campos aditivos `knowledge` y `pluto`).
+
+### Procedimiento para incorporar otra versión
+
+1. Revisar documentación oficial y cambios relevantes para CRDs, incluyendo parches y backports. Registrar revisor, fecha y referencias fijadas a tags/commits cuando existan.
+2. Agregar reglas y pruebas positivas, negativas y de límites; registrar explícitamente cambios ausentes o revisión parcial.
+3. Actualizar cobertura y protocolos solo dentro del alcance acreditado; mantener el catálogo del operador por separado.
+4. Ejecutar las pruebas locales y, cuando corresponda, pruebas funcionales en un laboratorio aislado autorizado. Esta entrega no crea clústeres ni ejecuta pruebas mutantes.
+5. Incrementar versiones de catálogo/herramienta y publicar una revisión con su evidencia. Conservar los archivos y hashes usados por cada evaluación.
+
+La validación de v0.2 el 4 de noviembre de 2026 completó **111 pruebas aprobadas** en Windows con Python 3.13.6, con subprocess simulado para Pluto; no se consultó un clúster real.

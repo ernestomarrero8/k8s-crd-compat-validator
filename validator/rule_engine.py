@@ -1,6 +1,8 @@
 """Versioned declarative JSON predicates; never eval/import external code."""
 from pathlib import Path
 import re
+import hashlib
+import json
 from urllib.parse import urlsplit
 from .collector import read_json
 from .models import finding, STATES, SEVERITIES
@@ -87,17 +89,25 @@ class RuleEngine:
                 raise ValueError("El directorio de reglas no contiene archivos JSON.")
             paths += [p for p in candidates if p.resolve() != builtin]
         self.rules = []
+        self.catalogs = []
         seen = set()
         for path in paths:
+            if path.resolve() == builtin.with_name("coverage.json"):
+                continue
+            self.catalogs.append({"file": path.name, "sha256": hashlib.sha256(path.read_bytes()).hexdigest()})
             data = read_json(path)
             if not isinstance(data, dict) or data.get("schema_version") != 1 or not isinstance(data.get("rules"), list):
                 raise ValueError("Archivo de reglas requiere schema_version: 1 y rules: [].")
+            self.catalogs[-1]["catalog_version"] = data.get("catalog_version", "unversioned")
             for rule in data["rules"]:
                 self.validate(rule)
                 if rule["rule_id"] in seen:
                     raise ValueError("Identificador de regla duplicado.")
                 seen.add(rule["rule_id"])
                 self.rules.append(rule)
+
+    def provenance(self):
+        return {"files": self.catalogs, "rules_sha256": hashlib.sha256(json.dumps(self.rules, sort_keys=True, ensure_ascii=False).encode("utf-8")).hexdigest()}
 
     @staticmethod
     def validate(rule):

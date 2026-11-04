@@ -8,7 +8,7 @@ from .collector import CollectionError
 from .models import finding, VERSION_SOURCE
 
 
-def analyze(crd, collector=None):
+def analyze(crd, collector=None, protocols=None):
     out = []
 
     def add(id_, state, text, **kw):
@@ -24,10 +24,14 @@ def analyze(crd, collector=None):
         return out
     webhook = conversion.get("webhook", {})
     review = webhook.get("conversionReviewVersions", [])
-    if not isinstance(review, list) or not review or any(not isinstance(v, str) for v in review) or not {"v1", "v1beta1"}.intersection(review):
+    if not isinstance(review, list) or not review or any(not isinstance(v, str) for v in review):
         add("CONVERSION-REVIEW", "FAIL", "No hay protocolo ConversionReview reconocido en la configuración.")
+    elif protocols is None:
+        add("CONVERSION-REVIEW", "UNKNOWN", "No hay catálogo de protocolos revisado para la versión objetivo.", relation="limitation")
+    elif not set(protocols).intersection(review):
+        add("CONVERSION-REVIEW", "FAIL", "Ningún protocolo declarado coincide con los documentados para el objetivo.", relation="upgrade", evidence={"declared": review, "supported": protocols})
     else:
-        add("CONVERSION-REVIEW", "PASS", "Hay un protocolo declarado reconocido en Kubernetes 1.34/1.35.",
+        add("CONVERSION-REVIEW", "PASS", "Hay un protocolo declarado documentado para la versión objetivo.",
             evidence={"conversion_review_versions": review}, limitations=["No prueba que el servidor webhook implemente ese protocolo."])
     config = webhook.get("clientConfig", {})
     service = config.get("service")

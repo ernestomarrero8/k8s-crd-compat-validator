@@ -132,7 +132,9 @@ def analyze_target(crd, target_collector, target_crds, target_error):
 
 
 def analyze(crd, current, target, engine, collector=None, catalog=None, include_instances=False,
-            instance_options=None, target_collector=None, target_crds=None, target_error=None):
+            instance_options=None, target_collector=None, target_crds=None, target_error=None, coverage=None):
+    from .coverage import CoverageCatalog
+    coverage = coverage or CoverageCatalog()
     errors = structure(crd)
     name = crd.get("metadata", {}).get("name", "<sin nombre>") if isinstance(crd.get("metadata"), dict) else "<sin nombre>"
     if not isinstance(name, str):
@@ -158,7 +160,7 @@ def analyze(crd, current, target, engine, collector=None, catalog=None, include_
                 findings.append(finding("CRD-CONDITION", "structure", "WARN", "El API Server informa una condición problemática preexistente.",
                                         evidence={"type": typ, "status": state}, validation_type="observed_status"))
         checks = [lambda: storage_validator.analyze(crd), lambda: schema_validator.analyze(crd),
-                  lambda: conversion_validator.analyze(crd, collector),
+                  lambda: conversion_validator.analyze(crd, collector, coverage.protocols(target)),
                   lambda: operator_validator.analyze(crd, target, collector, catalog), lambda: engine.evaluate(crd, current, target)]
         if include_instances:
             checks.append(lambda: analyze_instances(crd, collector, instance_options or {}))

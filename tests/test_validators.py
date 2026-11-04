@@ -111,14 +111,14 @@ def webhook(crd, review=None):
 def test_webhook_bad_protocol_and_ca(crd):
     hook = webhook(crd, ["v9"])
     hook["clientConfig"]["caBundle"] = "not-a-certificate"
-    result = rules(conversion_validator.analyze(crd))
+    result = rules(conversion_validator.analyze(crd, protocols=["v1", "v1beta1"]))
     assert result["CONVERSION-REVIEW"] == "FAIL"
     assert result["CONVERSION-CA"] == "FAIL"
 
 
 def test_webhook_v1beta1_is_still_a_protocol(crd):
     webhook(crd, ["v1beta1"])
-    result = rules(conversion_validator.analyze(crd))
+    result = rules(conversion_validator.analyze(crd, protocols=["v1", "v1beta1"]))
     assert result["CONVERSION-REVIEW"] == "PASS"
     assert result["CONVERSION-TARGET"] == "UNKNOWN"
 
@@ -132,7 +132,7 @@ def test_webhook_v1beta1_is_still_a_protocol(crd):
 ])
 def test_webhook_bad_configuration(crd, config, rule):
     webhook(crd)["clientConfig"] = config
-    assert rules(conversion_validator.analyze(crd))[rule] == "FAIL"
+    assert rules(conversion_validator.analyze(crd, protocols=["v1", "v1beta1"]))[rule] == "FAIL"
 
 
 def test_live_endpoints_do_not_prove_target_compatibility(crd):
