@@ -278,3 +278,55 @@ Los tres reportes incluyen versión de herramienta, versión y SHA256 del archiv
 5. Incrementar versiones de catálogo/herramienta y publicar una revisión con su evidencia. Conservar los archivos y hashes usados por cada evaluación.
 
 La validación de v0.2 el 4 de noviembre de 2026 completó **111 pruebas aprobadas** en Windows con Python 3.13.6, con subprocess simulado para Pluto; no se consultó un clúster real.
+
+## Varios contextos: detalle individual y HTML consolidado
+
+La shell `crd-compat-validator.sh` ejecuta el nuevo runner `batch.py`. Por defecto enumera todos los contextos del kubeconfig mediante `kubectl config get-contexts -o name`. No necesita kubectx ni cambia el contexto activo. Cada contexto se pasa explícitamente a main.py, que también lo utiliza para Pluto.
+
+```sh
+bash crd-compat-validator.sh --target 1.35.9
+```
+
+El intérprete predeterminado es python3.12. Para usar otro:
+
+```sh
+PYTHON_BIN=python3 bash crd-compat-validator.sh --target 1.35.9
+```
+
+También se puede ejecutar directamente en Windows o Linux, seleccionando contextos concretos:
+
+```sh
+python batch.py --target 1.35.9 --context production --context tools --output reports
+```
+
+El resultado tiene esta estructura; cada ejecución recibe una carpeta nueva con fecha UTC e identificador único:
+
+```text
+reports/run-<fecha>-<id>/
+  consolidated.html
+  contexts.json
+  001-production-<hash>/
+    report.html
+    report.json
+    report.md
+    console.txt
+  002-tools-<hash>/
+    report.html
+    report.json
+    report.md
+    console.txt
+```
+
+`consolidated.html` es un archivo autónomo: contiene una tabla ejecutiva por contexto, versión actual/objetivo, estado, cantidad de CRDs, resultado de Pluto, código de salida y decisión orientativa. Los enlaces de la tabla llevan al detalle completo dentro del mismo HTML, incluyendo hallazgos, evidencia, catálogos y tabla de Pluto. Se puede copiar o enviar ese único archivo sin las carpetas individuales.
+
+La recomendación respeta la evidencia: FAIL requiere resolver bloqueos, WARN requiere revisión, UNKNOWN indica evidencia insuficiente y ERROR una evaluación incompleta. No se declara adecuado un upgrade con verificaciones pendientes. Un resultado PASS solo acredita el alcance evaluado.
+
+Un fallo de un contexto no detiene los siguientes. Los contextos sin JSON válido, con JSON de otro contexto/objetivo o con timeout aparecen como ERROR en el consolidado. Solo se incluyen resultados de la ejecución actual; no se buscan archivos antiguos. `contexts.json` registra las rutas relativas y códigos de salida. Los nombres de carpeta usan un prefijo seguro y hash para evitar colisiones o rutas fuera del directorio de salida.
+
+El runner devuelve 2 si hubo errores o timeout; en otro caso devuelve 1 si algún análisis devolvió 1 según su política `--fail-on`, o 0. `--context-timeout` limita el proceso completo por contexto (1800 segundos por defecto). Al vencer puede conservarse detalle parcial, marcado ERROR.
+
+Se pueden pasar `--include-instances`, `--verbose`, `--verify-sources`, `--rules-path`, `--coverage-path`, `--operator-catalog`, `--timeout`, `--pluto-timeout`, `--max-queries`, `--page-size`, `--max-pages`, `--max-instances` y `--fail-on` a main.py mediante el runner. Escribir cada opción y valor separados por espacio. El runner fija `--format all` y los directorios individuales para poder consolidar. Modo offline y `--target-context` siguen disponibles mediante main.py, no mediante este runner de varios contextos.
+
+Ejemplo sintético de consolidación: `reports/examples/consolidated.html`. Se regenera con `python fixtures/generate_consolidated_example.py` y no representa clústeres reales. Las pruebas del runner simulan subprocess; la entrega no ejecuta análisis sobre clústeres reales.
+
+Verificación de esta ampliación: **118 pruebas aprobadas**; sintaxis de la shell comprobada con Bash. Incluye casos con contextos inaccesibles, timeout, JSON inválido, detalle de Pluto, nombres de contexto que colisionan tras normalización y aislamiento entre ejecuciones.
