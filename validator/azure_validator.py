@@ -38,6 +38,12 @@ def analyze(data, current, target):
             "addons": [], "limitations": []}
     if isinstance(aks, dict):
         info["current_version"] = aks.get("currentKubernetesVersion") or aks.get("kubernetesVersion")
+        network = aks.get("networkProfile") or {}
+        info["network_profile"] = {k: network.get(k) for k in ("networkPlugin", "networkPluginMode", "networkDataplane", "networkPolicy")}
+        if network.get("networkPlugin") == "azure":
+            info["addons"].append({"name": "Azure CNI", "detector_id": "azure-cni"})
+        if network.get("networkDataplane") == "cilium":
+            info["addons"].append({"name": "Cilium", "detector_id": "cilium"})
         for key, value in (aks.get("addonProfiles") or {}).items():
             if isinstance(value, dict) and value.get("enabled") is True:
                 info["addons"].append({"name": key, "detector_id": ADDONS.get(key)})

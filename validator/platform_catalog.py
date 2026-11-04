@@ -1,14 +1,16 @@
 """Reviewed support records: tested-only matrices never imply incompatibility."""
 from datetime import date
+from datetime import timedelta
 import hashlib
 import json
 from pathlib import Path
 import re
 from .collector import read_json
-from .models import finding, aggregate
+from .models import finding
 from .rule_engine import safe_source
 
 ROOT = Path(__file__).resolve().parents[1] / "catalogs/operators"
+SUPPORT_ROOT = ROOT.parent / "support"
 
 
 def release(value):
@@ -39,21 +41,39 @@ def in_range(version, lower, upper):
 class PlatformCatalog:
     def __init__(self, path=None):
         self.detectors = read_json(ROOT / "detectors.json")["products"]
-        self.records, self.files = {}, []
-        folder = Path(path) if path else ROOT
+        self.ownership = read_json(ROOT / "ownership.json")["owners"]
+        for definition in self.detectors:
+            owners = [o for o in self.ownership if o["product_id"] == definition["id"]]
+            definition["crd_groups"] = sorted({group for o in owners for group in o["groups"]})
+            definition["crds"] = sorted(set(definition["crds"]) | {name for o in owners for name in o["crds"]})
+        self.records, self.files, self.notes = {}, [], {}
+        folder = Path(path) if path else SUPPORT_ROOT
         paths = sorted(folder.glob("*.json")) if folder.is_dir() else [folder]
         if not paths:
             raise ValueError("Catálogo de plataformas vacío.")
         for file in paths:
-            if file.name == "detectors.json":
+            if file.name in ("detectors.json", "ownership.json"):
                 continue
             data = read_json(file)
+            if isinstance(data, dict) and "version" in data and "versions" not in data:
+                data = {"product": data.get("product"), "catalog_version": data.get("catalog_version", "unversioned"), "versions": [data]}
             if not isinstance(data, dict) or not isinstance(data.get("product"), str) or not isinstance(data.get("versions"), list):
                 raise ValueError("Catálogo de plataforma requiere product y versions.")
+            self.notes[data["product"]] = {"source": data.get("source"), "limitations": data.get("limitations", [])}
             self.files.append({"file": file.name, "catalog_version": data.get("catalog_version", "unversioned"),
                                "sha256": hashlib.sha256(file.read_bytes()).hexdigest()})
             for record in data["versions"]:
                 try:
+                    if "supported_kubernetes" in record:
+                        record["min_kubernetes"] = record["supported_kubernetes"]["min"]
+                        record["max_kubernetes"] = record["supported_kubernetes"]["max"]
+                        record["source"] = record.get("source_url", record.get("source"))
+                        record.setdefault("matrix_type", "supported")
+                        record.setdefault("exclusive", record["matrix_type"] == "supported")
+                        record.setdefault("valid_until", (date.fromisoformat(record["reviewed_on"]) + timedelta(days=90)).isoformat())
+                    record.setdefault("support_state", "supported")
+                    if record["support_state"] not in ("supported", "eol", "unknown"):
+                        raise ValueError()
                     if not isinstance(record, dict) or not safe_source(record["source"]) or not record["evidence"]:
                         raise ValueError()
                     if record["matrix_type"] not in ("supported", "tested") or type(record["exclusive"]) is not bool:
@@ -75,28 +95,34 @@ class PlatformCatalog:
         today = today or date.today()
         observed, target_release = release(version), release(str(target))
         def result(id_, status, text, record=None):
+            policy = self.notes.get(product, {})
+            fallback = policy.get("source") if safe_source(policy.get("source")) else source
             return finding(id_, "operator_compatibility", status, text,
-                source=record["source"] if record else source, relation="documented" if record else "limitation",
-                evidence={"product": product, "installed_version": version, "target": str(target), "matrix": record or {}},
+                source=record["source"] if record else fallback, relation="documented" if record else "limitation",
+                evidence={"product": product, "installed_version": version, "target": str(target), "matrix": record or {},
+                          "reviewed_on": record.get("reviewed_on") if record else None, "catalog_limitations": policy.get("limitations", [])},
                 recommendation="Revisar la matriz oficial y actualizar el componente o completar evidencia antes del upgrade.")
         if not observed:
-            return [result("OPERATOR-VERSION-UNKNOWN", "UNKNOWN", "No se determinó una versión de producto inequívoca; un chart, digest o tag mutable no demuestra versión efectiva.")]
+            return [result("VERSION_UNKNOWN", "UNKNOWN", "No se determinó una versión de producto inequívoca; un chart, digest o tag mutable no demuestra versión efectiva.")]
         records = [r for r in self.records.get(product, []) if in_range(observed, r["version"], r["version"])]
         if len(records) != 1:
-            return [result("OPERATOR-NO-MATRIX", "UNKNOWN", "No existe una única fila de matriz oficial revisada para esta versión.")]
+            return [result("NO_SUPPORT_DATA", "UNKNOWN", "No existe una única fila de matriz oficial revisada para esta versión.")]
         record = records[0]
         findings = []
-        if record.get("end_of_support") and today > date.fromisoformat(record["end_of_support"]):
-            findings.append(result("OPERATOR-END-OF-SUPPORT", "WARN", "Versión fuera de mantenimiento según la fecha oficial registrada.", record))
+        if record.get("support_state") == "eol" or (record.get("end_of_support") and today > date.fromisoformat(record["end_of_support"])):
+            findings.append(result("VERSION_EOL", "WARN", "Versión fuera de mantenimiento según la evidencia oficial registrada.", record))
         if not date.fromisoformat(record["reviewed_on"]) <= today <= date.fromisoformat(record["valid_until"]):
-            findings.append(result("OPERATOR-NO-MATRIX", "UNKNOWN", "La revisión de la matriz no está vigente para la fecha del análisis.", record))
+            findings.append(result("NO_SUPPORT_DATA", "UNKNOWN", "La revisión de la matriz no está vigente para la fecha del análisis.", record))
+        elif record["support_state"] == "unknown":
+            findings.append(result("NO_SUPPORT_DATA", "UNKNOWN", "Estado de soporte no acreditado por la fuente registrada.", record))
         elif in_range(target_release, record["min_kubernetes"], record["max_kubernetes"]):
-            findings.append(result("OPERATOR-COMPATIBLE", "PASS", "Objetivo dentro del rango documentado; consultar si la evidencia acredita soporte o pruebas upstream.", record))
+            findings.append(result("COMPATIBLE", "PASS", "Objetivo dentro del rango documentado; consultar si la evidencia acredita soporte o pruebas upstream.", record))
         elif record["exclusive"]:
-            findings.append(result("OPERATOR-NOT-COMPATIBLE", "FAIL", "Objetivo fuera del rango de soporte explícito del proveedor; no se recomienda este upgrade con la versión instalada.", record))
+            findings.append(result("NOT_COMPATIBLE", "FAIL", "Objetivo fuera del rango de soporte explícito del proveedor; no se recomienda este upgrade con la versión instalada.", record))
         else:
-            findings.append(result("OPERATOR-NO-MATRIX", "UNKNOWN", "Objetivo fuera de las versiones probadas; esto no demuestra incompatibilidad.", record))
+            findings.append(result("NO_SUPPORT_DATA", "UNKNOWN", "Objetivo fuera de las versiones probadas; esto no demuestra incompatibilidad.", record))
         return findings
 
     def provenance(self):
-        return {"files": self.files, "detectors_sha256": hashlib.sha256(json.dumps(self.detectors, sort_keys=True).encode()).hexdigest()}
+        return {"files": self.files, "detectors_sha256": hashlib.sha256(json.dumps(self.detectors, sort_keys=True).encode()).hexdigest(),
+                "ownership_sha256": hashlib.sha256(json.dumps(self.ownership, sort_keys=True).encode()).hexdigest()}

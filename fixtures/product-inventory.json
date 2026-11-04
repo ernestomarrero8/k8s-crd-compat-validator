@@ -1,0 +1,11 @@
+{
+  "schema_version":1,"context":"synthetic-example","kubernetes_version":"1.34.8",
+  "deployments.apps":[
+    {"metadata":{"name":"istiod","namespace":"istio-system"},"spec":{"template":{"spec":{"containers":[{"image":"docker.io/istio/pilot:1.30.7"}]}}}},
+    {"metadata":{"name":"argocd-server","namespace":"argocd"},"spec":{"template":{"spec":{"containers":[{"image":"quay.io/argoproj/argocd:v3.2.0"}]}}}},
+    {"metadata":{"name":"cert-manager","namespace":"cert-manager"},"spec":{"template":{"spec":{"containers":[{"image":"quay.io/jetstack/cert-manager-controller:v1.16.0"}]}}}}
+  ],
+  "daemonsets.apps":[],"statefulsets.apps":[],"pods":[],"nodes":[],"helm":[],
+  "istio":{"clientVersion":{"version":"9.9.9"},"meshVersion":[{"Component":"pilot","Info":{"version":"1.30.7"}}]},
+  "note":"SYNTHETIC ONLY. Simplified schemas demonstrate support linkage, not real product manifests. Local client version is deliberately different and must be ignored."
+}

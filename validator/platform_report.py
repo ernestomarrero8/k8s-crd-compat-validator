@@ -12,7 +12,7 @@ def html(report):
     rows = []
     for product in platform["products"]:
         origins = ", ".join(sorted({e["from"] for e in product["evidence"]}))
-        versions = ", ".join(product["versions"]) or "UNKNOWN"
+        versions = ", ".join(product.get("resolved_versions", product["versions"])) or "UNKNOWN"
         if product["unknown_version"] and product["versions"]:
             versions += ", UNKNOWN"
         sources = sorted({f["source"] for f in product["findings"]})
@@ -21,8 +21,10 @@ def html(report):
                     f'<td>{esc(product["compatibility"])}</td><td>{esc(product["status"])}</td><td>{links}</td></tr>')
     categories = "".join(f'<tr><td>{esc(key)}</td><td>{esc(value["weight"])}%</td><td>{esc(value["status"])}</td><td>{esc(value["earned_points"])}</td></tr>'
                          for key, value in readiness["categories"].items())
-    detail = "".join('<details><summary>' + esc(p["product"]) + ' — evidencia de detección</summary><pre>'
-                     + esc(json.dumps(p["evidence"], ensure_ascii=False, indent=2)) + '</pre></details>' for p in platform["products"])
+    detail = "".join('<details><summary>' + esc(p["product"]) + ' — resolución y evidencia de detección</summary><pre>'
+                     + esc(json.dumps({"resolved_versions": p.get("resolved_versions", []), "all_observed_versions": p["versions"],
+                                       "resolution_sources": p.get("resolution_sources", []), "mixed_versions": p.get("version_conflict", False),
+                                       "evidence": p["evidence"]}, ensure_ascii=False, indent=2)) + '</pre></details>' for p in platform["products"])
     return ('<section><h2>Upgrade Readiness Score</h2>'
         f'<p style="font-size:1.6em"><b>{esc(readiness["score"])}/100 · {esc(readiness["decision"])}</b></p>'
         '<table><thead><tr><th>Categoría</th><th>Peso</th><th>Estado</th><th>Puntos</th></tr></thead><tbody>' + categories + '</tbody></table>'
@@ -31,7 +33,8 @@ def html(report):
         f'<p>Objetivo Kubernetes/AKS: {esc(report["target_version"])}. Una versión de imagen o Helm no demuestra el binario ejecutado ni soporte de la distribución administrada.</p>'
         '<div style="overflow-x:auto"><table><thead><tr><th>Producto / namespace</th><th>Versiones observadas</th><th>Detectado desde</th><th>Compatibilidad objetivo</th><th>Resultado</th><th>Evidencia</th></tr></thead><tbody>'
         + "".join(rows) + '</tbody></table></div>' + ('<p>Sin productos detectados dentro del inventario disponible; consultar cobertura y errores de descubrimiento.</p>' if not rows else '')
-        + detail + '<h3>AKS y node images</h3><pre>' + esc(json.dumps(platform["aks"], ensure_ascii=False, indent=2))
+        + detail + '<h3>AKS Platform Compatibility</h3><pre>' + esc(json.dumps(platform["aks"], ensure_ascii=False, indent=2))
+        + '</pre><h3>Cobertura de soporte por producto</h3><pre>' + esc(json.dumps(platform.get("support_coverage", {}), ensure_ascii=False, indent=2))
         + '</pre><h3>Catálogos de plataformas</h3><pre>' + esc(json.dumps(platform["catalog"], ensure_ascii=False, indent=2)) + '</pre></section>')
 
 

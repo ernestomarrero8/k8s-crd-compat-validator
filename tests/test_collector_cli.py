@@ -162,7 +162,7 @@ def test_live_cli_uses_only_read_commands(tmp_path, crd, monkeypatch):
         raise AssertionError(cmd)
     monkeypatch.setattr(subprocess, "run", runner)
     assert main(["--context", "source", "--target", "1.35.9", "--output", str(tmp_path)]) == 0
-    assert len([c for c in calls if c[0] == "kubectl"]) == 8
+    assert len([c for c in calls if c[0] == "kubectl"]) == 7
     assert all(set(cmd).isdisjoint({"apply", "create", "patch", "delete", "replace", "edit"}) for cmd in calls)
 
 

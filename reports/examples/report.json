@@ -1,8 +1,8 @@
 {
-  "schema_version": "1.2",
+  "schema_version": "1.3",
   "tool": "k8s-crd-compat-validator",
-  "tool_version": "0.3.0",
-  "analyzed_at": "2026-11-04T16:18:34.859271+00:00",
+  "tool_version": "0.4.0",
+  "analyzed_at": "2026-11-04T19:00:32.674300+00:00",
   "cluster": "offline:mixed-crds.json",
   "current_version": "1.34.8",
   "target_version": "1.35.9",
@@ -31,8 +31,12 @@
       "LOW": 1,
       "INFO": 0
     },
-    "unknown_findings": 19,
+    "unknown_findings": 18,
     "platform_products": 3,
+    "unknown_products": 2,
+    "unknown_product_percentage": 66.7,
+    "crds_linked_to_product": 0,
+    "crds_without_product": 6,
     "platform_states": {
       "PASS": 0,
       "UNKNOWN": 2,
@@ -96,35 +100,7 @@
       ]
     },
     {
-      "rule_id": "OPERATOR-NO-MATRIX",
-      "category": "operator_compatibility",
-      "status": "UNKNOWN",
-      "severity": "INFO",
-      "description": "Objetivo fuera de las versiones probadas; esto no demuestra incompatibilidad.",
-      "evidence": {
-        "product": "Argo CD",
-        "installed_version": "v3.2.0",
-        "target": "1.35.9",
-        "matrix": {
-          "version": "3.2.x",
-          "min_kubernetes": "1.31.0",
-          "max_kubernetes": "1.34.x",
-          "matrix_type": "tested",
-          "exclusive": false,
-          "source": "https://argo-cd.readthedocs.io/en/release-3.2/operator-manual/tested-kubernetes-versions/",
-          "reviewed_on": "2026-11-04",
-          "valid_until": "2027-02-02",
-          "evidence": "La tabla de la rama release-3.2 enumera Kubernetes 1.31 a 1.34 como probados. Fuera de esa lista no se acredita incompatibilidad ni soporte."
-        }
-      },
-      "recommendation": "Revisar la matriz oficial y actualizar el componente o completar evidencia antes del upgrade.",
-      "source": "https://argo-cd.readthedocs.io/en/release-3.2/operator-manual/tested-kubernetes-versions/",
-      "relation": "documented",
-      "validation_type": "static",
-      "limitations": []
-    },
-    {
-      "rule_id": "OPERATOR-NO-MATRIX",
+      "rule_id": "NO_SUPPORT_DATA",
       "category": "operator_compatibility",
       "status": "UNKNOWN",
       "severity": "INFO",
@@ -142,8 +118,34 @@
           "source": "https://argo-cd.readthedocs.io/en/release-3.2/operator-manual/tested-kubernetes-versions/",
           "reviewed_on": "2026-11-04",
           "valid_until": "2027-02-02",
-          "evidence": "La tabla de la rama release-3.2 enumera Kubernetes 1.31 a 1.34 como probados. Fuera de esa lista no se acredita incompatibilidad ni soporte."
-        }
+          "evidence": "La tabla de la rama release-3.2 enumera Kubernetes 1.31 a 1.34 como probados. Fuera de esa lista no se acredita incompatibilidad ni soporte.",
+          "support_state": "supported"
+        },
+        "reviewed_on": "2026-11-04",
+        "catalog_limitations": [],
+        "detection_sources": [
+          {
+            "from": "deployments.apps",
+            "namespace": "argocd",
+            "name": "argocd-server",
+            "repository": "quay.io/argoproj/argocd",
+            "declared_tag": "v3.2.0",
+            "revision": null,
+            "version_basis": "workload_template_image_tag"
+          },
+          {
+            "from": "Helm",
+            "name": "argo-cd",
+            "chart": "argo-cd-8.3.0",
+            "app_version": "3.2.0"
+          }
+        ],
+        "resolution_sources": [
+          "Helm"
+        ],
+        "resolved_versions": [
+          "3.2.0"
+        ]
       },
       "recommendation": "Revisar la matriz oficial y actualizar el componente o completar evidencia antes del upgrade.",
       "source": "https://argo-cd.readthedocs.io/en/release-3.2/operator-manual/tested-kubernetes-versions/",
@@ -152,11 +154,11 @@
       "limitations": []
     },
     {
-      "rule_id": "OPERATOR-END-OF-SUPPORT",
+      "rule_id": "VERSION_EOL",
       "category": "operator_compatibility",
       "status": "WARN",
       "severity": "MEDIUM",
-      "description": "Versión fuera de mantenimiento según la fecha oficial registrada.",
+      "description": "Versión fuera de mantenimiento según la evidencia oficial registrada.",
       "evidence": {
         "product": "Istio",
         "installed_version": "1.21.1",
@@ -171,8 +173,28 @@
           "source": "https://istio.io/latest/docs/releases/supported-releases/",
           "reviewed_on": "2026-11-04",
           "valid_until": "2027-02-02",
-          "evidence": "Fila 1.21: Kubernetes soportados 1.26 a 1.29; EOL 27 septiembre 2024."
-        }
+          "evidence": "Fila 1.21: Kubernetes soportados 1.26 a 1.29; EOL 27 septiembre 2024.",
+          "support_state": "supported"
+        },
+        "reviewed_on": "2026-11-04",
+        "catalog_limitations": [],
+        "detection_sources": [
+          {
+            "from": "deployments.apps",
+            "namespace": "istio-system",
+            "name": "istiod",
+            "repository": "docker.io/istio/pilot",
+            "declared_tag": "1.21.1",
+            "revision": "old",
+            "version_basis": "workload_template_image_tag"
+          }
+        ],
+        "resolution_sources": [
+          "deployments.apps"
+        ],
+        "resolved_versions": [
+          "1.21.1"
+        ]
       },
       "recommendation": "Revisar la matriz oficial y actualizar el componente o completar evidencia antes del upgrade.",
       "source": "https://istio.io/latest/docs/releases/supported-releases/",
@@ -181,7 +203,7 @@
       "limitations": []
     },
     {
-      "rule_id": "OPERATOR-NOT-COMPATIBLE",
+      "rule_id": "NOT_COMPATIBLE",
       "category": "operator_compatibility",
       "status": "FAIL",
       "severity": "HIGH",
@@ -200,8 +222,28 @@
           "source": "https://istio.io/latest/docs/releases/supported-releases/",
           "reviewed_on": "2026-11-04",
           "valid_until": "2027-02-02",
-          "evidence": "Fila 1.21: Kubernetes soportados 1.26 a 1.29; EOL 27 septiembre 2024."
-        }
+          "evidence": "Fila 1.21: Kubernetes soportados 1.26 a 1.29; EOL 27 septiembre 2024.",
+          "support_state": "supported"
+        },
+        "reviewed_on": "2026-11-04",
+        "catalog_limitations": [],
+        "detection_sources": [
+          {
+            "from": "deployments.apps",
+            "namespace": "istio-system",
+            "name": "istiod",
+            "repository": "docker.io/istio/pilot",
+            "declared_tag": "1.21.1",
+            "revision": "old",
+            "version_basis": "workload_template_image_tag"
+          }
+        ],
+        "resolution_sources": [
+          "deployments.apps"
+        ],
+        "resolved_versions": [
+          "1.21.1"
+        ]
       },
       "recommendation": "Revisar la matriz oficial y actualizar el componente o completar evidencia antes del upgrade.",
       "source": "https://istio.io/latest/docs/releases/supported-releases/",
@@ -210,19 +252,40 @@
       "limitations": []
     },
     {
-      "rule_id": "OPERATOR-NO-MATRIX",
+      "rule_id": "NO_SUPPORT_DATA",
       "category": "operator_compatibility",
       "status": "UNKNOWN",
       "severity": "INFO",
       "description": "No existe una única fila de matriz oficial revisada para esta versión.",
       "evidence": {
         "product": "Gatekeeper",
-        "installed_version": "v3.17.0",
+        "installed_version": "3.17.0",
         "target": "1.35.9",
-        "matrix": {}
+        "matrix": {},
+        "reviewed_on": null,
+        "catalog_limitations": [
+          "La política general de versiones soportadas no prueba una matriz de cada binario antiguo. Sin fila revisada se informa UNKNOWN."
+        ],
+        "detection_sources": [
+          {
+            "from": "deployments.apps",
+            "namespace": "gatekeeper-system",
+            "name": "gatekeeper",
+            "repository": "openpolicyagent/gatekeeper",
+            "declared_tag": "v3.17.0",
+            "revision": null,
+            "version_basis": "workload_template_image_tag"
+          }
+        ],
+        "resolution_sources": [
+          "deployments.apps"
+        ],
+        "resolved_versions": [
+          "3.17.0"
+        ]
       },
       "recommendation": "Revisar la matriz oficial y actualizar el componente o completar evidencia antes del upgrade.",
-      "source": "https://open-policy-agent.github.io/gatekeeper/",
+      "source": "https://github.com/open-policy-agent/gatekeeper/blob/master/docs/Release_Management.md",
       "relation": "limitation",
       "validation_type": "static",
       "limitations": []
@@ -340,37 +403,13 @@
           "limitations": []
         },
         {
-          "rule_id": "OPERATOR-IDENTITY",
-          "category": "operator",
-          "status": "PASS",
-          "severity": "INFO",
-          "description": "Candidatos a operador responsable.",
-          "evidence": {
-            "candidates": [
-              {
-                "name": "example-operator",
-                "version": "2.0.0",
-                "basis": "crd_labels",
-                "confidence": "hint"
-              }
-            ]
-          },
-          "recommendation": "Revisar la evidencia antes del upgrade.",
-          "source": "https://v1-35.docs.kubernetes.io/docs/tasks/extend-kubernetes/custom-resources/custom-resource-definitions/",
-          "relation": "documented",
-          "validation_type": "static",
-          "limitations": [
-            "Labels y Helm son indicios; un release o chart puede no identificar la versión del controlador."
-          ]
-        },
-        {
-          "rule_id": "OPERATOR-SUPPORT",
+          "rule_id": "NO_PRODUCT_OWNER",
           "category": "operator",
           "status": "UNKNOWN",
           "severity": "INFO",
-          "description": "No hay una única matriz revisada que coincida con operador, versión y CRD.",
+          "description": "No existe una asociación explícita entre este CRD y un producto detectado.",
           "evidence": {},
-          "recommendation": "Obtener la matriz oficial del proveedor y registrar evidencia en --operator-catalog; no inferir soporte por Running.",
+          "recommendation": "Registrar ownership documentado y detectar la versión del producto; no inferirla por labels o por la existencia del CRD.",
           "source": "https://v1-35.docs.kubernetes.io/docs/tasks/extend-kubernetes/custom-resources/custom-resource-definitions/",
           "relation": "limitation",
           "validation_type": "static",
@@ -482,37 +521,13 @@
           "limitations": []
         },
         {
-          "rule_id": "OPERATOR-IDENTITY",
-          "category": "operator",
-          "status": "PASS",
-          "severity": "INFO",
-          "description": "Candidatos a operador responsable.",
-          "evidence": {
-            "candidates": [
-              {
-                "name": "example-operator",
-                "version": "2.0.0",
-                "basis": "crd_labels",
-                "confidence": "hint"
-              }
-            ]
-          },
-          "recommendation": "Revisar la evidencia antes del upgrade.",
-          "source": "https://v1-35.docs.kubernetes.io/docs/tasks/extend-kubernetes/custom-resources/custom-resource-definitions/",
-          "relation": "documented",
-          "validation_type": "static",
-          "limitations": [
-            "Labels y Helm son indicios; un release o chart puede no identificar la versión del controlador."
-          ]
-        },
-        {
-          "rule_id": "OPERATOR-SUPPORT",
+          "rule_id": "NO_PRODUCT_OWNER",
           "category": "operator",
           "status": "UNKNOWN",
           "severity": "INFO",
-          "description": "No hay una única matriz revisada que coincida con operador, versión y CRD.",
+          "description": "No existe una asociación explícita entre este CRD y un producto detectado.",
           "evidence": {},
-          "recommendation": "Obtener la matriz oficial del proveedor y registrar evidencia en --operator-catalog; no inferir soporte por Running.",
+          "recommendation": "Registrar ownership documentado y detectar la versión del producto; no inferirla por labels o por la existencia del CRD.",
           "source": "https://v1-35.docs.kubernetes.io/docs/tasks/extend-kubernetes/custom-resources/custom-resource-definitions/",
           "relation": "limitation",
           "validation_type": "static",
@@ -647,37 +662,13 @@
           "limitations": []
         },
         {
-          "rule_id": "OPERATOR-IDENTITY",
-          "category": "operator",
-          "status": "PASS",
-          "severity": "INFO",
-          "description": "Candidatos a operador responsable.",
-          "evidence": {
-            "candidates": [
-              {
-                "name": "example-operator",
-                "version": "2.0.0",
-                "basis": "crd_labels",
-                "confidence": "hint"
-              }
-            ]
-          },
-          "recommendation": "Revisar la evidencia antes del upgrade.",
-          "source": "https://v1-35.docs.kubernetes.io/docs/tasks/extend-kubernetes/custom-resources/custom-resource-definitions/",
-          "relation": "documented",
-          "validation_type": "static",
-          "limitations": [
-            "Labels y Helm son indicios; un release o chart puede no identificar la versión del controlador."
-          ]
-        },
-        {
-          "rule_id": "OPERATOR-SUPPORT",
+          "rule_id": "NO_PRODUCT_OWNER",
           "category": "operator",
           "status": "UNKNOWN",
           "severity": "INFO",
-          "description": "No hay una única matriz revisada que coincida con operador, versión y CRD.",
+          "description": "No existe una asociación explícita entre este CRD y un producto detectado.",
           "evidence": {},
-          "recommendation": "Obtener la matriz oficial del proveedor y registrar evidencia en --operator-catalog; no inferir soporte por Running.",
+          "recommendation": "Registrar ownership documentado y detectar la versión del producto; no inferirla por labels o por la existencia del CRD.",
           "source": "https://v1-35.docs.kubernetes.io/docs/tasks/extend-kubernetes/custom-resources/custom-resource-definitions/",
           "relation": "limitation",
           "validation_type": "static",
@@ -840,37 +831,13 @@
           ]
         },
         {
-          "rule_id": "OPERATOR-IDENTITY",
-          "category": "operator",
-          "status": "PASS",
-          "severity": "INFO",
-          "description": "Candidatos a operador responsable.",
-          "evidence": {
-            "candidates": [
-              {
-                "name": "example-operator",
-                "version": "2.0.0",
-                "basis": "crd_labels",
-                "confidence": "hint"
-              }
-            ]
-          },
-          "recommendation": "Revisar la evidencia antes del upgrade.",
-          "source": "https://v1-35.docs.kubernetes.io/docs/tasks/extend-kubernetes/custom-resources/custom-resource-definitions/",
-          "relation": "documented",
-          "validation_type": "static",
-          "limitations": [
-            "Labels y Helm son indicios; un release o chart puede no identificar la versión del controlador."
-          ]
-        },
-        {
-          "rule_id": "OPERATOR-SUPPORT",
+          "rule_id": "NO_PRODUCT_OWNER",
           "category": "operator",
           "status": "UNKNOWN",
           "severity": "INFO",
-          "description": "No hay una única matriz revisada que coincida con operador, versión y CRD.",
+          "description": "No existe una asociación explícita entre este CRD y un producto detectado.",
           "evidence": {},
-          "recommendation": "Obtener la matriz oficial del proveedor y registrar evidencia en --operator-catalog; no inferir soporte por Running.",
+          "recommendation": "Registrar ownership documentado y detectar la versión del producto; no inferirla por labels o por la existencia del CRD.",
           "source": "https://v1-35.docs.kubernetes.io/docs/tasks/extend-kubernetes/custom-resources/custom-resource-definitions/",
           "relation": "limitation",
           "validation_type": "static",
@@ -984,37 +951,13 @@
           "limitations": []
         },
         {
-          "rule_id": "OPERATOR-IDENTITY",
-          "category": "operator",
-          "status": "PASS",
-          "severity": "INFO",
-          "description": "Candidatos a operador responsable.",
-          "evidence": {
-            "candidates": [
-              {
-                "name": "example-operator",
-                "version": "2.0.0",
-                "basis": "crd_labels",
-                "confidence": "hint"
-              }
-            ]
-          },
-          "recommendation": "Revisar la evidencia antes del upgrade.",
-          "source": "https://v1-35.docs.kubernetes.io/docs/tasks/extend-kubernetes/custom-resources/custom-resource-definitions/",
-          "relation": "documented",
-          "validation_type": "static",
-          "limitations": [
-            "Labels y Helm son indicios; un release o chart puede no identificar la versión del controlador."
-          ]
-        },
-        {
-          "rule_id": "OPERATOR-SUPPORT",
+          "rule_id": "NO_PRODUCT_OWNER",
           "category": "operator",
           "status": "UNKNOWN",
           "severity": "INFO",
-          "description": "No hay una única matriz revisada que coincida con operador, versión y CRD.",
+          "description": "No existe una asociación explícita entre este CRD y un producto detectado.",
           "evidence": {},
-          "recommendation": "Obtener la matriz oficial del proveedor y registrar evidencia en --operator-catalog; no inferir soporte por Running.",
+          "recommendation": "Registrar ownership documentado y detectar la versión del producto; no inferirla por labels o por la existencia del CRD.",
           "source": "https://v1-35.docs.kubernetes.io/docs/tasks/extend-kubernetes/custom-resources/custom-resource-definitions/",
           "relation": "limitation",
           "validation_type": "static",
@@ -1163,37 +1106,13 @@
           "limitations": []
         },
         {
-          "rule_id": "OPERATOR-IDENTITY",
-          "category": "operator",
-          "status": "PASS",
-          "severity": "INFO",
-          "description": "Candidatos a operador responsable.",
-          "evidence": {
-            "candidates": [
-              {
-                "name": "example-operator",
-                "version": "2.0.0",
-                "basis": "crd_labels",
-                "confidence": "hint"
-              }
-            ]
-          },
-          "recommendation": "Revisar la evidencia antes del upgrade.",
-          "source": "https://v1-35.docs.kubernetes.io/docs/tasks/extend-kubernetes/custom-resources/custom-resource-definitions/",
-          "relation": "documented",
-          "validation_type": "static",
-          "limitations": [
-            "Labels y Helm son indicios; un release o chart puede no identificar la versión del controlador."
-          ]
-        },
-        {
-          "rule_id": "OPERATOR-SUPPORT",
+          "rule_id": "NO_PRODUCT_OWNER",
           "category": "operator",
           "status": "UNKNOWN",
           "severity": "INFO",
-          "description": "No hay una única matriz revisada que coincida con operador, versión y CRD.",
+          "description": "No existe una asociación explícita entre este CRD y un producto detectado.",
           "evidence": {},
-          "recommendation": "Obtener la matriz oficial del proveedor y registrar evidencia en --operator-catalog; no inferir soporte por Running.",
+          "recommendation": "Registrar ownership documentado y detectar la versión del producto; no inferirla por labels o por la existencia del CRD.",
           "source": "https://v1-35.docs.kubernetes.io/docs/tasks/extend-kubernetes/custom-resources/custom-resource-definitions/",
           "relation": "limitation",
           "validation_type": "static",
@@ -1261,7 +1180,6 @@
         "category": "operator",
         "source": "https://argo-cd.readthedocs.io/",
         "versions": [
-          "v3.2.0",
           "3.2.0"
         ],
         "evidence": [
@@ -1281,40 +1199,37 @@
             "app_version": "3.2.0"
           }
         ],
+        "version_candidates": [
+          {
+            "version": "v3.2.0",
+            "from": "deployments.apps",
+            "namespace": "argocd",
+            "revision": null
+          },
+          {
+            "version": "3.2.0",
+            "from": "Helm",
+            "namespace": "argocd",
+            "revision": null
+          }
+        ],
         "unknown_version": false,
+        "namespaces": [
+          "argocd"
+        ],
+        "resolved_versions": [
+          "3.2.0"
+        ],
+        "resolution_sources": [
+          "Helm"
+        ],
+        "version_conflict": false,
+        "resolution_policy": "cluster-bound server CLI > Helm appVersion > exact image tags > explicit product resource; all known mixed versions evaluated",
         "status": "UNKNOWN",
         "compatibility": "No verificada",
         "findings": [
           {
-            "rule_id": "OPERATOR-NO-MATRIX",
-            "category": "operator_compatibility",
-            "status": "UNKNOWN",
-            "severity": "INFO",
-            "description": "Objetivo fuera de las versiones probadas; esto no demuestra incompatibilidad.",
-            "evidence": {
-              "product": "Argo CD",
-              "installed_version": "v3.2.0",
-              "target": "1.35.9",
-              "matrix": {
-                "version": "3.2.x",
-                "min_kubernetes": "1.31.0",
-                "max_kubernetes": "1.34.x",
-                "matrix_type": "tested",
-                "exclusive": false,
-                "source": "https://argo-cd.readthedocs.io/en/release-3.2/operator-manual/tested-kubernetes-versions/",
-                "reviewed_on": "2026-11-04",
-                "valid_until": "2027-02-02",
-                "evidence": "La tabla de la rama release-3.2 enumera Kubernetes 1.31 a 1.34 como probados. Fuera de esa lista no se acredita incompatibilidad ni soporte."
-              }
-            },
-            "recommendation": "Revisar la matriz oficial y actualizar el componente o completar evidencia antes del upgrade.",
-            "source": "https://argo-cd.readthedocs.io/en/release-3.2/operator-manual/tested-kubernetes-versions/",
-            "relation": "documented",
-            "validation_type": "static",
-            "limitations": []
-          },
-          {
-            "rule_id": "OPERATOR-NO-MATRIX",
+            "rule_id": "NO_SUPPORT_DATA",
             "category": "operator_compatibility",
             "status": "UNKNOWN",
             "severity": "INFO",
@@ -1332,8 +1247,34 @@
                 "source": "https://argo-cd.readthedocs.io/en/release-3.2/operator-manual/tested-kubernetes-versions/",
                 "reviewed_on": "2026-11-04",
                 "valid_until": "2027-02-02",
-                "evidence": "La tabla de la rama release-3.2 enumera Kubernetes 1.31 a 1.34 como probados. Fuera de esa lista no se acredita incompatibilidad ni soporte."
-              }
+                "evidence": "La tabla de la rama release-3.2 enumera Kubernetes 1.31 a 1.34 como probados. Fuera de esa lista no se acredita incompatibilidad ni soporte.",
+                "support_state": "supported"
+              },
+              "reviewed_on": "2026-11-04",
+              "catalog_limitations": [],
+              "detection_sources": [
+                {
+                  "from": "deployments.apps",
+                  "namespace": "argocd",
+                  "name": "argocd-server",
+                  "repository": "quay.io/argoproj/argocd",
+                  "declared_tag": "v3.2.0",
+                  "revision": null,
+                  "version_basis": "workload_template_image_tag"
+                },
+                {
+                  "from": "Helm",
+                  "name": "argo-cd",
+                  "chart": "argo-cd-8.3.0",
+                  "app_version": "3.2.0"
+                }
+              ],
+              "resolution_sources": [
+                "Helm"
+              ],
+              "resolved_versions": [
+                "3.2.0"
+              ]
             },
             "recommendation": "Revisar la matriz oficial y actualizar el componente o completar evidencia antes del upgrade.",
             "source": "https://argo-cd.readthedocs.io/en/release-3.2/operator-manual/tested-kubernetes-versions/",
@@ -1363,16 +1304,35 @@
             "version_basis": "workload_template_image_tag"
           }
         ],
+        "version_candidates": [
+          {
+            "version": "1.21.1",
+            "from": "deployments.apps",
+            "namespace": "istio-system",
+            "revision": "old"
+          }
+        ],
         "unknown_version": false,
+        "namespaces": [
+          "istio-system"
+        ],
+        "resolved_versions": [
+          "1.21.1"
+        ],
+        "resolution_sources": [
+          "deployments.apps"
+        ],
+        "version_conflict": false,
+        "resolution_policy": "cluster-bound server CLI > Helm appVersion > exact image tags > explicit product resource; all known mixed versions evaluated",
         "status": "FAIL",
         "compatibility": "No",
         "findings": [
           {
-            "rule_id": "OPERATOR-END-OF-SUPPORT",
+            "rule_id": "VERSION_EOL",
             "category": "operator_compatibility",
             "status": "WARN",
             "severity": "MEDIUM",
-            "description": "Versión fuera de mantenimiento según la fecha oficial registrada.",
+            "description": "Versión fuera de mantenimiento según la evidencia oficial registrada.",
             "evidence": {
               "product": "Istio",
               "installed_version": "1.21.1",
@@ -1387,8 +1347,28 @@
                 "source": "https://istio.io/latest/docs/releases/supported-releases/",
                 "reviewed_on": "2026-11-04",
                 "valid_until": "2027-02-02",
-                "evidence": "Fila 1.21: Kubernetes soportados 1.26 a 1.29; EOL 27 septiembre 2024."
-              }
+                "evidence": "Fila 1.21: Kubernetes soportados 1.26 a 1.29; EOL 27 septiembre 2024.",
+                "support_state": "supported"
+              },
+              "reviewed_on": "2026-11-04",
+              "catalog_limitations": [],
+              "detection_sources": [
+                {
+                  "from": "deployments.apps",
+                  "namespace": "istio-system",
+                  "name": "istiod",
+                  "repository": "docker.io/istio/pilot",
+                  "declared_tag": "1.21.1",
+                  "revision": "old",
+                  "version_basis": "workload_template_image_tag"
+                }
+              ],
+              "resolution_sources": [
+                "deployments.apps"
+              ],
+              "resolved_versions": [
+                "1.21.1"
+              ]
             },
             "recommendation": "Revisar la matriz oficial y actualizar el componente o completar evidencia antes del upgrade.",
             "source": "https://istio.io/latest/docs/releases/supported-releases/",
@@ -1397,7 +1377,7 @@
             "limitations": []
           },
           {
-            "rule_id": "OPERATOR-NOT-COMPATIBLE",
+            "rule_id": "NOT_COMPATIBLE",
             "category": "operator_compatibility",
             "status": "FAIL",
             "severity": "HIGH",
@@ -1416,8 +1396,28 @@
                 "source": "https://istio.io/latest/docs/releases/supported-releases/",
                 "reviewed_on": "2026-11-04",
                 "valid_until": "2027-02-02",
-                "evidence": "Fila 1.21: Kubernetes soportados 1.26 a 1.29; EOL 27 septiembre 2024."
-              }
+                "evidence": "Fila 1.21: Kubernetes soportados 1.26 a 1.29; EOL 27 septiembre 2024.",
+                "support_state": "supported"
+              },
+              "reviewed_on": "2026-11-04",
+              "catalog_limitations": [],
+              "detection_sources": [
+                {
+                  "from": "deployments.apps",
+                  "namespace": "istio-system",
+                  "name": "istiod",
+                  "repository": "docker.io/istio/pilot",
+                  "declared_tag": "1.21.1",
+                  "revision": "old",
+                  "version_basis": "workload_template_image_tag"
+                }
+              ],
+              "resolution_sources": [
+                "deployments.apps"
+              ],
+              "resolved_versions": [
+                "1.21.1"
+              ]
             },
             "recommendation": "Revisar la matriz oficial y actualizar el componente o completar evidencia antes del upgrade.",
             "source": "https://istio.io/latest/docs/releases/supported-releases/",
@@ -1434,7 +1434,7 @@
         "category": "operator",
         "source": "https://open-policy-agent.github.io/gatekeeper/",
         "versions": [
-          "v3.17.0"
+          "3.17.0"
         ],
         "evidence": [
           {
@@ -1447,24 +1447,64 @@
             "version_basis": "workload_template_image_tag"
           }
         ],
+        "version_candidates": [
+          {
+            "version": "v3.17.0",
+            "from": "deployments.apps",
+            "namespace": "gatekeeper-system",
+            "revision": null
+          }
+        ],
         "unknown_version": false,
+        "namespaces": [
+          "gatekeeper-system"
+        ],
+        "resolved_versions": [
+          "3.17.0"
+        ],
+        "resolution_sources": [
+          "deployments.apps"
+        ],
+        "version_conflict": false,
+        "resolution_policy": "cluster-bound server CLI > Helm appVersion > exact image tags > explicit product resource; all known mixed versions evaluated",
         "status": "UNKNOWN",
         "compatibility": "No verificada",
         "findings": [
           {
-            "rule_id": "OPERATOR-NO-MATRIX",
+            "rule_id": "NO_SUPPORT_DATA",
             "category": "operator_compatibility",
             "status": "UNKNOWN",
             "severity": "INFO",
             "description": "No existe una única fila de matriz oficial revisada para esta versión.",
             "evidence": {
               "product": "Gatekeeper",
-              "installed_version": "v3.17.0",
+              "installed_version": "3.17.0",
               "target": "1.35.9",
-              "matrix": {}
+              "matrix": {},
+              "reviewed_on": null,
+              "catalog_limitations": [
+                "La política general de versiones soportadas no prueba una matriz de cada binario antiguo. Sin fila revisada se informa UNKNOWN."
+              ],
+              "detection_sources": [
+                {
+                  "from": "deployments.apps",
+                  "namespace": "gatekeeper-system",
+                  "name": "gatekeeper",
+                  "repository": "openpolicyagent/gatekeeper",
+                  "declared_tag": "v3.17.0",
+                  "revision": null,
+                  "version_basis": "workload_template_image_tag"
+                }
+              ],
+              "resolution_sources": [
+                "deployments.apps"
+              ],
+              "resolved_versions": [
+                "3.17.0"
+              ]
             },
             "recommendation": "Revisar la matriz oficial y actualizar el componente o completar evidencia antes del upgrade.",
-            "source": "https://open-policy-agent.github.io/gatekeeper/",
+            "source": "https://github.com/open-policy-agent/gatekeeper/blob/master/docs/Release_Management.md",
             "relation": "limitation",
             "validation_type": "static",
             "limitations": []
@@ -1505,6 +1545,12 @@
         "Node images se inventarían; no se infiere compatibilidad futura por su nombre."
       ]
     },
+    "support_coverage": {
+      "products": 3,
+      "unknown_products": 2,
+      "unknown_percentage": 66.7,
+      "note": "Métrica de productos, no promesa de menos de 10%; no se excluyen limitaciones técnicas reales."
+    },
     "catalog": {
       "files": [
         {
@@ -1514,8 +1560,13 @@
         },
         {
           "file": "calico.json",
-          "catalog_version": "2026.11.04.1",
-          "sha256": "501b9bb76e96d142139280eff336cedebcef88a071cabbbe50ab5cd7f8b75c22"
+          "catalog_version": "2026.11.04.2",
+          "sha256": "5a5baedaf7a225c80f9b438bb027a9df211e8a968f158b903639d5ed05098735"
+        },
+        {
+          "file": "cert-manager.json",
+          "catalog_version": "2026.11.04.2",
+          "sha256": "2a962b9b25a5845a92f5c0931715bc62a149d80236f52da97ce420e9b0c39b33"
         },
         {
           "file": "dapr.json",
@@ -1531,9 +1582,25 @@
           "file": "istio.json",
           "catalog_version": "2026.11.04.1",
           "sha256": "305d2234bda17176a363c8878a2553e79df1bf57fd27808b0bb57ad1cffad431"
+        },
+        {
+          "file": "secrets-store-csi.json",
+          "catalog_version": "2026.11.04.2",
+          "sha256": "2f82f9af9bc500fb2ca3892c8102010c87cecc6828fd18b1e190d299b91f8f09"
+        },
+        {
+          "file": "tigera-operator.json",
+          "catalog_version": "2026.11.04.2",
+          "sha256": "bc3ea82928cec948d5c3565a4b5b9fb83c27a4a8ec402453f2a7097ad7d42063"
+        },
+        {
+          "file": "velero.json",
+          "catalog_version": "2026.11.04.2",
+          "sha256": "fb6c3f8f579c95a86a6e0eac8b01b7302e174ab988826a125703871a26711662"
         }
       ],
-      "detectors_sha256": "9d145665e09fd3dc471ef9d3591b46a63d5aed56b161e6a3f30beb9e6fd4d07e"
+      "detectors_sha256": "408114b82ee94e03702d573f9ec96cbd3fda6fde950cc95fe5ae1827be0a8cb4",
+      "ownership_sha256": "73fdd7bdcb98ede36f0a65e186d43554ca9aaaf953917f00203a2ebae0c23bde"
     },
     "analyzed_on": "2026-11-04"
   },
@@ -1546,7 +1613,7 @@
         "weight": 40,
         "status": "FAIL",
         "earned_points": 0,
-        "observations": 5
+        "observations": 4
       },
       "crds": {
         "weight": 25,

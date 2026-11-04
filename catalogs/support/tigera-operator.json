@@ -1,0 +1,1 @@
+{"product":"Tigera Operator","catalog_version":"2026.11.04.2","versions":[],"source":"https://github.com/tigera/operator","limitations":["La versión del operador no es la de Calico. Un manifiesto que relaciona ambos artefactos no demuestra por sí mismo la matriz Kubernetes del operador; no se copia soporte entre productos."]}

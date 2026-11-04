@@ -73,14 +73,14 @@ def test_support_vs_tested_only_and_eol(catalog):
     assert [f.status for f in findings] == ["UNKNOWN"]
     assert catalog.evaluate("Argo CD", "3.2.0", "1.34.9", "https://example.com", TODAY)[0].status == "PASS"
     findings = catalog.evaluate("Istio", "1.21.1", "1.35.9", "https://example.com", TODAY)
-    assert {f.rule_id: f.status for f in findings} == {"OPERATOR-END-OF-SUPPORT": "WARN", "OPERATOR-NOT-COMPATIBLE": "FAIL"}
+    assert {f.rule_id: f.status for f in findings} == {"VERSION_EOL": "WARN", "NOT_COMPATIBLE": "FAIL"}
     assert catalog.evaluate("Istio", "1.30.1", "1.35.9", "https://example.com", TODAY)[0].status == "PASS"
 
 
 def test_expired_matrix_and_missing_version_are_unknown(catalog):
     assert catalog.evaluate("Argo CD", "3.2.0", "1.34.9", "https://example.com", date(2028, 1, 1))[0].status == "UNKNOWN"
-    assert catalog.evaluate("Gatekeeper", "3.17.0", "1.35.9", "https://example.com", TODAY)[0].rule_id == "OPERATOR-NO-MATRIX"
-    assert catalog.evaluate("Istio", "latest", "1.35.9", "https://example.com", TODAY)[0].rule_id == "OPERATOR-VERSION-UNKNOWN"
+    assert catalog.evaluate("Gatekeeper", "3.17.0", "1.35.9", "https://example.com", TODAY)[0].rule_id == "NO_SUPPORT_DATA"
+    assert catalog.evaluate("Istio", "latest", "1.35.9", "https://example.com", TODAY)[0].rule_id == "VERSION_UNKNOWN"
     assert bound("1.35.x", True) > (1, 35, 100000)
 
 

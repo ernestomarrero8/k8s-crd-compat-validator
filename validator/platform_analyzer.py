@@ -3,6 +3,7 @@ from datetime import date
 from .models import finding, aggregate
 from .platform_discovery import collect, detect
 from .azure_validator import collect_aks, analyze as analyze_aks
+from .version_resolver import resolve
 
 
 def analyze(collector, crds, current, target, catalog, snapshot=None, limit=2000):
@@ -24,7 +25,7 @@ def analyze(collector, crds, current, target, catalog, snapshot=None, limit=2000
                 data[key] = data[key][:limit]
                 data.setdefault("discovery_errors", []).append({"source": key, "reason": "inventory_limit"})
     elif collector:
-        data = collect(collector, crds, limit)
+        data = collect(collector, crds, limit, catalog.detectors)
         if any(str(n.get("spec", {}).get("providerID", "")).lower().startswith("azure:") for n in data.get("nodes", [])):
             data["aks"], data["aks_error"] = collect_aks(data, collector.timeout)
     else:
@@ -35,13 +36,13 @@ def analyze(collector, crds, current, target, catalog, snapshot=None, limit=2000
             data["aks"] = None
             data["aks_error"] = "La versión AKS de Azure no coincide con el servidor consultado; metadata no utilizada para atribuir add-ons."
     azure, azure_finding = analyze_aks(data, current, target)
-    rows = detect(data, catalog.detectors)
+    rows = resolve(detect(data, catalog.detectors))
     for addon in azure["addons"]:
         definition = next((d for d in catalog.detectors if d["id"] == addon["detector_id"]), None)
         if definition and not any(r["id"] == definition["id"] for r in rows):
             rows.append({"id": definition["id"], "product": definition["product"], "namespace": "AKS managed",
                 "category": definition.get("category", "operator"), "source": definition["source"], "versions": [], "unknown_version": True,
-                "evidence": [{"from": "az aks show", "addon": addon["name"], "note": "Habilitado no determina versión efectiva."}]})
+                "evidence": [{"from": "az aks show", "addon": addon["name"], "note": "Habilitado no determina versión efectiva."}], "resolved_versions": [], "resolution_sources": ["az aks show"]})
     findings = []
     for row in rows:
         row_findings = []
@@ -49,6 +50,10 @@ def analyze(collector, crds, current, target, catalog, snapshot=None, limit=2000
             row_findings.extend(catalog.evaluate(row["product"], version, target, row["source"]))
         if not row["versions"] or row["unknown_version"]:
             row_findings.extend(catalog.evaluate(row["product"], "UNKNOWN", target, row["source"]))
+        for f in row_findings:
+            f.evidence["detection_sources"] = row["evidence"]
+            f.evidence["resolution_sources"] = row.get("resolution_sources", [])
+            f.evidence["resolved_versions"] = row.get("resolved_versions", [])
         states = {f.status for f in row_findings}
         row["status"] = aggregate(row_findings)
         # WARN lifecycle and UNKNOWN coverage must both remain visible.
@@ -66,5 +71,8 @@ def analyze(collector, crds, current, target, catalog, snapshot=None, limit=2000
     # When not AKS and complete node inventory is available, the managed-addon category is N/A, not PASS.
     if azure["detected"] or errors:
         findings.append(azure_finding)
+    unknown = sum(p["compatibility"] == "No verificada" for p in rows)
     return {"title": "OPERATOR COMPATIBILITY ANALYSIS", "products": rows, "discovery": inventory.to_dict(), "aks": azure,
+            "support_coverage": {"products": len(rows), "unknown_products": unknown, "unknown_percentage": round(100 * unknown / len(rows), 1) if rows else None,
+                                 "note": "Métrica de productos, no promesa de menos de 10%; no se excluyen limitaciones técnicas reales."},
             "catalog": catalog.provenance(), "analyzed_on": date.today().isoformat()}, findings

@@ -22,7 +22,7 @@ def main(argv=None):
     args, forwarded = parser.parse_known_args(argv)
     # Explicit allowlist of main.py options: callers cannot redirect or reuse reports.
     allowed = {"--include-instances": 0, "--verbose": 0, "--verify-sources": 0,
-               "--platform-catalog": 1, "--platform-limit": 1,
+               "--platform-catalog": 1, "--support-catalog": 1, "--platform-limit": 1,
                "--rules-path": 1, "--coverage-path": 1, "--operator-catalog": 1,
                "--timeout": 1, "--pluto-timeout": 1, "--max-queries": 1, "--page-size": 1,
                "--max-pages": 1, "--max-instances": 1, "--fail-on": 1}

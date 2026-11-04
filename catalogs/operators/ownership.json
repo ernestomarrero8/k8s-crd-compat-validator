@@ -1,0 +1,23 @@
+{
+  "schema_version": 1,
+  "owners": [
+    {"product_id":"istio","groups":["networking.istio.io","security.istio.io","telemetry.istio.io","extensions.istio.io"],"crds":[]},
+    {"product_id":"argocd","groups":[],"crds":["applications.argoproj.io","appprojects.argoproj.io","applicationsets.argoproj.io"]},
+    {"product_id":"argo-workflows","groups":[],"crds":["workflows.argoproj.io","workflowtemplates.argoproj.io","clusterworkflowtemplates.argoproj.io","cronworkflows.argoproj.io","workflowtaskresults.argoproj.io","workflowtasksets.argoproj.io","workfloweventbindings.argoproj.io","workflowartifactgctasks.argoproj.io"]},
+    {"product_id":"gatekeeper","groups":["templates.gatekeeper.sh","constraints.gatekeeper.sh","config.gatekeeper.sh","status.gatekeeper.sh","mutations.gatekeeper.sh"],"crds":[]},
+    {"product_id":"calico","groups":["crd.projectcalico.org","projectcalico.org"],"crds":[]},
+    {"product_id":"tigera","groups":["operator.tigera.io"],"crds":[]},
+    {"product_id":"dapr","groups":["dapr.io"],"crds":[]},
+    {"product_id":"cert-manager","groups":["cert-manager.io","acme.cert-manager.io"],"crds":[]},
+    {"product_id":"secrets-store-csi","groups":["secrets-store.csi.x-k8s.io"],"crds":[]},
+    {"product_id":"external-secrets","groups":["external-secrets.io","generators.external-secrets.io"],"crds":[]},
+    {"product_id":"velero","groups":["velero.io"],"crds":[]},
+    {"product_id":"snapshot","groups":["snapshot.storage.k8s.io","groupsnapshot.storage.k8s.io"],"crds":[]},
+    {"product_id":"prometheus","groups":["monitoring.coreos.com"],"crds":[]},
+    {"product_id":"otel","groups":["opentelemetry.io"],"crds":[]},
+    {"product_id":"flux","groups":["source.toolkit.fluxcd.io","kustomize.toolkit.fluxcd.io","helm.toolkit.fluxcd.io","notification.toolkit.fluxcd.io","image.toolkit.fluxcd.io"],"crds":[]},
+    {"product_id":"kyverno","groups":["kyverno.io","reports.kyverno.io","policies.kyverno.io"],"crds":[]},
+    {"product_id":"karpenter","groups":["karpenter.sh","karpenter.k8s.aws"],"crds":[]},
+    {"product_id":"cilium","groups":["cilium.io"],"crds":[]}
+  ]
+}

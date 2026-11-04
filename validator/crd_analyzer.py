@@ -3,6 +3,7 @@ import re
 from . import schema_validator, storage_validator, conversion_validator, operator_validator
 from .collector import CollectionError
 from .models import finding, aggregate, SEVERITIES
+from .product_link import product_finding, unmapped_finding
 
 DNS_LABEL = re.compile(r"[a-z0-9](?:[-a-z0-9]*[a-z0-9])?")
 DNS_SUBDOMAIN = re.compile(r"[a-z0-9](?:[-a-z0-9.]*[a-z0-9])?")
@@ -132,7 +133,7 @@ def analyze_target(crd, target_collector, target_crds, target_error):
 
 
 def analyze(crd, current, target, engine, collector=None, catalog=None, include_instances=False,
-            instance_options=None, target_collector=None, target_crds=None, target_error=None, coverage=None):
+            instance_options=None, target_collector=None, target_crds=None, target_error=None, coverage=None, product=None, product_mode=False):
     from .coverage import CoverageCatalog
     coverage = coverage or CoverageCatalog()
     errors = structure(crd)
@@ -161,7 +162,7 @@ def analyze(crd, current, target, engine, collector=None, catalog=None, include_
                                         evidence={"type": typ, "status": state}, validation_type="observed_status"))
         checks = [lambda: storage_validator.analyze(crd), lambda: schema_validator.analyze(crd),
                   lambda: conversion_validator.analyze(crd, collector, coverage.protocols(target)),
-                  lambda: operator_validator.analyze(crd, target, collector, catalog), lambda: engine.evaluate(crd, current, target)]
+                  lambda: [product_finding(product)] if product else [unmapped_finding()] if product_mode else operator_validator.analyze(crd, target, collector, catalog), lambda: engine.evaluate(crd, current, target)]
         if include_instances:
             checks.append(lambda: analyze_instances(crd, collector, instance_options or {}))
         if target_collector:

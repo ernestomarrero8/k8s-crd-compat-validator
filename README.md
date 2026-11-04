@@ -424,3 +424,76 @@ El snapshot sintético demuestra Argo CD, Gatekeeper e Istio con evidencia difer
 Se preservan los modos anteriores y la ausencia de CI automático. Las pruebas de descubrimiento, Azure, scoring, catálogos y reportes usan respuestas simuladas; no se ha verificado un clúster de producción ni se han ejecutado escrituras.
 
 Verificación de v0.3: **167 pruebas aprobadas** localmente. Incluyen un caso de detección por imagen para cada producto, separación chart/appVersion y Calico/Tigera, versiones mezcladas, tags desconocidos, RBAC, asociación de AKS, vigencia de matrices, fin de soporte, aislamiento offline, comandos con contexto explícito y score que no oculta bloqueos. El informe JSON pasa al esquema 1.2 con campos aditivos `platform` y `readiness`.
+
+## v0.4: registro de productos y soporte compartido con CRDs
+
+La evaluación principal sigue ahora este orden:
+
+```text
+Inventario de fuentes → detector exacto → resolver de versión
+  → registro único por producto → catálogo oficial → evaluación
+  → asociación explícita de CRDs → reporte y readiness
+```
+
+Cada producto se evalúa una vez para todas sus instalaciones/namespaces. Se publican versiones resueltas, fuentes elegidas y todas las versiones distintas observadas. Los CRDs asociados referencian el resultado mediante `PRODUCT_SUPPORT`; dejan de realizar la búsqueda histórica por labels/Helm/OLM que generaba UNKNOWN duplicados aun cuando ya se había acreditado soporte del producto.
+
+### Resolver determinista
+
+La prioridad es: versión del servidor obtenida mediante CLI oficial fijada al contexto, `app_version` de Helm, tags exactos de imágenes, y campos explícitos de recursos propios. Se conservan todas las versiones numéricas diferentes y se evalúan: una CLI nueva no puede esconder un data plane antiguo o una actualización en curso incompatible.
+
+Una fuente secundaria sin versión no invalida automáticamente una versión resuelta por otra fuente válida. La observación original queda en la evidencia. No se inventan versiones de un digest ni se usa coincidencia aproximada de nombres; los repositorios/charts y grupos se comparan con listas explícitas. Mirrors y productos no registrados requieren ampliar las definiciones revisadas.
+
+`istioctl version` aporta información de los planos de control/datos. `argocd version --client` y `helm version --short` identifican herramientas locales, por lo que **no** se usan como versión instalada de Argo CD, de un chart ni de otro producto. Argo CD se resuelve mediante Helm e imágenes del clúster. No se ejecuta código de IA ni consultas a modelos; las decisiones son comparaciones deterministas sobre registros curados.
+
+### Catálogo canónico de soporte
+
+Las matrices predeterminadas residen ahora en `catalogs/support/`. `catalogs/operators/detectors.json` conserva las definiciones de identidad y `catalogs/operators/ownership.json` define ownership explícito por grupo API o nombre exacto de CRD. Los archivos históricos de matrices de `catalogs/operators/` se conservan para compatibilidad y ya no son el catálogo predeterminado.
+
+`--support-catalog` es un alias de `--platform-catalog`, tanto en main.py como mediante la shell/batch. Admite el formato anterior y el nuevo, ya sea un registro individual o una lista `versions` por producto:
+
+```json
+{
+  "product": "Istio",
+  "version": "1.30.x",
+  "supported_kubernetes": {"min": "1.32", "max": "1.36"},
+  "support_state": "supported",
+  "source": "https://istio.io/latest/docs/releases/supported-releases/",
+  "reviewed_on": "2026-11-04",
+  "evidence": "Fila oficial 1.30: Kubernetes soportados 1.32–1.36"
+}
+```
+
+`source: "official"` por sí solo no es verificable: debe añadirse `source_url` con la URL HTTPS oficial. El nuevo formato aplica una vigencia predeterminada de revisión de 90 días, configurable mediante `valid_until`. `support_state` acepta `supported`, `eol` o `unknown`. Una mera lista de pruebas debe declarar `matrix_type: "tested"` y `exclusive: false`; no se transforma en un máximo de soporte.
+
+Las reglas de producto pasan a llamarse `COMPATIBLE`, `NOT_COMPATIBLE`, `VERSION_EOL`, `VERSION_UNKNOWN` y `NO_SUPPORT_DATA`. Se conserva el detalle de rango, fuente, revisión, objetivo, producto, versiones y fuentes de detección. Las políticas públicas que no vinculan una versión concreta al objetivo conservan UNKNOWN con su justificación; no se las presenta como ausencia de documentación pública.
+
+Se añadieron matrices verificadas de cert-manager 1.16, 1.18, 1.19, 1.20 y 1.21, y Calico 3.31/3.32. Se registraron también fuentes y limitaciones explícitas de Secrets Store CSI, Velero y Tigera Operator. Las reglas no extrapolan documentos `latest`, compatibilidad esperada o políticas del release mantenido a cualquier binario histórico. La documentación archivada de Calico 3.30 no pudo verificarse durante esta revisión y no se inventó su rango.
+
+Los ejemplos de una solicitud no reemplazan fuentes: Istio 1.30.7 está dentro de 1.32–1.36; la documentación de Argo CD 3.2 publica versiones probadas hasta 1.34; la tabla oficial de cert-manager 1.16 enumera 1.25–1.32. Por ello esos casos producen PASS, UNKNOWN y FAIL respectivamente para 1.35.9. Gatekeeper 3.18 publica una política condicionada a que su release continúe mantenido; no acredita automáticamente 1.35 para cualquier versión antigua.
+
+### Asociación de CRDs y riesgo
+
+Un CRD de un producto compatible obtiene un hallazgo de soporte PASS/INFO y una referencia al producto. La tabla añade producto, versiones, soporte y `upgrade_risk`. Si no hay hallazgos técnicos WARN/FAIL/ERROR y el producto pasa, el riesgo de upgrade se presenta como INFO. El estado técnico/cobertura sigue reflejando limitaciones reales, por ejemplo instancias no inspeccionadas o CEL sin compilar.
+
+El soporte del producto nunca oculta esquemas inválidos, storedVersions inconsistentes, errores de conversión ni incompatibilidades probadas. Un defecto de storage continúa siendo FAIL aunque Istio tenga PASS. INFO es una severidad/riesgo, no un nuevo estado ni un permiso absoluto para actualizar.
+
+Para CRDs sin asociación explícita se informa `NO_PRODUCT_OWNER`; no se adivina ownership por labels. Si el usuario proporciona expresamente el catálogo histórico `--operator-catalog`, conserva sus comprobaciones independientes y no se sustituyen sus resultados mediante el nuevo registro.
+
+Se añadieron detectores de External Secrets Operator, Azure CNI y Cilium. El módulo AKS muestra `networkPlugin`, `networkPluginMode`, `networkDataplane` y `networkPolicy` desde metadata verificada de Azure. La habilitación de un plano de red administrado no determina su versión ni certifica soporte futuro: se conservan los límites de evidencia de Microsoft.
+
+### Cobertura y reproducción
+
+`platform.support_coverage` y el resumen registran productos conocidos, productos sin soporte acreditado y porcentaje UNKNOWN por producto, además de CRDs asociados y sin propietario. El objetivo de menos de 10% se puede medir, pero no se fuerza cambiando clasificaciones ni ocultando limitaciones. El porcentaje de productos y el número de hallazgos técnicos pendientes son métricas distintas.
+
+Ejemplo sintético que demuestra la asociación y preserva diferencias de evidencia:
+
+```sh
+python main.py --input fixtures/product-crds.json --platform-input fixtures/product-inventory.json --current 1.34.8 --target-version 1.35.9 --output reports/examples/product-analysis --format all
+python fixtures/generate_consolidated_example.py --source reports/examples/product-analysis/report.json
+```
+
+Devuelve 1 por cert-manager fuera de su rango. El CRD de Istio muestra soporte PASS y riesgo INFO; sus limitaciones de cobertura permanecen visibles. Los esquemas son simplificaciones sintéticas y no manifiestos de los productos reales.
+
+El esquema del reporte JSON es 1.3; los campos son aditivos. El HTML individual y el consolidado comparten el mismo resultado de producto. La verificación de esta entrega se ejecuta con herramientas y snapshots simulados, sin acceso a clústeres reales ni escrituras, y sin agregar CI automático.
+
+Verificación de v0.4: **180 pruebas aprobadas**. Incluye soporte compartido sin UNKNOWN de ownership duplicados, versionado canónico, precedencia de fuentes, conservación de revisiones incompatibles, identificación por grupos explícitos, clientes locales ignorados, matriz nueva/antigua y bloqueo técnico de almacenamiento independiente del soporte del producto.

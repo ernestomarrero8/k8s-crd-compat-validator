@@ -2,7 +2,7 @@
 
 Clúster: offline:mixed\-crds\.json · 1\.34\.8 → 1\.35\.9
 
-Fecha UTC: 2026\-11\-04T16:18:34\.859271\+00:00 · Estado general: **FAIL**
+Fecha UTC: 2026\-11\-04T19:00:32\.674300\+00:00 · Estado general: **FAIL**
 
 CRDs: 6 · Consultas kubectl: 0
 
@@ -34,12 +34,21 @@ El score es una ayuda de revisión; READY exige ausencia de bloqueos, avisos y e
 
 | Producto | Versiones | Origen | Compatibilidad | Resultado |
 |---|---|---|---|---|
-| Argo CD | v3\.2\.0, 3\.2\.0 | Helm, deployments\.apps | No verificada | UNKNOWN |
+| Argo CD | 3\.2\.0 | Helm, deployments\.apps | No verificada | UNKNOWN |
 | Istio | 1\.21\.1 | deployments\.apps | No | FAIL |
-| Gatekeeper | v3\.17\.0 | deployments\.apps | No verificada | UNKNOWN |
+| Gatekeeper | 3\.17\.0 | deployments\.apps | No verificada | UNKNOWN |
 
 AKS: \{"detected": false, "target\_version": "1\.35\.9", "current\_version": null, "node\_image\_versions": \[\], "node\_kubelet\_versions": \[\], "addons": \[\], "limitations": \["Metadata AKS observada; la versión efectiva y soporte de cada add\-on se evalúan por separado\.", "Una versión Kubernetes soportada upstream no acredita disponibilidad de upgrade, región, canal LTS ni soporte del add\-on administrado en AKS\.", "Node images se inventarían; no se infiere compatibilidad futura por su nombre\."\]\}
 
+
+| CRD | Producto | Soporte producto | Riesgo upgrade |
+|---|---|---|---|
+| widgets\.example\.com | — | — | INFO |
+| broken\-schemas\.example\.com | — | — | HIGH |
+| retired\-versions\.example\.com | — | — | HIGH |
+| broken\-webhooks\.example\.com | — | — | HIGH |
+| cel\-widgets\.example\.com | — | — | LOW |
+| migrating\-widgets\.example\.com | — | — | MEDIUM |
 
 ## Alcance y limitaciones
 
@@ -77,65 +86,53 @@ Recomendación: Revisar categorías, parches y distribuciones pendientes antes d
 Fuente: [Referencia técnica](<https://v1-35.docs.kubernetes.io/docs/tasks/extend-kubernetes/custom-resources/custom-resource-definitions/>)
 
 - Límite: Una revisión sin cambios relevantes no equivale a ausencia de revisión ni certifica compatibilidad completa\.
-### OPERATOR\-NO\-MATRIX · UNKNOWN · INFO
+### NO\_SUPPORT\_DATA · UNKNOWN · INFO
 
 Objetivo fuera de las versiones probadas; esto no demuestra incompatibilidad\.
 
 Categoría: operator\_compatibility · Relación: documented · Método: static
 
-Evidencia: \{"product": "Argo CD", "installed\_version": "v3\.2\.0", "target": "1\.35\.9", "matrix": \{"version": "3\.2\.x", "min\_kubernetes": "1\.31\.0", "max\_kubernetes": "1\.34\.x", "matrix\_type": "tested", "exclusive": false, "source": "https://argo\-cd\.readthedocs\.io/en/release\-3\.2/operator\-manual/tested\-kubernetes\-versions/", "reviewed\_on": "2026\-11\-04", "valid\_until": "2027\-02\-02", "evidence": "La tabla de la rama release\-3\.2 enumera Kubernetes 1\.31 a 1\.34 como probados\. Fuera de esa lista no se acredita incompatibilidad ni soporte\."\}\}
+Evidencia: \{"product": "Argo CD", "installed\_version": "3\.2\.0", "target": "1\.35\.9", "matrix": \{"version": "3\.2\.x", "min\_kubernetes": "1\.31\.0", "max\_kubernetes": "1\.34\.x", "matrix\_type": "tested", "exclusive": false, "source": "https://argo\-cd\.readthedocs\.io/en/release\-3\.2/operator\-manual/tested\-kubernetes\-versions/", "reviewed\_on": "2026\-11\-04", "valid\_until": "2027\-02\-02", "evidence": "La tabla de la rama release\-3\.2 enumera Kubernetes 1\.31 a 1\.34 como probados\. Fuera de esa lista no se acredita incompatibilidad ni soporte\.", "support\_state": "supported"\}, "reviewed\_on": "2026\-11\-04", "catalog\_limitations": \[\], "detection\_sources": \[\{"from": "deployments\.apps", "namespace": "argocd", "name": "argocd\-server", "repository": "quay\.io/argoproj/argocd", "declared\_tag": "v3\.2\.0", "revision": null, "version\_basis": "workload\_template\_image\_tag"\}, \{"from": "Helm", "name": "argo\-cd", "chart": "argo\-cd\-8\.3\.0", "app\_version": "3\.2\.0"\}\], "resolution\_sources": \["Helm"\], "resolved\_versions": \["3\.2\.0"\]\}
 
 Recomendación: Revisar la matriz oficial y actualizar el componente o completar evidencia antes del upgrade\.
 
 Fuente: [Referencia técnica](<https://argo-cd.readthedocs.io/en/release-3.2/operator-manual/tested-kubernetes-versions/>)
 
-### OPERATOR\-NO\-MATRIX · UNKNOWN · INFO
+### VERSION\_EOL · WARN · MEDIUM
 
-Objetivo fuera de las versiones probadas; esto no demuestra incompatibilidad\.
-
-Categoría: operator\_compatibility · Relación: documented · Método: static
-
-Evidencia: \{"product": "Argo CD", "installed\_version": "3\.2\.0", "target": "1\.35\.9", "matrix": \{"version": "3\.2\.x", "min\_kubernetes": "1\.31\.0", "max\_kubernetes": "1\.34\.x", "matrix\_type": "tested", "exclusive": false, "source": "https://argo\-cd\.readthedocs\.io/en/release\-3\.2/operator\-manual/tested\-kubernetes\-versions/", "reviewed\_on": "2026\-11\-04", "valid\_until": "2027\-02\-02", "evidence": "La tabla de la rama release\-3\.2 enumera Kubernetes 1\.31 a 1\.34 como probados\. Fuera de esa lista no se acredita incompatibilidad ni soporte\."\}\}
-
-Recomendación: Revisar la matriz oficial y actualizar el componente o completar evidencia antes del upgrade\.
-
-Fuente: [Referencia técnica](<https://argo-cd.readthedocs.io/en/release-3.2/operator-manual/tested-kubernetes-versions/>)
-
-### OPERATOR\-END\-OF\-SUPPORT · WARN · MEDIUM
-
-Versión fuera de mantenimiento según la fecha oficial registrada\.
+Versión fuera de mantenimiento según la evidencia oficial registrada\.
 
 Categoría: operator\_compatibility · Relación: documented · Método: static
 
-Evidencia: \{"product": "Istio", "installed\_version": "1\.21\.1", "target": "1\.35\.9", "matrix": \{"version": "1\.21\.x", "min\_kubernetes": "1\.26\.0", "max\_kubernetes": "1\.29\.x", "matrix\_type": "supported", "exclusive": true, "end\_of\_support": "2024\-09\-27", "source": "https://istio\.io/latest/docs/releases/supported\-releases/", "reviewed\_on": "2026\-11\-04", "valid\_until": "2027\-02\-02", "evidence": "Fila 1\.21: Kubernetes soportados 1\.26 a 1\.29; EOL 27 septiembre 2024\."\}\}
+Evidencia: \{"product": "Istio", "installed\_version": "1\.21\.1", "target": "1\.35\.9", "matrix": \{"version": "1\.21\.x", "min\_kubernetes": "1\.26\.0", "max\_kubernetes": "1\.29\.x", "matrix\_type": "supported", "exclusive": true, "end\_of\_support": "2024\-09\-27", "source": "https://istio\.io/latest/docs/releases/supported\-releases/", "reviewed\_on": "2026\-11\-04", "valid\_until": "2027\-02\-02", "evidence": "Fila 1\.21: Kubernetes soportados 1\.26 a 1\.29; EOL 27 septiembre 2024\.", "support\_state": "supported"\}, "reviewed\_on": "2026\-11\-04", "catalog\_limitations": \[\], "detection\_sources": \[\{"from": "deployments\.apps", "namespace": "istio\-system", "name": "istiod", "repository": "docker\.io/istio/pilot", "declared\_tag": "1\.21\.1", "revision": "old", "version\_basis": "workload\_template\_image\_tag"\}\], "resolution\_sources": \["deployments\.apps"\], "resolved\_versions": \["1\.21\.1"\]\}
 
 Recomendación: Revisar la matriz oficial y actualizar el componente o completar evidencia antes del upgrade\.
 
 Fuente: [Referencia técnica](<https://istio.io/latest/docs/releases/supported-releases/>)
 
-### OPERATOR\-NOT\-COMPATIBLE · FAIL · HIGH
+### NOT\_COMPATIBLE · FAIL · HIGH
 
 Objetivo fuera del rango de soporte explícito del proveedor; no se recomienda este upgrade con la versión instalada\.
 
 Categoría: operator\_compatibility · Relación: documented · Método: static
 
-Evidencia: \{"product": "Istio", "installed\_version": "1\.21\.1", "target": "1\.35\.9", "matrix": \{"version": "1\.21\.x", "min\_kubernetes": "1\.26\.0", "max\_kubernetes": "1\.29\.x", "matrix\_type": "supported", "exclusive": true, "end\_of\_support": "2024\-09\-27", "source": "https://istio\.io/latest/docs/releases/supported\-releases/", "reviewed\_on": "2026\-11\-04", "valid\_until": "2027\-02\-02", "evidence": "Fila 1\.21: Kubernetes soportados 1\.26 a 1\.29; EOL 27 septiembre 2024\."\}\}
+Evidencia: \{"product": "Istio", "installed\_version": "1\.21\.1", "target": "1\.35\.9", "matrix": \{"version": "1\.21\.x", "min\_kubernetes": "1\.26\.0", "max\_kubernetes": "1\.29\.x", "matrix\_type": "supported", "exclusive": true, "end\_of\_support": "2024\-09\-27", "source": "https://istio\.io/latest/docs/releases/supported\-releases/", "reviewed\_on": "2026\-11\-04", "valid\_until": "2027\-02\-02", "evidence": "Fila 1\.21: Kubernetes soportados 1\.26 a 1\.29; EOL 27 septiembre 2024\.", "support\_state": "supported"\}, "reviewed\_on": "2026\-11\-04", "catalog\_limitations": \[\], "detection\_sources": \[\{"from": "deployments\.apps", "namespace": "istio\-system", "name": "istiod", "repository": "docker\.io/istio/pilot", "declared\_tag": "1\.21\.1", "revision": "old", "version\_basis": "workload\_template\_image\_tag"\}\], "resolution\_sources": \["deployments\.apps"\], "resolved\_versions": \["1\.21\.1"\]\}
 
 Recomendación: Revisar la matriz oficial y actualizar el componente o completar evidencia antes del upgrade\.
 
 Fuente: [Referencia técnica](<https://istio.io/latest/docs/releases/supported-releases/>)
 
-### OPERATOR\-NO\-MATRIX · UNKNOWN · INFO
+### NO\_SUPPORT\_DATA · UNKNOWN · INFO
 
 No existe una única fila de matriz oficial revisada para esta versión\.
 
 Categoría: operator\_compatibility · Relación: limitation · Método: static
 
-Evidencia: \{"product": "Gatekeeper", "installed\_version": "v3\.17\.0", "target": "1\.35\.9", "matrix": \{\}\}
+Evidencia: \{"product": "Gatekeeper", "installed\_version": "3\.17\.0", "target": "1\.35\.9", "matrix": \{\}, "reviewed\_on": null, "catalog\_limitations": \["La política general de versiones soportadas no prueba una matriz de cada binario antiguo\. Sin fila revisada se informa UNKNOWN\."\], "detection\_sources": \[\{"from": "deployments\.apps", "namespace": "gatekeeper\-system", "name": "gatekeeper", "repository": "openpolicyagent/gatekeeper", "declared\_tag": "v3\.17\.0", "revision": null, "version\_basis": "workload\_template\_image\_tag"\}\], "resolution\_sources": \["deployments\.apps"\], "resolved\_versions": \["3\.17\.0"\]\}
 
 Recomendación: Revisar la matriz oficial y actualizar el componente o completar evidencia antes del upgrade\.
 
-Fuente: [Referencia técnica](<https://open-policy-agent.github.io/gatekeeper/>)
+Fuente: [Referencia técnica](<https://github.com/open-policy-agent/gatekeeper/blob/master/docs/Release_Management.md>)
 
 ### PLATFORM\-DISCOVERY · PASS · INFO
 
@@ -218,28 +215,15 @@ Recomendación: Revisar la evidencia antes del upgrade\.
 
 Fuente: [Referencia técnica](<https://v1-35.docs.kubernetes.io/docs/tasks/extend-kubernetes/custom-resources/custom-resource-definition-versioning/>)
 
-### OPERATOR\-IDENTITY · PASS · INFO
+### NO\_PRODUCT\_OWNER · UNKNOWN · INFO
 
-Candidatos a operador responsable\.
-
-Categoría: operator · Relación: documented · Método: static
-
-Evidencia: \{"candidates": \[\{"name": "example\-operator", "version": "2\.0\.0", "basis": "crd\_labels", "confidence": "hint"\}\]\}
-
-Recomendación: Revisar la evidencia antes del upgrade\.
-
-Fuente: [Referencia técnica](<https://v1-35.docs.kubernetes.io/docs/tasks/extend-kubernetes/custom-resources/custom-resource-definitions/>)
-
-- Límite: Labels y Helm son indicios; un release o chart puede no identificar la versión del controlador\.
-### OPERATOR\-SUPPORT · UNKNOWN · INFO
-
-No hay una única matriz revisada que coincida con operador, versión y CRD\.
+No existe una asociación explícita entre este CRD y un producto detectado\.
 
 Categoría: operator · Relación: limitation · Método: static
 
 Evidencia: \{\}
 
-Recomendación: Obtener la matriz oficial del proveedor y registrar evidencia en \-\-operator\-catalog; no inferir soporte por Running\.
+Recomendación: Registrar ownership documentado y detectar la versión del producto; no inferirla por labels o por la existencia del CRD\.
 
 Fuente: [Referencia técnica](<https://v1-35.docs.kubernetes.io/docs/tasks/extend-kubernetes/custom-resources/custom-resource-definitions/>)
 
@@ -319,28 +303,15 @@ Recomendación: Revisar la evidencia antes del upgrade\.
 
 Fuente: [Referencia técnica](<https://v1-35.docs.kubernetes.io/docs/tasks/extend-kubernetes/custom-resources/custom-resource-definition-versioning/>)
 
-### OPERATOR\-IDENTITY · PASS · INFO
+### NO\_PRODUCT\_OWNER · UNKNOWN · INFO
 
-Candidatos a operador responsable\.
-
-Categoría: operator · Relación: documented · Método: static
-
-Evidencia: \{"candidates": \[\{"name": "example\-operator", "version": "2\.0\.0", "basis": "crd\_labels", "confidence": "hint"\}\]\}
-
-Recomendación: Revisar la evidencia antes del upgrade\.
-
-Fuente: [Referencia técnica](<https://v1-35.docs.kubernetes.io/docs/tasks/extend-kubernetes/custom-resources/custom-resource-definitions/>)
-
-- Límite: Labels y Helm son indicios; un release o chart puede no identificar la versión del controlador\.
-### OPERATOR\-SUPPORT · UNKNOWN · INFO
-
-No hay una única matriz revisada que coincida con operador, versión y CRD\.
+No existe una asociación explícita entre este CRD y un producto detectado\.
 
 Categoría: operator · Relación: limitation · Método: static
 
 Evidencia: \{\}
 
-Recomendación: Obtener la matriz oficial del proveedor y registrar evidencia en \-\-operator\-catalog; no inferir soporte por Running\.
+Recomendación: Registrar ownership documentado y detectar la versión del producto; no inferirla por labels o por la existencia del CRD\.
 
 Fuente: [Referencia técnica](<https://v1-35.docs.kubernetes.io/docs/tasks/extend-kubernetes/custom-resources/custom-resource-definitions/>)
 
@@ -434,28 +405,15 @@ Recomendación: Revisar la evidencia antes del upgrade\.
 
 Fuente: [Referencia técnica](<https://v1-35.docs.kubernetes.io/docs/tasks/extend-kubernetes/custom-resources/custom-resource-definition-versioning/>)
 
-### OPERATOR\-IDENTITY · PASS · INFO
+### NO\_PRODUCT\_OWNER · UNKNOWN · INFO
 
-Candidatos a operador responsable\.
-
-Categoría: operator · Relación: documented · Método: static
-
-Evidencia: \{"candidates": \[\{"name": "example\-operator", "version": "2\.0\.0", "basis": "crd\_labels", "confidence": "hint"\}\]\}
-
-Recomendación: Revisar la evidencia antes del upgrade\.
-
-Fuente: [Referencia técnica](<https://v1-35.docs.kubernetes.io/docs/tasks/extend-kubernetes/custom-resources/custom-resource-definitions/>)
-
-- Límite: Labels y Helm son indicios; un release o chart puede no identificar la versión del controlador\.
-### OPERATOR\-SUPPORT · UNKNOWN · INFO
-
-No hay una única matriz revisada que coincida con operador, versión y CRD\.
+No existe una asociación explícita entre este CRD y un producto detectado\.
 
 Categoría: operator · Relación: limitation · Método: static
 
 Evidencia: \{\}
 
-Recomendación: Obtener la matriz oficial del proveedor y registrar evidencia en \-\-operator\-catalog; no inferir soporte por Running\.
+Recomendación: Registrar ownership documentado y detectar la versión del producto; no inferirla por labels o por la existencia del CRD\.
 
 Fuente: [Referencia técnica](<https://v1-35.docs.kubernetes.io/docs/tasks/extend-kubernetes/custom-resources/custom-resource-definitions/>)
 
@@ -573,28 +531,15 @@ Recomendación: Verificar confianza TLS, SAN, expiración, red y conversiones bi
 Fuente: [Referencia técnica](<https://v1-35.docs.kubernetes.io/docs/tasks/extend-kubernetes/custom-resources/custom-resource-definition-versioning/>)
 
 - Límite: Parsear la CA o encontrar endpoints no verifica handshake, cadena, caducidad ni conversión\.
-### OPERATOR\-IDENTITY · PASS · INFO
+### NO\_PRODUCT\_OWNER · UNKNOWN · INFO
 
-Candidatos a operador responsable\.
-
-Categoría: operator · Relación: documented · Método: static
-
-Evidencia: \{"candidates": \[\{"name": "example\-operator", "version": "2\.0\.0", "basis": "crd\_labels", "confidence": "hint"\}\]\}
-
-Recomendación: Revisar la evidencia antes del upgrade\.
-
-Fuente: [Referencia técnica](<https://v1-35.docs.kubernetes.io/docs/tasks/extend-kubernetes/custom-resources/custom-resource-definitions/>)
-
-- Límite: Labels y Helm son indicios; un release o chart puede no identificar la versión del controlador\.
-### OPERATOR\-SUPPORT · UNKNOWN · INFO
-
-No hay una única matriz revisada que coincida con operador, versión y CRD\.
+No existe una asociación explícita entre este CRD y un producto detectado\.
 
 Categoría: operator · Relación: limitation · Método: static
 
 Evidencia: \{\}
 
-Recomendación: Obtener la matriz oficial del proveedor y registrar evidencia en \-\-operator\-catalog; no inferir soporte por Running\.
+Recomendación: Registrar ownership documentado y detectar la versión del producto; no inferirla por labels o por la existencia del CRD\.
 
 Fuente: [Referencia técnica](<https://v1-35.docs.kubernetes.io/docs/tasks/extend-kubernetes/custom-resources/custom-resource-definitions/>)
 
@@ -675,28 +620,15 @@ Recomendación: Revisar la evidencia antes del upgrade\.
 
 Fuente: [Referencia técnica](<https://v1-35.docs.kubernetes.io/docs/tasks/extend-kubernetes/custom-resources/custom-resource-definition-versioning/>)
 
-### OPERATOR\-IDENTITY · PASS · INFO
+### NO\_PRODUCT\_OWNER · UNKNOWN · INFO
 
-Candidatos a operador responsable\.
-
-Categoría: operator · Relación: documented · Método: static
-
-Evidencia: \{"candidates": \[\{"name": "example\-operator", "version": "2\.0\.0", "basis": "crd\_labels", "confidence": "hint"\}\]\}
-
-Recomendación: Revisar la evidencia antes del upgrade\.
-
-Fuente: [Referencia técnica](<https://v1-35.docs.kubernetes.io/docs/tasks/extend-kubernetes/custom-resources/custom-resource-definitions/>)
-
-- Límite: Labels y Helm son indicios; un release o chart puede no identificar la versión del controlador\.
-### OPERATOR\-SUPPORT · UNKNOWN · INFO
-
-No hay una única matriz revisada que coincida con operador, versión y CRD\.
+No existe una asociación explícita entre este CRD y un producto detectado\.
 
 Categoría: operator · Relación: limitation · Método: static
 
 Evidencia: \{\}
 
-Recomendación: Obtener la matriz oficial del proveedor y registrar evidencia en \-\-operator\-catalog; no inferir soporte por Running\.
+Recomendación: Registrar ownership documentado y detectar la versión del producto; no inferirla por labels o por la existencia del CRD\.
 
 Fuente: [Referencia técnica](<https://v1-35.docs.kubernetes.io/docs/tasks/extend-kubernetes/custom-resources/custom-resource-definitions/>)
 
@@ -804,28 +736,15 @@ Recomendación: Revisar la evidencia antes del upgrade\.
 
 Fuente: [Referencia técnica](<https://v1-35.docs.kubernetes.io/docs/tasks/extend-kubernetes/custom-resources/custom-resource-definition-versioning/>)
 
-### OPERATOR\-IDENTITY · PASS · INFO
+### NO\_PRODUCT\_OWNER · UNKNOWN · INFO
 
-Candidatos a operador responsable\.
-
-Categoría: operator · Relación: documented · Método: static
-
-Evidencia: \{"candidates": \[\{"name": "example\-operator", "version": "2\.0\.0", "basis": "crd\_labels", "confidence": "hint"\}\]\}
-
-Recomendación: Revisar la evidencia antes del upgrade\.
-
-Fuente: [Referencia técnica](<https://v1-35.docs.kubernetes.io/docs/tasks/extend-kubernetes/custom-resources/custom-resource-definitions/>)
-
-- Límite: Labels y Helm son indicios; un release o chart puede no identificar la versión del controlador\.
-### OPERATOR\-SUPPORT · UNKNOWN · INFO
-
-No hay una única matriz revisada que coincida con operador, versión y CRD\.
+No existe una asociación explícita entre este CRD y un producto detectado\.
 
 Categoría: operator · Relación: limitation · Método: static
 
 Evidencia: \{\}
 
-Recomendación: Obtener la matriz oficial del proveedor y registrar evidencia en \-\-operator\-catalog; no inferir soporte por Running\.
+Recomendación: Registrar ownership documentado y detectar la versión del producto; no inferirla por labels o por la existencia del CRD\.
 
 Fuente: [Referencia técnica](<https://v1-35.docs.kubernetes.io/docs/tasks/extend-kubernetes/custom-resources/custom-resource-definitions/>)
 

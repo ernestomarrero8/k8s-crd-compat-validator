@@ -13,6 +13,7 @@ from .report_generator import build_report, write_reports
 from .platform_catalog import PlatformCatalog
 from .platform_analyzer import analyze as analyze_platform
 from .readiness import score
+from .product_link import owner_result, annotate
 
 
 def positive(value):
@@ -38,7 +39,7 @@ def parser():
     p.add_argument("--pluto-timeout", type=positive, default=120, help="Timeout total de Pluto en segundos")
     p.add_argument("--rules-path", type=Path, help="Archivo/directorio JSON; agrega reglas a las incluidas")
     p.add_argument("--operator-catalog", type=Path, help="Matriz de soporte revisada con fuentes y versiones exactas")
-    p.add_argument("--platform-catalog", type=Path, help="Directorio de matrices oficiales de plataformas (reemplaza las incluidas)")
+    p.add_argument("--platform-catalog", "--support-catalog", type=Path, help="Directorio de matrices oficiales de plataformas (reemplaza las incluidas)")
     p.add_argument("--platform-input", type=Path, help="Snapshot JSON de inventario de plataformas; permite análisis offline")
     p.add_argument("--platform-limit", type=positive, default=2000, help="Máximo de objetos examinados por fuente de plataformas")
     p.add_argument("--verify-sources", action="store_true", help="Consulta documentos HTTPS del catálogo y verifica SHA256; solo LIVE")
@@ -116,13 +117,6 @@ def main(argv=None):
             except CollectionError as exc:
                 target_error = exc
         options = {"page_size": args.page_size, "max_pages": args.max_pages, "max_instances": args.max_instances}
-        results = []
-        for crd in crds:
-            result = analyze(crd, current, target, engine, collector, catalog, args.include_instances,
-                             options, target_collector, target_crds, target_error, coverage)
-            results.append(result)
-            if args.verbose:
-                print(f"CRD {len(results)}/{len(crds)}: {result['status']} ({len(result['findings'])} hallazgos)", file=sys.stderr)
         try:
             platform, platform_findings = analyze_platform(collector, crds, current, target, platform_catalog,
                 read_json(args.platform_input) if args.platform_input else None, args.platform_limit)
@@ -132,6 +126,16 @@ def main(argv=None):
             platform = {"products": [], "discovery": failure.to_dict(), "aks": {"detected": False, "limitations": [failure.description]}, "catalog": platform_catalog.provenance()}
             platform_findings = [failure]
         global_findings.extend(platform_findings)
+        results = []
+        for crd in crds:
+            product = owner_result(crd, platform, platform_catalog.ownership) if isinstance(crd.get("spec"), dict) and isinstance(crd.get("metadata"), dict) else None
+            # Explicit legacy catalog keeps its extra independent ownership checks.
+            linked = product if not args.operator_catalog else None
+            result = analyze(crd, current, target, engine, collector, catalog, args.include_instances,
+                             options, target_collector, target_crds, target_error, coverage, linked, not bool(args.operator_catalog))
+            results.append(annotate(result, linked))
+            if args.verbose:
+                print(f"CRD {len(results)}/{len(crds)}: {result['status']} ({len(result['findings'])} hallazgos)", file=sys.stderr)
         queries = (collector.queries if collector else 0) + (target_collector.queries if target_collector else 0)
         pluto_result, pluto_finding = pluto.run(cluster, target, args.pluto_timeout, offline=bool(args.input))
         global_findings.append(pluto_finding)
@@ -140,6 +144,10 @@ def main(argv=None):
         report["platform"] = platform
         report["readiness"] = score(report)
         report["summary"]["platform_products"] = len(platform["products"])
+        report["summary"]["unknown_products"] = platform.get("support_coverage", {}).get("unknown_products")
+        report["summary"]["unknown_product_percentage"] = platform.get("support_coverage", {}).get("unknown_percentage")
+        report["summary"]["crds_linked_to_product"] = sum("product_compatibility" in r for r in results)
+        report["summary"]["crds_without_product"] = sum("product_compatibility" not in r for r in results)
         report["summary"]["platform_states"] = {s: sum(p["status"] == s for p in platform["products"]) for s in STATES}
         report["knowledge"] = {"coverage_catalog_version": coverage.data["catalog_version"], "coverage_sha256": coverage.sha256, "rule_catalogs": engine.provenance()}
         written = write_reports(report, args.output, "markdown" if args.format == "md" else args.format)

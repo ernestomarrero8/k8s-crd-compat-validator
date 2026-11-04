@@ -1,0 +1,10 @@
+{
+  "product":"Cert Manager", "catalog_version":"2026.11.04.2",
+  "versions":[
+    {"version":"1.16.x","supported_kubernetes":{"min":"1.25","max":"1.32"},"support_state":"eol","end_of_support":"2025-06-10","source":"https://cert-manager.io/docs/releases/","reviewed_on":"2026-11-04","evidence":"La tabla oficial de releases antiguas enumera compatibilidad 1.25–1.32 y EOL 10 junio 2025."},
+    {"version":"1.18.x","supported_kubernetes":{"min":"1.29","max":"1.33"},"support_state":"eol","end_of_support":"2026-03-10","source":"https://cert-manager.io/docs/releases/","reviewed_on":"2026-11-04","evidence":"Fila oficial 1.18: compatibilidad 1.29–1.33; EOL 10 marzo 2026."},
+    {"version":"1.19.x","supported_kubernetes":{"min":"1.31","max":"1.35"},"support_state":"eol","end_of_support":"2026-07-08","source":"https://cert-manager.io/docs/releases/","reviewed_on":"2026-11-04","evidence":"Fila oficial 1.19: compatibilidad 1.31–1.35; EOL 8 julio 2026."},
+    {"version":"1.20.x","supported_kubernetes":{"min":"1.32","max":"1.35"},"support_state":"supported","source":"https://cert-manager.io/docs/releases/","reviewed_on":"2026-11-04","evidence":"Tabla oficial: fila 1.20, Kubernetes soportados 1.32–1.35. EOL ligado a otro release, sin inventar fecha futura."},
+    {"version":"1.21.x","supported_kubernetes":{"min":"1.33","max":"1.36"},"support_state":"supported","source":"https://cert-manager.io/docs/releases/","reviewed_on":"2026-11-04","evidence":"Tabla oficial: fila 1.21, Kubernetes soportados 1.33–1.36."}
+  ]
+}

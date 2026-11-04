@@ -15,7 +15,7 @@ def build_report(cluster, current, target, path, crds, global_findings, queries=
     counts = Counter(c["status"] for c in crds)
     risk_counts = Counter(f["severity"] for f in all_findings if f["status"] in ("WARN", "FAIL", "ERROR"))
     states = [f["status"] for f in all_findings]
-    return {"schema_version": "1.2", "tool": "k8s-crd-compat-validator", "tool_version": "0.3.0",
+    return {"schema_version": "1.3", "tool": "k8s-crd-compat-validator", "tool_version": "0.4.0",
             "analyzed_at": datetime.now(timezone.utc).isoformat(), "cluster": cluster,
             "current_version": str(current), "target_version": str(target), "upgrade_path": path,
             "target_context": target_context, "read_only": True, "kubectl_queries": queries,
@@ -46,6 +46,8 @@ def markdown(report):
     lines += ["", "| Severidad de riesgos | Hallazgos |", "|---|---:|"]
     lines += [f"| {s} | {n} |" for s, n in report["summary"]["risks_by_severity"].items()]
     lines += platform_markdown(report, md)
+    lines += ["", "| CRD | Producto | Soporte producto | Riesgo upgrade |", "|---|---|---|---|"]
+    lines += [f"| {md(c['name'])} | {md(c.get('product_compatibility', {}).get('product', '—'))} | {md(c.get('product_compatibility', {}).get('status', '—'))} | {md(c.get('upgrade_risk', c['severity']))} |" for c in report["crds"]]
     lines += ["", "## Alcance y limitaciones", ""] + ["- " + md(x) for x in report["limitations"]]
     lines += ["", "## Catálogos utilizados", "", md(json.dumps(report.get("knowledge", {}), ensure_ascii=False)), "", "## Pluto", ""]
     scan = report.get("pluto", {})
@@ -66,7 +68,9 @@ def markdown(report):
 def html(report):
     def esc(v):
         return escape(str(v), quote=True)
-    rows = "".join(f"<tr><td>{esc(c['name'])}</td><td>{c['status']}</td><td>{c['severity']}</td></tr>" for c in report["crds"])
+    rows = "".join(f"<tr><td>{esc(c['name'])}</td><td>{c['status']}</td><td>{c['severity']}</td>"
+                   f"<td>{esc(c.get('product_compatibility', {}).get('product', '—'))}<br>{esc(', '.join(c.get('product_compatibility', {}).get('versions', [])))}</td>"
+                   f"<td>{esc(c.get('product_compatibility', {}).get('status', '—'))}</td><td>{esc(c.get('upgrade_risk', c['severity']))}</td></tr>" for c in report["crds"])
     summary = " · ".join(f"{s}: {n}" for s, n in report["summary"]["states"].items())
     risks = " · ".join(f"{s}: {n}" for s, n in report["summary"]["risks_by_severity"].items())
     scan = report.get("pluto", {})
@@ -96,7 +100,7 @@ details{background:white;border:1px solid #bccbdb;border-radius:6px;margin:12px 
         f"<p>{report['summary']['total_crds']} CRDs · {esc(summary)}</p><p>Riesgos por severidad: {esc(risks)}</p>"
         + platform_html(report) +
         "<h2>Alcance y limitaciones</h2><ul>" + "".join(f"<li>{esc(x)}</li>" for x in report["limitations"]) + "</ul>"
-        "<table><thead><tr><th>CRD afectado</th><th>Estado</th><th>Severidad</th></tr></thead><tbody>" + rows + "</tbody></table>"
+        "<table><thead><tr><th>CRD afectado</th><th>Estado técnico / cobertura</th><th>Severidad</th><th>Producto / versiones</th><th>Soporte producto</th><th>Riesgo upgrade</th></tr></thead><tbody>" + rows + "</tbody></table>"
         + "".join(content) + "</main></html>")
 
 

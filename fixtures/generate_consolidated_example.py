@@ -3,6 +3,7 @@ from copy import deepcopy
 import json
 from pathlib import Path
 import sys
+import argparse
 
 sys.path.insert(0, str(Path(__file__).resolve().parents[1]))
 from validator.collector import read_json
@@ -11,7 +12,10 @@ from validator.consolidated_report import consolidate
 
 def main():
     output = Path(__file__).resolve().parents[1] / "reports/examples"
-    base = read_json(output / "report.json")
+    parser = argparse.ArgumentParser(description="Consolidado sintético de un reporte ya generado")
+    parser.add_argument("--source", type=Path, default=output / "report.json")
+    args = parser.parse_args()
+    base = read_json(args.source)
     entries = []
     for name in ("demo-cluster-a", "demo-cluster-b"):
         report = deepcopy(base)

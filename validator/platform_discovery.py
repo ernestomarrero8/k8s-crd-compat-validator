@@ -2,8 +2,8 @@
 import json
 import re
 import subprocess
-from .collector import CollectionError
-from .platform_catalog import release
+from .collector import CollectionError, read_json
+from .platform_catalog import release, ROOT
 
 
 def command_json(command, timeout):
@@ -21,7 +21,7 @@ def command_json(command, timeout):
         return None, "invalid_response"
 
 
-def collect(collector, crds, limit=2000):
+def collect(collector, crds, limit=2000, definitions=None):
     data, errors = {"crds": crds}, []
     for resource in ("deployments.apps", "daemonsets.apps", "statefulsets.apps", "pods", "nodes"):
         try:
@@ -49,7 +49,8 @@ def collect(collector, crds, limit=2000):
                 data[crd] = collector.get(crd, all_namespaces=crd == "configurations.dapr.io").get("items", [])[:limit]
             except CollectionError as exc:
                 errors.append({"source": crd, "reason": exc.code})
-    if "virtualservices.networking.istio.io" in names or any("istio/" in str(c.get("image", "")) for w in data.get("deployments.apps", []) for c in w.get("spec", {}).get("template", {}).get("spec", {}).get("containers", [])):
+    definitions = definitions or read_json(ROOT / "detectors.json")["products"]
+    if any(row["id"] == "istio" for row in detect(data, definitions)):
         data["istio"], error = command_json(["istioctl", "version", "--context", collector.context, "-o", "json"], collector.timeout)
         if not error and (not isinstance(data["istio"], dict) or not any(data["istio"].get(k) for k in ("meshVersion", "dataPlaneVersion"))):
             error = "remote_versions_unavailable"
@@ -64,7 +65,7 @@ def detect(data, definitions):
     def add(definition, namespace, version, evidence):
         key = (definition["id"], namespace)
         row = detected.setdefault(key, {"id": definition["id"], "product": definition["product"], "namespace": namespace,
-            "category": definition.get("category", "operator"), "source": definition["source"], "versions": [], "evidence": [], "unknown_version": False})
+            "category": definition.get("category", "operator"), "source": definition["source"], "versions": [], "evidence": [], "version_candidates": [], "unknown_version": False})
         version = str(version) if version is not None else "UNKNOWN"
         if not release(version) or (definition.get("component_versions") and evidence["from"] != "Helm"):
             if evidence["from"] not in ("Helm", "CRD") or not row["versions"]:
@@ -74,6 +75,10 @@ def detect(data, definitions):
             row["unknown_version"] = False
         if version != "UNKNOWN" and version not in row["versions"]:
             row["versions"].append(version)
+        if version != "UNKNOWN":
+            candidate = {"version": version, "from": evidence["from"], "namespace": namespace, "revision": evidence.get("revision")}
+            if candidate not in row["version_candidates"]:
+                row["version_candidates"].append(candidate)
         # Bound report size independently from inventory size.
         if len(row["evidence"]) < 30 and evidence not in row["evidence"]:
             row["evidence"].append(evidence)
@@ -100,7 +105,9 @@ def detect(data, definitions):
                 add(definition, helm.get("namespace", ""), helm.get("app_version") if definition.get("helm_version_is_product", True) else None,
                     {"from": "Helm", "name": helm.get("name"), "chart": helm.get("chart"), "app_version": helm.get("app_version")})
     for definition in definitions:
-        if any(c.get("metadata", {}).get("name") in definition["crds"] for c in data.get("crds", [])) and not any(k[0] == definition["id"] for k in detected):
+        if any(c.get("metadata", {}).get("name") in definition["crds"] or
+               (isinstance(c.get("spec"), dict) and c["spec"].get("group") in definition.get("crd_groups", []))
+               for c in data.get("crds", [])) and not any(k[0] == definition["id"] for k in detected):
             add(definition, "", None, {"from": "CRD", "note": "Presencia del CRD; no prueba que un controlador esté activo."})
     # Calico's clusterinformation has an explicit product version. Installation configuration does not.
     for obj in data.get("clusterinformations.crd.projectcalico.org", []):

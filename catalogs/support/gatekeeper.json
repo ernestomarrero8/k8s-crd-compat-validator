@@ -1,0 +1,1 @@
+{"product":"Gatekeeper","catalog_version":"2026.11.04.1","versions":[],"source":"https://github.com/open-policy-agent/gatekeeper/blob/master/docs/Release_Management.md","limitations":["La política general de versiones soportadas no prueba una matriz de cada binario antiguo. Sin fila revisada se informa UNKNOWN."]}
