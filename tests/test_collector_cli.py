@@ -155,10 +155,14 @@ def test_live_cli_uses_only_read_commands(tmp_path, crd, monkeypatch):
             return response({"kind": "List", "items": [crd]})
         if "clusterserviceversions.operators.coreos.com" in cmd:
             return response({}, 1, "NotFound")
+        if cmd[0] == "helm":
+            return response([])
+        if "get" in cmd:
+            return response({"items": []})
         raise AssertionError(cmd)
     monkeypatch.setattr(subprocess, "run", runner)
     assert main(["--context", "source", "--target", "1.35.9", "--output", str(tmp_path)]) == 0
-    assert len(calls) == 3
+    assert len([c for c in calls if c[0] == "kubectl"]) == 8
     assert all(set(cmd).isdisjoint({"apply", "create", "patch", "delete", "replace", "edit"}) for cmd in calls)
 
 
@@ -185,6 +189,8 @@ def test_target_context_and_instances_full_cli(tmp_path, crd, monkeypatch):
     def runner(cmd, **kwargs):
         if cmd[0] == "pluto":
             return SimpleNamespace(returncode=0, stdout="No output to display", stderr="")
+        if cmd[0] == "helm":
+            return response([])
         calls.append(cmd)
         context = cmd[cmd.index("--context") + 1]
         if "version" in cmd:
@@ -197,6 +203,8 @@ def test_target_context_and_instances_full_cli(tmp_path, crd, monkeypatch):
             if context == "target":
                 return response({"resources": [{"name": "widgets"}]})
             return response({"items": [{"apiVersion": "example.com/v1alpha1", "spec": {"replicas": 2}}], "metadata": {}})
+        if "get" in cmd:
+            return response({"items": []})
         raise AssertionError(cmd)
     monkeypatch.setattr(subprocess, "run", runner)
     assert main(["--context", "source", "--target", "1.35.9", "--target-context", "target", "--include-instances", "--output", str(tmp_path)]) == 0

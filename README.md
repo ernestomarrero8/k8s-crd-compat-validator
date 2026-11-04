@@ -2,6 +2,8 @@
 
 CLI de solo lectura para evaluar CRDs y sus dependencias antes de un upgrade Kubernetes. Python 3.12+, Windows y Linux; biblioteca estándar en ejecución. No instala servicios, no modifica el clúster. En LIVE también ejecuta Pluto como detector externo de APIs deprecadas.
 
+Desde v0.3 también descubre plataformas/operadores mediante Helm, workloads, pods y CRDs; evalúa matrices oficiales curadas y muestra un resumen ejecutivo con Upgrade Readiness Score. El mismo análisis se incorpora al HTML consolidado de varios contextos.
+
 El repositorio incluye validaciones estáticas, consultas LIVE acotadas, un motor de reglas JSON, reportes JSON/Markdown/HTML y pruebas con kubectl simulado. La transición revisada inicialmente es **1.34 → 1.35**. Los números de parche se comparan, pero el catálogo no promete cubrir todos los cambios de cada parche o distribución, incluido AKS.
 
 ## Inicio rápido
@@ -330,3 +332,95 @@ Se pueden pasar `--include-instances`, `--verbose`, `--verify-sources`, `--rules
 Ejemplo sintético de consolidación: `reports/examples/consolidated.html`. Se regenera con `python fixtures/generate_consolidated_example.py` y no representa clústeres reales. Las pruebas del runner simulan subprocess; la entrega no ejecuta análisis sobre clústeres reales.
 
 Verificación de esta ampliación: **118 pruebas aprobadas**; sintaxis de la shell comprobada con Bash. Incluye casos con contextos inaccesibles, timeout, JSON inválido, detalle de Pluto, nombres de contexto que colisionan tras normalización y aislamiento entre ejecuciones.
+
+## v0.3: Cluster Platform Compatibility
+
+```sh
+python main.py --context aks-tools-prod-ceeb --target-version 1.35.9 --output reports/aks-tools
+bash crd-compat-validator.sh --target-version 1.35.9
+```
+
+`--target-version` es un alias de `--target` tanto en main.py como en batch.py. En LIVE el descubrimiento de plataformas es automático. La categoría `operator_compatibility`, presentada como **OPERATOR COMPATIBILITY ANALYSIS**, agrega hallazgos globales al informe y a la política `--fail-on`. Los hallazgos de operadores asociados a CRDs ya existentes se conservan como una comprobación adicional de ownership; no equivalen al nuevo inventario de plataformas.
+
+### Productos detectables
+
+El catálogo `catalogs/operators/detectors.json` incluye Argo CD, Argo Workflows, Istio, Gatekeeper, Calico, Tigera Operator, Dapr, Secrets Store CSI Driver, Azure Policy Add-on, Defender for Cloud, Cluster Autoscaler, Karpenter, Cert Manager, NGINX Ingress Controller, AGIC, External DNS, Velero, Snapshot Controller, Prometheus Operator, OpenTelemetry Operator, FluxCD y Kyverno. Incluye además OMS Agent / AMA, Azure Key Vault CSI Driver y los drivers CSI de Azure Disk/File. Se distingue ingress-nginx comunitario del controlador F5 NGINX; sus versiones y matrices no son intercambiables.
+
+Las identidades se basan en repositorios de imagen conocidos, nombres exactos de charts y CRDs específicos. No se busca por una subcadena genérica del nombre del Deployment. Mirrors privados o repositorios no catalogados pueden requerir actualizar los detectores; un producto ausente en el inventario no prueba ausencia absoluta en el clúster.
+
+### Fuentes de versión y límites
+
+- `helm list -A -o json --kube-context <contexto>`: se conserva chart y `app_version`; no se usa la versión del chart como versión de producto. Tigera es una excepción explícita: appVersion puede identificar Calico, no al operador.
+- Deployments, DaemonSets, StatefulSets y Pods: se observan repositorio y tag de containers/initContainers. Los pods permiten detectar versiones anteriores que aún coexisten con el nuevo template. Se conservan namespaces, fuentes y revisiones Istio.
+- CRDs: acreditan una API instalada, no que su operador esté activo. Si solo hay CRDs y no versión verificable, UNKNOWN.
+- Calico: se consulta `clusterinformations.crd.projectcalico.org` y su campo `spec.calicoVersion`; también se leen TigeraStatus e Installation cuando sus CRDs existen. Estos últimos pueden no declarar ninguna versión de binario.
+- Dapr: se observan imágenes, Helm y configuraciones de su API cuando existe; una versión de formato de configuración no se usa como versión runtime.
+- Istio: cuando se detecta su instalación se intenta `istioctl version --context <contexto> -o json`. Se leen las versiones de control/data plane; se ignora la versión local del cliente. La falta del binario se registra como cobertura pendiente. Para Argo CD se utilizan las imágenes y Helm, evitando depender de una sesión de argocd CLI que pudiera apuntar a otro servidor.
+- Flux: las versiones de source-controller, helm-controller y otros componentes no se convierten en una versión ficticia de la distribución Flux. Sin evidencia de su release, se informa UNKNOWN.
+
+Tags `latest`, prereleases, versiones no reconocidas o imágenes solo por digest producen UNKNOWN. Un tag numérico es evidencia declarada de versión; no se verifica el contenido del binario mediante digest ni se infiere soporte porque el pod esté Running. Se muestran todas las versiones observadas, incluso mezcladas. Una observación sin versión impide acreditar compatibilidad completa de esa instalación.
+
+`--platform-limit 2000` limita objetos examinados por fuente y evidencia publicada a 30 observaciones por producto/namespace. Las listas kubectl se descargan completas dentro de su timeout, y Helm solicita como máximo ese límite. Alcanzarlo genera UNKNOWN por cobertura. No hay una consulta por producto: se comparten inventarios y caché. Las consultas kubectl consumen `--max-queries`; Helm, istioctl y Azure CLI son procesos externos con `--timeout` por proceso. Errores RBAC, fuentes ausentes y datos incompletos generan hallazgos de cobertura; no se ocultan como productos inexistentes.
+
+### Matrices documentadas
+
+`catalogs/operators/` contiene archivos por producto. `--platform-catalog <directorio-o-json>` reemplaza las matrices incluidas, conservando los detectores. Es distinto del catálogo histórico `--operator-catalog` que relaciona ownership de CRDs.
+
+Cada archivo requiere `product`, `catalog_version` y una lista `versions`. Cada registro requiere:
+
+| Campo | Significado |
+|---|---|
+| `version` | Versión o familia de producto, por ejemplo `3.2.x` |
+| `min_kubernetes`, `max_kubernetes` | Rango inclusivo; se admite `1.35.x` para toda esa minor |
+| `matrix_type` | `supported` o `tested`, según la afirmación real del proveedor |
+| `exclusive` | Solo true cuando la matriz delimita explícitamente las versiones soportadas; nunca para una mera lista de pruebas |
+| `source`, `evidence` | URL oficial y resumen verificable de la fila/afirmación |
+| `reviewed_on`, `valid_until` | Fechas ISO de revisión y vencimiento de la evidencia local |
+| `end_of_support` | Opcional: fecha oficial de fin de mantenimiento |
+
+El catálogo se valida antes de consultar el clúster. Las revisiones vencidas y las coincidencias de versión ambiguas producen UNKNOWN. Cada informe incluye hashes SHA256 de archivos y de los detectores para reproducibilidad. Se consultan las matrices **locales curadas con fuentes oficiales**; no se scrapea ni interpreta automáticamente HTML de proveedores durante una evaluación. Las consultas online de `--verify-sources` siguen correspondiendo únicamente al catálogo histórico de ownership. Actualizar estas matrices requiere revisar la fuente y sus fechas, no ampliar rangos por suposición.
+
+Reglas de resultados:
+
+| ID | Resultado |
+|---|---|
+| `OPERATOR-COMPATIBLE` | PASS: objetivo dentro de una matriz vigente de soporte o pruebas; el tipo de evidencia se muestra en el detalle |
+| `OPERATOR-END-OF-SUPPORT` | WARN: se superó una fecha oficial de fin de mantenimiento |
+| `OPERATOR-NOT-COMPATIBLE` | FAIL: objetivo fuera del rango explícito de soporte; no implica que se haya reproducido una caída |
+| `OPERATOR-NO-MATRIX` | UNKNOWN: fila inexistente, ambigua, vencida o fuera de una mera lista de versiones probadas |
+| `OPERATOR-VERSION-UNKNOWN` | UNKNOWN: no se obtuvo una versión inequívoca de producto |
+
+Se conserva cada hallazgo: un producto puede tener PASS para un rango de Kubernetes y WARN por fin de mantenimiento. Los bloqueos prevalecen sobre otras versiones compatibles; UNKNOWN permanece visible como evidencia pendiente.
+
+La primera revisión incorpora rangos de Istio 1.21, 1.28, 1.29 y 1.30, y versiones probadas de Argo CD 3.2, a partir de sus matrices oficiales consultadas el 4 de noviembre de 2026. Los archivos de Gatekeeper, Calico y Dapr registran fuentes y límites sin inventar rangos numéricos; los demás productos también permanecen UNKNOWN hasta contar con una matriz revisada para la versión instalada. Un detector disponible no equivale a una matriz disponible.
+
+Fuentes iniciales: [Istio](https://istio.io/latest/docs/releases/supported-releases/), [Argo CD 3.2](https://argo-cd.readthedocs.io/en/release-3.2/operator-manual/tested-kubernetes-versions/), [Gatekeeper](https://github.com/open-policy-agent/gatekeeper/blob/master/docs/Release_Management.md), [Calico](https://docs.tigera.io/calico/latest/getting-started/kubernetes/requirements) y [Dapr](https://docs.dapr.io/operations/support/support-release-policy/). Los rangos de los ejemplos de requisitos no se toman como evidencia: por ejemplo, la tabla de Argo CD 3.2 enumera 1.31–1.34 como probadas; 1.35 se clasifica UNKNOWN.
+
+### Metadata AKS
+
+Se inventarían provider IDs de nodos, versiones kubelet y la label `kubernetes.azure.com/node-image-version`. Si todos los nodos permiten obtener una identidad Azure única, se consulta `az aks list` en esa suscripción para asociar exactamente el node resource group, y después `az aks show` con nombre, resource group y suscripción explícitos. No se modifica la cuenta activa ni el kubeconfig. La asociación debe ser única y la versión AKS coincidir con el servidor analizado; de otro modo se conserva UNKNOWN.
+
+Del resultado solo se publican versión Kubernetes, add-ons habilitados, Defender, autoscaling y perfiles CSI/snapshot. No se exportan IDs de suscripción, datos de autenticación, configuración completa de add-ons, identities, env de contenedores ni manifiestos. Azure CLI es opcional; falta de acceso o de metadata produce UNKNOWN.
+
+Los productos administrados pueden no tener Pods visibles, por ejemplo Cluster Autoscaler. En tal caso la metadata acredita su habilitación, pero no determina versión efectiva: UNKNOWN. Las matrices upstream no acreditan soporte de la distribución administrada de AKS. La versión/región/canal disponibles para el upgrade y la relación futura de node images/add-ons requieren evidencia específica de Microsoft; `AKS-SUPPORT-UNVERIFIED` permanece UNKNOWN. No se inventa una matriz de add-ons a partir de que estén habilitados.
+
+### Upgrade Readiness Score y tabla ejecutiva
+
+El HTML muestra producto/namespace, versiones observadas, fuente de detección, compatibilidad con el objetivo, resultado y enlaces oficiales. Incluye metadata de AKS, evidencia de detección, matrices y el score. El consolidado añade score y decisión por contexto, y conserva el detalle íntegro dentro del mismo archivo.
+
+Pesos: operadores 40%, CRDs 25%, Pluto 15%, add-ons AKS 10% y storage/snapshot 10%. Cada producto se asigna a una categoría principal para evitar duplicar su peso. Storage incluye comprobaciones de almacenamiento de CRDs y productos CSI/snapshot/backup. El estado más conservador de la categoría determina puntos: PASS=100%, WARN=50%, UNKNOWN/FAIL/ERROR=0%. Las categorías sin componentes aplicables y con inventario completo se marcan N/A y se normaliza el peso restante; inventario incompleto nunca obtiene N/A por mera ausencia.
+
+`READY` requiere score >=90 y ausencia de FAIL, ERROR, WARN o UNKNOWN en todo el informe, incluidas cobertura, instancias y soporte administrado. Un solo FAIL/ERROR da `BLOCKED`; cualquier evidencia pendiente da `ATTENTION REQUIRED`. Muchos PASS no diluyen un bloqueo. El score es una ayuda de revisión y no una garantía absoluta de upgrade. Su fórmula y pesos se publican en JSON/HTML/Markdown.
+
+### Offline y ejemplos
+
+```sh
+python main.py --input fixtures/mixed-crds.json --platform-input fixtures/platform-inventory.json --current 1.34.8 --target-version 1.35.9 --output reports/examples --format all
+python fixtures/generate_consolidated_example.py
+```
+
+El snapshot sintético demuestra Argo CD, Gatekeeper e Istio con evidencia diferenciada; el comando devuelve 1 por bloqueos deliberados. Sin `--platform-input`, offline registra que no hay inventario, sin ejecutar herramientas ni acceder a la red. Un snapshot requiere `schema_version: 1`, `kubernetes_version` igual a `--current` y listas JSON con claves `deployments.apps`, `daemonsets.apps`, `statefulsets.apps`, `pods`, `nodes` y `helm`. Puede incluir las claves de APIs específicas usadas en el fixture y metadata `aks`. Las fuentes omitidas generan UNKNOWN. En LIVE, un snapshot debe declarar además `context` idéntico al contexto fijado.
+
+Se preservan los modos anteriores y la ausencia de CI automático. Las pruebas de descubrimiento, Azure, scoring, catálogos y reportes usan respuestas simuladas; no se ha verificado un clúster de producción ni se han ejecutado escrituras.
+
+Verificación de v0.3: **167 pruebas aprobadas** localmente. Incluyen un caso de detección por imagen para cada producto, separación chart/appVersion y Calico/Tigera, versiones mezcladas, tags desconocidos, RBAC, asociación de AKS, vigencia de matrices, fin de soporte, aislamiento offline, comandos con contexto explícito y score que no oculta bloqueos. El informe JSON pasa al esquema 1.2 con campos aditivos `platform` y `readiness`.

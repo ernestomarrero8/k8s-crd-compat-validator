@@ -10,6 +10,9 @@ from .operator_validator import OperatorCatalog
 from .crd_analyzer import analyze
 from .models import finding, STATES
 from .report_generator import build_report, write_reports
+from .platform_catalog import PlatformCatalog
+from .platform_analyzer import analyze as analyze_platform
+from .readiness import score
 
 
 def positive(value):
@@ -24,7 +27,7 @@ def positive(value):
 
 def parser():
     p = argparse.ArgumentParser(description="Analiza riesgos de CRDs durante un upgrade Kubernetes; solo lectura.")
-    p.add_argument("--target", required=True, help="Versión Kubernetes objetivo, por ejemplo 1.35.9")
+    p.add_argument("--target", "--target-version", required=True, help="Versión Kubernetes objetivo, por ejemplo 1.35.9")
     p.add_argument("--current", help="Versión actual; obligatoria en offline, validada contra servidor en LIVE")
     p.add_argument("--context", help="Contexto de origen; por defecto el activo")
     p.add_argument("--input", type=Path, help="Exportación JSON de CRDs; activa modo offline sin red")
@@ -35,6 +38,9 @@ def parser():
     p.add_argument("--pluto-timeout", type=positive, default=120, help="Timeout total de Pluto en segundos")
     p.add_argument("--rules-path", type=Path, help="Archivo/directorio JSON; agrega reglas a las incluidas")
     p.add_argument("--operator-catalog", type=Path, help="Matriz de soporte revisada con fuentes y versiones exactas")
+    p.add_argument("--platform-catalog", type=Path, help="Directorio de matrices oficiales de plataformas (reemplaza las incluidas)")
+    p.add_argument("--platform-input", type=Path, help="Snapshot JSON de inventario de plataformas; permite análisis offline")
+    p.add_argument("--platform-limit", type=positive, default=2000, help="Máximo de objetos examinados por fuente de plataformas")
     p.add_argument("--verify-sources", action="store_true", help="Consulta documentos HTTPS del catálogo y verifica SHA256; solo LIVE")
     p.add_argument("--target-context", help="Clúster objetivo: comparar CRDs preinstalados y discovery, sin escrituras")
     p.add_argument("--verbose", action="store_true", help="Mostrar conteos y reglas; nunca salida cruda de kubectl")
@@ -75,6 +81,7 @@ def main(argv=None):
         coverage = CoverageCatalog(args.coverage_path)
         engine = RuleEngine(args.rules_path)
         catalog = OperatorCatalog(args.operator_catalog, args.verify_sources, args.timeout)
+        platform_catalog = PlatformCatalog(args.platform_catalog)
         collector = None
         if args.input:
             current = declared_current
@@ -116,15 +123,29 @@ def main(argv=None):
             results.append(result)
             if args.verbose:
                 print(f"CRD {len(results)}/{len(crds)}: {result['status']} ({len(result['findings'])} hallazgos)", file=sys.stderr)
+        try:
+            platform, platform_findings = analyze_platform(collector, crds, current, target, platform_catalog,
+                read_json(args.platform_input) if args.platform_input else None, args.platform_limit)
+        except (KeyError, TypeError, AttributeError):
+            failure = finding("PLATFORM-DISCOVERY-ERROR", "operator_compatibility", "ERROR",
+                "No se pudo interpretar una respuesta del inventario de plataformas; el análisis de CRDs se conserva.", relation="limitation")
+            platform = {"products": [], "discovery": failure.to_dict(), "aks": {"detected": False, "limitations": [failure.description]}, "catalog": platform_catalog.provenance()}
+            platform_findings = [failure]
+        global_findings.extend(platform_findings)
         queries = (collector.queries if collector else 0) + (target_collector.queries if target_collector else 0)
         pluto_result, pluto_finding = pluto.run(cluster, target, args.pluto_timeout, offline=bool(args.input))
         global_findings.append(pluto_finding)
         report = build_report(cluster, current, target, path, results, global_findings, queries, args.target_context)
         report["pluto"] = pluto_result
+        report["platform"] = platform
+        report["readiness"] = score(report)
+        report["summary"]["platform_products"] = len(platform["products"])
+        report["summary"]["platform_states"] = {s: sum(p["status"] == s for p in platform["products"]) for s in STATES}
         report["knowledge"] = {"coverage_catalog_version": coverage.data["catalog_version"], "coverage_sha256": coverage.sha256, "rule_catalogs": engine.provenance()}
         written = write_reports(report, args.output, "markdown" if args.format == "md" else args.format)
         print(f"Kubernetes {current} -> {target} | CRDs: {len(results)} | Estado: {report['overall_status']}")
         print(" | ".join(f"{s}: {n}" for s, n in report["summary"]["states"].items()))
+        print(f"Plataformas: {len(platform['products'])} | Readiness: {report['readiness']['score']}/100 | {report['readiness']['decision']}")
         print("PASS acredita comprobaciones realizadas; no garantiza compatibilidad completa.")
         for file in written:
             print(f"Reporte: {file.resolve()}")

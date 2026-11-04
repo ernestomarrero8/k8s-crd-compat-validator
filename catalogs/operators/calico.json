@@ -1,0 +1,1 @@
+{"product":"Calico","catalog_version":"2026.11.04.1","versions":[],"source":"https://docs.tigera.io/calico/latest/getting-started/kubernetes/requirements","limitations":["No extrapolar requisitos de latest a una versión instalada antigua o Calico Enterprise. Sin matriz fijada a versión, UNKNOWN."]}

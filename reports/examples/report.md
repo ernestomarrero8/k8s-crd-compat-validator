@@ -2,7 +2,7 @@
 
 Clúster: offline:mixed\-crds\.json · 1\.34\.8 → 1\.35\.9
 
-Fecha UTC: 2026\-11\-04T13:35:38\.716062\+00:00 · Estado general: **FAIL**
+Fecha UTC: 2026\-11\-04T16:18:34\.859271\+00:00 · Estado general: **FAIL**
 
 CRDs: 6 · Consultas kubectl: 0
 
@@ -17,10 +17,29 @@ CRDs: 6 · Consultas kubectl: 0
 | Severidad de riesgos | Hallazgos |
 |---|---:|
 | CRITICAL | 0 |
-| HIGH | 5 |
-| MEDIUM | 2 |
+| HIGH | 6 |
+| MEDIUM | 3 |
 | LOW | 1 |
 | INFO | 0 |
+
+## Upgrade Readiness Score
+
+0.0/100 · BLOCKED
+
+Worst finding per category\. PASS=100%, WARN=50%, UNKNOWN/FAIL/ERROR=0%; N/A excluded and remaining weights normalized\.
+
+El score es una ayuda de revisión; READY exige ausencia de bloqueos, avisos y evidencia pendiente en todo el informe\.
+
+## Cluster Platform Compatibility — OPERATOR COMPATIBILITY ANALYSIS
+
+| Producto | Versiones | Origen | Compatibilidad | Resultado |
+|---|---|---|---|---|
+| Argo CD | v3\.2\.0, 3\.2\.0 | Helm, deployments\.apps | No verificada | UNKNOWN |
+| Istio | 1\.21\.1 | deployments\.apps | No | FAIL |
+| Gatekeeper | v3\.17\.0 | deployments\.apps | No verificada | UNKNOWN |
+
+AKS: \{"detected": false, "target\_version": "1\.35\.9", "current\_version": null, "node\_image\_versions": \[\], "node\_kubelet\_versions": \[\], "addons": \[\], "limitations": \["Metadata AKS observada; la versión efectiva y soporte de cada add\-on se evalúan por separado\.", "Una versión Kubernetes soportada upstream no acredita disponibilidad de upgrade, región, canal LTS ni soporte del add\-on administrado en AKS\.", "Node images se inventarían; no se infiere compatibilidad futura por su nombre\."\]\}
+
 
 ## Alcance y limitaciones
 
@@ -58,6 +77,81 @@ Recomendación: Revisar categorías, parches y distribuciones pendientes antes d
 Fuente: [Referencia técnica](<https://v1-35.docs.kubernetes.io/docs/tasks/extend-kubernetes/custom-resources/custom-resource-definitions/>)
 
 - Límite: Una revisión sin cambios relevantes no equivale a ausencia de revisión ni certifica compatibilidad completa\.
+### OPERATOR\-NO\-MATRIX · UNKNOWN · INFO
+
+Objetivo fuera de las versiones probadas; esto no demuestra incompatibilidad\.
+
+Categoría: operator\_compatibility · Relación: documented · Método: static
+
+Evidencia: \{"product": "Argo CD", "installed\_version": "v3\.2\.0", "target": "1\.35\.9", "matrix": \{"version": "3\.2\.x", "min\_kubernetes": "1\.31\.0", "max\_kubernetes": "1\.34\.x", "matrix\_type": "tested", "exclusive": false, "source": "https://argo\-cd\.readthedocs\.io/en/release\-3\.2/operator\-manual/tested\-kubernetes\-versions/", "reviewed\_on": "2026\-11\-04", "valid\_until": "2027\-02\-02", "evidence": "La tabla de la rama release\-3\.2 enumera Kubernetes 1\.31 a 1\.34 como probados\. Fuera de esa lista no se acredita incompatibilidad ni soporte\."\}\}
+
+Recomendación: Revisar la matriz oficial y actualizar el componente o completar evidencia antes del upgrade\.
+
+Fuente: [Referencia técnica](<https://argo-cd.readthedocs.io/en/release-3.2/operator-manual/tested-kubernetes-versions/>)
+
+### OPERATOR\-NO\-MATRIX · UNKNOWN · INFO
+
+Objetivo fuera de las versiones probadas; esto no demuestra incompatibilidad\.
+
+Categoría: operator\_compatibility · Relación: documented · Método: static
+
+Evidencia: \{"product": "Argo CD", "installed\_version": "3\.2\.0", "target": "1\.35\.9", "matrix": \{"version": "3\.2\.x", "min\_kubernetes": "1\.31\.0", "max\_kubernetes": "1\.34\.x", "matrix\_type": "tested", "exclusive": false, "source": "https://argo\-cd\.readthedocs\.io/en/release\-3\.2/operator\-manual/tested\-kubernetes\-versions/", "reviewed\_on": "2026\-11\-04", "valid\_until": "2027\-02\-02", "evidence": "La tabla de la rama release\-3\.2 enumera Kubernetes 1\.31 a 1\.34 como probados\. Fuera de esa lista no se acredita incompatibilidad ni soporte\."\}\}
+
+Recomendación: Revisar la matriz oficial y actualizar el componente o completar evidencia antes del upgrade\.
+
+Fuente: [Referencia técnica](<https://argo-cd.readthedocs.io/en/release-3.2/operator-manual/tested-kubernetes-versions/>)
+
+### OPERATOR\-END\-OF\-SUPPORT · WARN · MEDIUM
+
+Versión fuera de mantenimiento según la fecha oficial registrada\.
+
+Categoría: operator\_compatibility · Relación: documented · Método: static
+
+Evidencia: \{"product": "Istio", "installed\_version": "1\.21\.1", "target": "1\.35\.9", "matrix": \{"version": "1\.21\.x", "min\_kubernetes": "1\.26\.0", "max\_kubernetes": "1\.29\.x", "matrix\_type": "supported", "exclusive": true, "end\_of\_support": "2024\-09\-27", "source": "https://istio\.io/latest/docs/releases/supported\-releases/", "reviewed\_on": "2026\-11\-04", "valid\_until": "2027\-02\-02", "evidence": "Fila 1\.21: Kubernetes soportados 1\.26 a 1\.29; EOL 27 septiembre 2024\."\}\}
+
+Recomendación: Revisar la matriz oficial y actualizar el componente o completar evidencia antes del upgrade\.
+
+Fuente: [Referencia técnica](<https://istio.io/latest/docs/releases/supported-releases/>)
+
+### OPERATOR\-NOT\-COMPATIBLE · FAIL · HIGH
+
+Objetivo fuera del rango de soporte explícito del proveedor; no se recomienda este upgrade con la versión instalada\.
+
+Categoría: operator\_compatibility · Relación: documented · Método: static
+
+Evidencia: \{"product": "Istio", "installed\_version": "1\.21\.1", "target": "1\.35\.9", "matrix": \{"version": "1\.21\.x", "min\_kubernetes": "1\.26\.0", "max\_kubernetes": "1\.29\.x", "matrix\_type": "supported", "exclusive": true, "end\_of\_support": "2024\-09\-27", "source": "https://istio\.io/latest/docs/releases/supported\-releases/", "reviewed\_on": "2026\-11\-04", "valid\_until": "2027\-02\-02", "evidence": "Fila 1\.21: Kubernetes soportados 1\.26 a 1\.29; EOL 27 septiembre 2024\."\}\}
+
+Recomendación: Revisar la matriz oficial y actualizar el componente o completar evidencia antes del upgrade\.
+
+Fuente: [Referencia técnica](<https://istio.io/latest/docs/releases/supported-releases/>)
+
+### OPERATOR\-NO\-MATRIX · UNKNOWN · INFO
+
+No existe una única fila de matriz oficial revisada para esta versión\.
+
+Categoría: operator\_compatibility · Relación: limitation · Método: static
+
+Evidencia: \{"product": "Gatekeeper", "installed\_version": "v3\.17\.0", "target": "1\.35\.9", "matrix": \{\}\}
+
+Recomendación: Revisar la matriz oficial y actualizar el componente o completar evidencia antes del upgrade\.
+
+Fuente: [Referencia técnica](<https://open-policy-agent.github.io/gatekeeper/>)
+
+### PLATFORM\-DISCOVERY · PASS · INFO
+
+Cobertura del descubrimiento de plataformas\.
+
+Categoría: operator\_compatibility · Relación: tested · Método: snapshot
+
+Evidencia: \{"errors": \[\], "products\_detected": 3\}
+
+Recomendación: Revisar la evidencia antes del upgrade\.
+
+Fuente: [Referencia técnica](<https://v1-35.docs.kubernetes.io/docs/tasks/extend-kubernetes/custom-resources/custom-resource-definitions/>)
+
+- Límite: Detectores por repositorios y charts conocidos\. Mirrors privados, productos no catalogados y planos administrados pueden no ser visibles\.
+- Límite: La versión de tag/Helm es evidencia declarada, no una verificación del binario por digest\.
+- Límite: Las listas de workloads se descargan completas dentro del timeout y se examinan hasta el límite configurado\.
 ### PLUTO\-SCAN · UNKNOWN · INFO
 
 Pluto no se ejecuta en modo offline\.

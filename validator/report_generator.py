@@ -7,6 +7,7 @@ from pathlib import Path
 import re
 from urllib.parse import quote
 from .models import STATES, SEVERITIES
+from .platform_report import html as platform_html, markdown as platform_markdown
 
 
 def build_report(cluster, current, target, path, crds, global_findings, queries=0, target_context=None):
@@ -14,7 +15,7 @@ def build_report(cluster, current, target, path, crds, global_findings, queries=
     counts = Counter(c["status"] for c in crds)
     risk_counts = Counter(f["severity"] for f in all_findings if f["status"] in ("WARN", "FAIL", "ERROR"))
     states = [f["status"] for f in all_findings]
-    return {"schema_version": "1.1", "tool": "k8s-crd-compat-validator", "tool_version": "0.2.0",
+    return {"schema_version": "1.2", "tool": "k8s-crd-compat-validator", "tool_version": "0.3.0",
             "analyzed_at": datetime.now(timezone.utc).isoformat(), "cluster": cluster,
             "current_version": str(current), "target_version": str(target), "upgrade_path": path,
             "target_context": target_context, "read_only": True, "kubectl_queries": queries,
@@ -44,6 +45,7 @@ def markdown(report):
     lines += [f"| {s} | {n} |" for s, n in report["summary"]["states"].items()]
     lines += ["", "| Severidad de riesgos | Hallazgos |", "|---|---:|"]
     lines += [f"| {s} | {n} |" for s, n in report["summary"]["risks_by_severity"].items()]
+    lines += platform_markdown(report, md)
     lines += ["", "## Alcance y limitaciones", ""] + ["- " + md(x) for x in report["limitations"]]
     lines += ["", "## Catálogos utilizados", "", md(json.dumps(report.get("knowledge", {}), ensure_ascii=False)), "", "## Pluto", ""]
     scan = report.get("pluto", {})
@@ -92,6 +94,7 @@ details{background:white;border:1px solid #bccbdb;border-radius:6px;margin:12px 
         f"<h1>Kubernetes CRD Compatibility Validator</h1><p>{esc(report['cluster'])} · {report['current_version']} → {report['target_version']}</p>"
         f"<p>{esc(report['analyzed_at'])} · Estado general: <b>{report['overall_status']}</b></p>"
         f"<p>{report['summary']['total_crds']} CRDs · {esc(summary)}</p><p>Riesgos por severidad: {esc(risks)}</p>"
+        + platform_html(report) +
         "<h2>Alcance y limitaciones</h2><ul>" + "".join(f"<li>{esc(x)}</li>" for x in report["limitations"]) + "</ul>"
         "<table><thead><tr><th>CRD afectado</th><th>Estado</th><th>Severidad</th></tr></thead><tbody>" + rows + "</tbody></table>"
         + "".join(content) + "</main></html>")

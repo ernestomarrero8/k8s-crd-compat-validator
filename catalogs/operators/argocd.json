@@ -1,0 +1,4 @@
+{
+  "product":"Argo CD", "catalog_version":"2026.11.04.1",
+  "versions":[{"version":"3.2.x","min_kubernetes":"1.31.0","max_kubernetes":"1.34.x","matrix_type":"tested","exclusive":false,"source":"https://argo-cd.readthedocs.io/en/release-3.2/operator-manual/tested-kubernetes-versions/","reviewed_on":"2026-11-04","valid_until":"2027-02-02","evidence":"La tabla de la rama release-3.2 enumera Kubernetes 1.31 a 1.34 como probados. Fuera de esa lista no se acredita incompatibilidad ni soporte."}]
+}
