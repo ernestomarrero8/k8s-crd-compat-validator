@@ -16,6 +16,7 @@ class CollectionError(Exception):
                           "kubectl_missing": "kubectl no está disponible.",
                           "invalid_json": "Respuesta JSON inválida.",
                           "command_failed": "Falló la lectura; detalle omitido para proteger credenciales.",
+                          "unreachable": "No se pudo alcanzar el API Server. Revisar red/DNS y si el contexto apunta a un clúster eliminado; el diagnóstico no demuestra eliminación.",
                           "query_limit": "Se alcanzó el límite global de consultas.",
                           "invalid_response": "La respuesta no tiene la estructura esperada."}.get(code, code))
 
@@ -79,6 +80,7 @@ class Collector:
             error = result.stderr.lower()
             code = "forbidden" if "forbidden" in error or "unauthorized" in error else (
                 "not_found" if "notfound" in error or "not found" in error or "doesn't have a resource type" in error
+                else "unreachable" if any(t in error for t in ("no such host", "name or service not known", "connection refused", "unable to connect to the server", "i/o timeout"))
                 else "command_failed")
             raise CollectionError(code)
         if not json_output:

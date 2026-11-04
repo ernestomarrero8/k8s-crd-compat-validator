@@ -2,7 +2,7 @@
 
 Clúster: offline:product\-crds\.json · 1\.34\.8 → 1\.35\.9
 
-Fecha UTC: 2026\-11\-04T19:00:33\.058923\+00:00 · Estado general: **FAIL**
+Fecha UTC: 2026\-11\-04T20:12:18\.235207\+00:00 · Estado general: **FAIL**
 
 CRDs: 3 · Consultas kubectl: 0
 
@@ -24,19 +24,22 @@ CRDs: 3 · Consultas kubectl: 0
 
 ## Upgrade Readiness Score
 
-38.9/100 · BLOCKED
+53.7/100 · BLOCKED
 
-Worst finding per category\. PASS=100%, WARN=50%, UNKNOWN/FAIL/ERROR=0%; N/A excluded and remaining weights normalized\.
+Worst finding per product/CRD, then average units within each weighted category\. PASS=100%, WARN=50%, UNKNOWN/FAIL/ERROR=0%; N/A excluded\. Evidence coverage and compatibility of assessed units reported separately\.
 
 El score es una ayuda de revisión; READY exige ausencia de bloqueos, avisos y evidencia pendiente en todo el informe\.
+
+Cobertura de evidencia: 68.5% · Compatibilidad de unidades evaluadas: 78.4/100
+
 
 ## Cluster Platform Compatibility — OPERATOR COMPATIBILITY ANALYSIS
 
 | Producto | Versiones | Origen | Compatibilidad | Resultado |
 |---|---|---|---|---|
 | Istio | 1\.30\.7 | deployments\.apps, istioctl control plane | Sí, según evidencia documentada | PASS |
-| Argo CD | 3\.2\.0 | deployments\.apps | No verificada | UNKNOWN |
-| Cert Manager | 1\.16\.0 | deployments\.apps | No | FAIL |
+| Argo CD | v3\.2\.0 | deployments\.apps | No verificada | UNKNOWN |
+| Cert Manager | v1\.16\.0 | deployments\.apps | No | FAIL |
 
 AKS: \{"detected": false, "target\_version": "1\.35\.9", "current\_version": null, "node\_image\_versions": \[\], "node\_kubelet\_versions": \[\], "addons": \[\], "limitations": \["Metadata AKS observada; la versión efectiva y soporte de cada add\-on se evalúan por separado\.", "Una versión Kubernetes soportada upstream no acredita disponibilidad de upgrade, región, canal LTS ni soporte del add\-on administrado en AKS\.", "Node images se inventarían; no se infiere compatibilidad futura por su nombre\."\]\}
 
@@ -89,7 +92,7 @@ Objetivo dentro del rango documentado; consultar si la evidencia acredita soport
 
 Categoría: operator\_compatibility · Relación: documented · Método: static
 
-Evidencia: \{"product": "Istio", "installed\_version": "1\.30\.7", "target": "1\.35\.9", "matrix": \{"version": "1\.30\.x", "min\_kubernetes": "1\.32\.0", "max\_kubernetes": "1\.36\.x", "matrix\_type": "supported", "exclusive": true, "source": "https://istio\.io/latest/docs/releases/supported\-releases/", "reviewed\_on": "2026\-11\-04", "valid\_until": "2027\-02\-02", "evidence": "Fila 1\.30: Kubernetes soportados 1\.32 a 1\.36; evaluar también vigencia de mantenimiento\.", "support\_state": "supported"\}, "reviewed\_on": "2026\-11\-04", "catalog\_limitations": \[\], "detection\_sources": \[\{"from": "deployments\.apps", "namespace": "istio\-system", "name": "istiod", "repository": "docker\.io/istio/pilot", "declared\_tag": "1\.30\.7", "revision": null, "version\_basis": "workload\_template\_image\_tag"\}, \{"from": "istioctl control plane", "component": "pilot", "revision": null\}\], "resolution\_sources": \["istioctl control plane"\], "resolved\_versions": \["1\.30\.7"\]\}
+Evidencia: \{"product": "Istio", "installed\_version": "1\.30\.7", "target": "1\.35\.9", "matrix": \{"version": "1\.30\.x", "min\_kubernetes": "1\.32\.0", "max\_kubernetes": "1\.36\.x", "matrix\_type": "supported", "exclusive": true, "source": "https://istio\.io/latest/docs/releases/supported\-releases/", "reviewed\_on": "2026\-11\-04", "valid\_until": "2027\-02\-02", "evidence": "Fila 1\.30: Kubernetes soportados 1\.32 a 1\.36; evaluar también vigencia de mantenimiento\.", "support\_state": "supported"\}, "detected\_version": "1\.30\.7", "version\_confidence": "server\_cli", "catalog\_lookup": \{"catalog\_present": true, "files": \["istio\.json"\], "paths": \["catalogs/support/istio\.json"\], "available\_selectors": \["1\.30\.x", "1\.29\.x", "1\.28\.x", "1\.27\.x", "1\.26\.x", "1\.25\.x", "1\.24\.x", "1\.23\.x", "1\.22\.x", "1\.21\.x"\], "matched\_selectors": \["1\.30\.x"\], "selected\_selector": "1\.30\.x", "normalized\_version": "1\.30\.7", "reason": "matched"\}, "distribution\_revision": null, "reviewed\_on": "2026\-11\-04", "catalog\_limitations": \[\], "detection\_sources": \[\{"from": "deployments\.apps", "namespace": "istio\-system", "name": "istiod", "repository": "docker\.io/istio/pilot", "declared\_tag": "1\.30\.7", "revision": null, "identity\_basis": "catalog\_repository", "confidence": "image\_tag", "version\_basis": "workload\_template\_image\_tag"\}, \{"from": "istioctl control plane", "component": "pilot", "revision": null\}\], "resolution\_sources": \["istioctl control plane"\], "resolved\_versions": \["1\.30\.7"\], "raw\_detected\_versions": \["1\.30\.7"\]\}
 
 Recomendación: Revisar la matriz oficial y actualizar el componente o completar evidencia antes del upgrade\.
 
@@ -101,7 +104,7 @@ Objetivo fuera de las versiones probadas; esto no demuestra incompatibilidad\.
 
 Categoría: operator\_compatibility · Relación: documented · Método: static
 
-Evidencia: \{"product": "Argo CD", "installed\_version": "3\.2\.0", "target": "1\.35\.9", "matrix": \{"version": "3\.2\.x", "min\_kubernetes": "1\.31\.0", "max\_kubernetes": "1\.34\.x", "matrix\_type": "tested", "exclusive": false, "source": "https://argo\-cd\.readthedocs\.io/en/release\-3\.2/operator\-manual/tested\-kubernetes\-versions/", "reviewed\_on": "2026\-11\-04", "valid\_until": "2027\-02\-02", "evidence": "La tabla de la rama release\-3\.2 enumera Kubernetes 1\.31 a 1\.34 como probados\. Fuera de esa lista no se acredita incompatibilidad ni soporte\.", "support\_state": "supported"\}, "reviewed\_on": "2026\-11\-04", "catalog\_limitations": \[\], "detection\_sources": \[\{"from": "deployments\.apps", "namespace": "argocd", "name": "argocd\-server", "repository": "quay\.io/argoproj/argocd", "declared\_tag": "v3\.2\.0", "revision": null, "version\_basis": "workload\_template\_image\_tag"\}\], "resolution\_sources": \["deployments\.apps"\], "resolved\_versions": \["3\.2\.0"\]\}
+Evidencia: \{"product": "Argo CD", "installed\_version": "3\.2\.0", "target": "1\.35\.9", "matrix": \{"version": "3\.2\.x", "min\_kubernetes": "1\.31\.0", "max\_kubernetes": "1\.34\.x", "matrix\_type": "tested", "exclusive": false, "source": "https://argo\-cd\.readthedocs\.io/en/release\-3\.2/operator\-manual/tested\-kubernetes\-versions/", "reviewed\_on": "2026\-11\-04", "valid\_until": "2027\-02\-02", "evidence": "La tabla de la rama release\-3\.2 enumera Kubernetes 1\.31 a 1\.34 como probados\. Fuera de esa lista no se acredita incompatibilidad ni soporte\.", "support\_state": "supported"\}, "detected\_version": "3\.2\.0", "version\_confidence": "image\_tag", "catalog\_lookup": \{"catalog\_present": true, "files": \["argocd\.json"\], "paths": \["catalogs/support/argocd\.json"\], "available\_selectors": \["3\.2\.x"\], "matched\_selectors": \["3\.2\.x"\], "selected\_selector": "3\.2\.x", "normalized\_version": "3\.2\.0", "reason": "matched"\}, "distribution\_revision": null, "reviewed\_on": "2026\-11\-04", "catalog\_limitations": \[\], "detection\_sources": \[\{"from": "deployments\.apps", "namespace": "argocd", "name": "argocd\-server", "repository": "quay\.io/argoproj/argocd", "declared\_tag": "v3\.2\.0", "revision": null, "identity\_basis": "catalog\_repository", "confidence": "image\_tag", "version\_basis": "workload\_template\_image\_tag"\}\], "resolution\_sources": \["deployments\.apps"\], "resolved\_versions": \["3\.2\.0"\], "raw\_detected\_versions": \["v3\.2\.0"\]\}
 
 Recomendación: Revisar la matriz oficial y actualizar el componente o completar evidencia antes del upgrade\.
 
@@ -113,7 +116,7 @@ Versión fuera de mantenimiento según la evidencia oficial registrada\.
 
 Categoría: operator\_compatibility · Relación: documented · Método: static
 
-Evidencia: \{"product": "Cert Manager", "installed\_version": "1\.16\.0", "target": "1\.35\.9", "matrix": \{"version": "1\.16\.x", "supported\_kubernetes": \{"min": "1\.25", "max": "1\.32"\}, "support\_state": "eol", "end\_of\_support": "2025\-06\-10", "source": "https://cert\-manager\.io/docs/releases/", "reviewed\_on": "2026\-11\-04", "evidence": "La tabla oficial de releases antiguas enumera compatibilidad 1\.25–1\.32 y EOL 10 junio 2025\.", "min\_kubernetes": "1\.25", "max\_kubernetes": "1\.32", "matrix\_type": "supported", "exclusive": true, "valid\_until": "2027\-02\-02"\}, "reviewed\_on": "2026\-11\-04", "catalog\_limitations": \[\], "detection\_sources": \[\{"from": "deployments\.apps", "namespace": "cert\-manager", "name": "cert\-manager", "repository": "quay\.io/jetstack/cert\-manager\-controller", "declared\_tag": "v1\.16\.0", "revision": null, "version\_basis": "workload\_template\_image\_tag"\}\], "resolution\_sources": \["deployments\.apps"\], "resolved\_versions": \["1\.16\.0"\]\}
+Evidencia: \{"product": "Cert Manager", "installed\_version": "1\.16\.0", "target": "1\.35\.9", "matrix": \{"version": "1\.16\.x", "supported\_kubernetes": \{"min": "1\.25", "max": "1\.32"\}, "support\_state": "eol", "end\_of\_support": "2025\-06\-10", "source": "https://cert\-manager\.io/docs/releases/", "reviewed\_on": "2026\-11\-04", "evidence": "La tabla oficial de releases antiguas enumera compatibilidad 1\.25–1\.32 y EOL 10 junio 2025\.", "min\_kubernetes": "1\.25", "max\_kubernetes": "1\.32", "matrix\_type": "supported", "exclusive": true, "valid\_until": "2027\-02\-02"\}, "detected\_version": "1\.16\.0", "version\_confidence": "image\_tag", "catalog\_lookup": \{"catalog\_present": true, "files": \["cert\-manager\.json"\], "paths": \["catalogs/support/cert\-manager\.json"\], "available\_selectors": \["1\.16\.x", "1\.18\.x", "1\.19\.x", "1\.20\.x", "1\.21\.x"\], "matched\_selectors": \["1\.16\.x"\], "selected\_selector": "1\.16\.x", "normalized\_version": "1\.16\.0", "reason": "matched"\}, "distribution\_revision": null, "reviewed\_on": "2026\-11\-04", "catalog\_limitations": \[\], "detection\_sources": \[\{"from": "deployments\.apps", "namespace": "cert\-manager", "name": "cert\-manager", "repository": "quay\.io/jetstack/cert\-manager\-controller", "declared\_tag": "v1\.16\.0", "revision": null, "identity\_basis": "catalog\_repository", "confidence": "image\_tag", "version\_basis": "workload\_template\_image\_tag"\}\], "resolution\_sources": \["deployments\.apps"\], "resolved\_versions": \["1\.16\.0"\], "raw\_detected\_versions": \["v1\.16\.0"\]\}
 
 Recomendación: Revisar la matriz oficial y actualizar el componente o completar evidencia antes del upgrade\.
 
@@ -125,7 +128,7 @@ Objetivo fuera del rango de soporte explícito del proveedor; no se recomienda e
 
 Categoría: operator\_compatibility · Relación: documented · Método: static
 
-Evidencia: \{"product": "Cert Manager", "installed\_version": "1\.16\.0", "target": "1\.35\.9", "matrix": \{"version": "1\.16\.x", "supported\_kubernetes": \{"min": "1\.25", "max": "1\.32"\}, "support\_state": "eol", "end\_of\_support": "2025\-06\-10", "source": "https://cert\-manager\.io/docs/releases/", "reviewed\_on": "2026\-11\-04", "evidence": "La tabla oficial de releases antiguas enumera compatibilidad 1\.25–1\.32 y EOL 10 junio 2025\.", "min\_kubernetes": "1\.25", "max\_kubernetes": "1\.32", "matrix\_type": "supported", "exclusive": true, "valid\_until": "2027\-02\-02"\}, "reviewed\_on": "2026\-11\-04", "catalog\_limitations": \[\], "detection\_sources": \[\{"from": "deployments\.apps", "namespace": "cert\-manager", "name": "cert\-manager", "repository": "quay\.io/jetstack/cert\-manager\-controller", "declared\_tag": "v1\.16\.0", "revision": null, "version\_basis": "workload\_template\_image\_tag"\}\], "resolution\_sources": \["deployments\.apps"\], "resolved\_versions": \["1\.16\.0"\]\}
+Evidencia: \{"product": "Cert Manager", "installed\_version": "1\.16\.0", "target": "1\.35\.9", "matrix": \{"version": "1\.16\.x", "supported\_kubernetes": \{"min": "1\.25", "max": "1\.32"\}, "support\_state": "eol", "end\_of\_support": "2025\-06\-10", "source": "https://cert\-manager\.io/docs/releases/", "reviewed\_on": "2026\-11\-04", "evidence": "La tabla oficial de releases antiguas enumera compatibilidad 1\.25–1\.32 y EOL 10 junio 2025\.", "min\_kubernetes": "1\.25", "max\_kubernetes": "1\.32", "matrix\_type": "supported", "exclusive": true, "valid\_until": "2027\-02\-02"\}, "detected\_version": "1\.16\.0", "version\_confidence": "image\_tag", "catalog\_lookup": \{"catalog\_present": true, "files": \["cert\-manager\.json"\], "paths": \["catalogs/support/cert\-manager\.json"\], "available\_selectors": \["1\.16\.x", "1\.18\.x", "1\.19\.x", "1\.20\.x", "1\.21\.x"\], "matched\_selectors": \["1\.16\.x"\], "selected\_selector": "1\.16\.x", "normalized\_version": "1\.16\.0", "reason": "matched"\}, "distribution\_revision": null, "reviewed\_on": "2026\-11\-04", "catalog\_limitations": \[\], "detection\_sources": \[\{"from": "deployments\.apps", "namespace": "cert\-manager", "name": "cert\-manager", "repository": "quay\.io/jetstack/cert\-manager\-controller", "declared\_tag": "v1\.16\.0", "revision": null, "identity\_basis": "catalog\_repository", "confidence": "image\_tag", "version\_basis": "workload\_template\_image\_tag"\}\], "resolution\_sources": \["deployments\.apps"\], "resolved\_versions": \["1\.16\.0"\], "raw\_detected\_versions": \["v1\.16\.0"\]\}
 
 Recomendación: Revisar la matriz oficial y actualizar el componente o completar evidencia antes del upgrade\.
 

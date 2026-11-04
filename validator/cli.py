@@ -1,6 +1,7 @@
 import argparse
 from pathlib import Path
 import sys
+from . import __version__
 from .collector import Collector, CollectionError, read_json, crd_items
 from .coverage import CoverageCatalog
 from . import pluto
@@ -28,6 +29,7 @@ def positive(value):
 
 def parser():
     p = argparse.ArgumentParser(description="Analiza riesgos de CRDs durante un upgrade Kubernetes; solo lectura.")
+    p.add_argument("--version", action="version", version=f"%(prog)s {__version__}")
     p.add_argument("--target", "--target-version", required=True, help="Versión Kubernetes objetivo, por ejemplo 1.35.9")
     p.add_argument("--current", help="Versión actual; obligatoria en offline, validada contra servidor en LIVE")
     p.add_argument("--context", help="Contexto de origen; por defecto el activo")
@@ -42,6 +44,7 @@ def parser():
     p.add_argument("--platform-catalog", "--support-catalog", type=Path, help="Directorio de matrices oficiales de plataformas (reemplaza las incluidas)")
     p.add_argument("--platform-input", type=Path, help="Snapshot JSON de inventario de plataformas; permite análisis offline")
     p.add_argument("--platform-limit", type=positive, default=2000, help="Máximo de objetos examinados por fuente de plataformas")
+    p.add_argument("--detectors-path", type=Path, help="Aliases explícitos de repositorios/charts para productos conocidos")
     p.add_argument("--verify-sources", action="store_true", help="Consulta documentos HTTPS del catálogo y verifica SHA256; solo LIVE")
     p.add_argument("--target-context", help="Clúster objetivo: comparar CRDs preinstalados y discovery, sin escrituras")
     p.add_argument("--verbose", action="store_true", help="Mostrar conteos y reglas; nunca salida cruda de kubectl")
@@ -82,7 +85,7 @@ def main(argv=None):
         coverage = CoverageCatalog(args.coverage_path)
         engine = RuleEngine(args.rules_path)
         catalog = OperatorCatalog(args.operator_catalog, args.verify_sources, args.timeout)
-        platform_catalog = PlatformCatalog(args.platform_catalog)
+        platform_catalog = PlatformCatalog(args.platform_catalog, args.detectors_path)
         collector = None
         if args.input:
             current = declared_current
@@ -151,9 +154,10 @@ def main(argv=None):
         report["summary"]["platform_states"] = {s: sum(p["status"] == s for p in platform["products"]) for s in STATES}
         report["knowledge"] = {"coverage_catalog_version": coverage.data["catalog_version"], "coverage_sha256": coverage.sha256, "rule_catalogs": engine.provenance()}
         written = write_reports(report, args.output, "markdown" if args.format == "md" else args.format)
-        print(f"Kubernetes {current} -> {target} | CRDs: {len(results)} | Estado: {report['overall_status']}")
+        print(f"k8s-crd-compat-validator {__version__} | Kubernetes {current} -> {target} | CRDs: {len(results)} | Estado: {report['overall_status']}")
         print(" | ".join(f"{s}: {n}" for s, n in report["summary"]["states"].items()))
         print(f"Plataformas: {len(platform['products'])} | Readiness: {report['readiness']['score']}/100 | {report['readiness']['decision']}")
+        print(f"Cobertura de evidencia: {report['readiness']['evidence_coverage']}% | Método de score: {report['readiness']['scoring_version']}")
         print("PASS acredita comprobaciones realizadas; no garantiza compatibilidad completa.")
         for file in written:
             print(f"Reporte: {file.resolve()}")

@@ -1,0 +1,5 @@
+{"product":"Azure File CSI Driver","catalog_version":"2026.11.04.1","versions":[
+  {"version":"1.35.7","supported_kubernetes":{"min":"1.21","max":"*"},"source":"https://raw.githubusercontent.com/kubernetes-sigs/azurefile-csi-driver/master/README.md","reviewed_on":"2026-11-04","evidence":"Tabla upstream: versión 1.35.7, Kubernetes 1.21+. No acredita builds administrados."},
+  {"version":"1.34.8","supported_kubernetes":{"min":"1.21","max":"*"},"source":"https://raw.githubusercontent.com/kubernetes-sigs/azurefile-csi-driver/master/README.md","reviewed_on":"2026-11-04","evidence":"Tabla upstream: versión 1.34.8, Kubernetes 1.21+. No acredita builds administrados."},
+  {"version":"1.33.10","supported_kubernetes":{"min":"1.21","max":"*"},"source":"https://raw.githubusercontent.com/kubernetes-sigs/azurefile-csi-driver/master/README.md","reviewed_on":"2026-11-04","evidence":"Tabla upstream: versión 1.33.10, Kubernetes 1.21+. No acredita builds administrados."}
+],"limitations":["No se encontró una matriz para v1.35.11-6. No se sustituye su versión detectada por UNKNOWN ni se extiende el soporte de 1.35.7 por similitud de minor."]}

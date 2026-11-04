@@ -46,14 +46,20 @@ def analyze(collector, crds, current, target, catalog, snapshot=None, limit=2000
     findings = []
     for row in rows:
         row_findings = []
-        for version in row["versions"]:
+        for version in row["versions"] or row.get("detected_versions", []):
             row_findings.extend(catalog.evaluate(row["product"], version, target, row["source"]))
-        if not row["versions"] or row["unknown_version"]:
+        if not row_findings:
             row_findings.extend(catalog.evaluate(row["product"], "UNKNOWN", target, row["source"]))
+        sources = row.get("resolution_sources", [])
+        row["confidence"] = "server_cli" if any(s.startswith("istioctl") for s in sources) else "helm_app_version" if "Helm" in sources else "image_tag" if any(s in ("pods", "deployments.apps", "daemonsets.apps", "statefulsets.apps") for s in sources) or any(e.get("confidence") == "image_tag" for e in row["evidence"]) else "product_metadata" if sources else "unknown"
+        observed = row.get("detected_versions", row["versions"])
+        row["detected_version"] = observed[0] if len(observed) == 1 else None
         for f in row_findings:
             f.evidence["detection_sources"] = row["evidence"]
             f.evidence["resolution_sources"] = row.get("resolution_sources", [])
             f.evidence["resolved_versions"] = row.get("resolved_versions", [])
+            f.evidence["version_confidence"] = row["confidence"]
+            f.evidence["raw_detected_versions"] = observed
         states = {f.status for f in row_findings}
         row["status"] = aggregate(row_findings)
         # WARN lifecycle and UNKNOWN coverage must both remain visible.
@@ -73,6 +79,10 @@ def analyze(collector, crds, current, target, catalog, snapshot=None, limit=2000
         findings.append(azure_finding)
     unknown = sum(p["compatibility"] == "No verificada" for p in rows)
     return {"title": "OPERATOR COMPATIBILITY ANALYSIS", "products": rows, "discovery": inventory.to_dict(), "aks": azure,
+            "detector_diagnostics": [{"product": d["product"], "id": d["id"], "status": "DETECTED" if any(r["id"] == d["id"] for r in rows) else "INVENTORY_INCOMPLETE" if errors else "NOT_DETECTED",
+                "catalog_present": d["product"] in catalog.product_files,
+                "reason": "Identidad exacta encontrada" if any(r["id"] == d["id"] for r in rows) else "Sin coincidencia en repositorios/charts/grupos configurados; no prueba ausencia absoluta.",
+                "inventory_errors": errors} for d in catalog.detectors],
             "support_coverage": {"products": len(rows), "unknown_products": unknown, "unknown_percentage": round(100 * unknown / len(rows), 1) if rows else None,
                                  "note": "Métrica de productos, no promesa de menos de 10%; no se excluyen limitaciones técnicas reales."},
             "catalog": catalog.provenance(), "analyzed_on": date.today().isoformat()}, findings

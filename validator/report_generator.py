@@ -8,6 +8,7 @@ import re
 from urllib.parse import quote
 from .models import STATES, SEVERITIES
 from .platform_report import html as platform_html, markdown as platform_markdown
+from . import __version__
 
 
 def build_report(cluster, current, target, path, crds, global_findings, queries=0, target_context=None):
@@ -15,7 +16,7 @@ def build_report(cluster, current, target, path, crds, global_findings, queries=
     counts = Counter(c["status"] for c in crds)
     risk_counts = Counter(f["severity"] for f in all_findings if f["status"] in ("WARN", "FAIL", "ERROR"))
     states = [f["status"] for f in all_findings]
-    return {"schema_version": "1.3", "tool": "k8s-crd-compat-validator", "tool_version": "0.4.0",
+    return {"schema_version": "1.4", "tool": "k8s-crd-compat-validator", "tool_version": __version__,
             "analyzed_at": datetime.now(timezone.utc).isoformat(), "cluster": cluster,
             "current_version": str(current), "target_version": str(target), "upgrade_path": path,
             "target_context": target_context, "read_only": True, "kubectl_queries": queries,

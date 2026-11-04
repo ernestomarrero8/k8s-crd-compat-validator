@@ -497,3 +497,78 @@ Devuelve 1 por cert-manager fuera de su rango. El CRD de Istio muestra soporte P
 El esquema del reporte JSON es 1.3; los campos son aditivos. El HTML individual y el consolidado comparten el mismo resultado de producto. La verificación de esta entrega se ejecuta con herramientas y snapshots simulados, sin acceso a clústeres reales ni escrituras, y sin agregar CI automático.
 
 Verificación de v0.4: **180 pruebas aprobadas**. Incluye soporte compartido sin UNKNOWN de ownership duplicados, versionado canónico, precedencia de fuentes, conservación de revisiones incompatibles, identificación por grupos explícitos, clientes locales ignorados, matriz nueva/antigua y bloqueo técnico de almacenamiento independiente del soporte del producto.
+
+## v0.5: trazabilidad de matrices, revisiones de distribución y score por unidades
+
+Esta revisión corrige tres causas diferentes que antes podían parecer un único fallo de compatibilidad:
+
+- Istio 1.24.1 era interpretable, pero faltaba la fila 1.24.x en el catálogo. Se añadieron las filas oficiales 1.22–1.27. Para Istio 1.24.x, Kubernetes soportados son 1.28–1.31 y EOL es 24 junio 2025; 1.35.9 produce NOT_COMPATIBLE/FAIL, además del aviso EOL.
+- Los tags de Azure `v1.35.11-6` y `v1.34.7-7` eran descartados por el parser. Ahora se conservan completos, con confianza `image_tag`, versión base normalizada y revisión de distribución separadas. Se reconoce esta sintaxis solo para productos Azure definidos; no se convierte cualquier prerelease en una versión estable.
+- Una matriz cargada puede no contener una fila aplicable. La evidencia añade `catalog_lookup`: catálogo presente, archivos, selectores disponibles, coincidencias, selector elegido, versión normalizada y motivo. Así se distingue parser fallido, familia sin catálogo, registro ambiguo, evidencia vencida y build de distribución no acreditado.
+
+La regresión de Calico `v3.31.2` contra 1.35.9 encuentra `3.31.x` y devuelve PASS con la evidencia de pruebas de Tigera. La existencia de un archivo por producto no acredita todas sus versiones; no se eliminan UNKNOWN por defecto cuando falta una fila oficial aplicable.
+
+### Versiones observadas y soporte son datos independientes
+
+Cada producto conserva `detected_versions`, `detected_version` cuando es único, `confidence`, `normalized_versions`, versiones resueltas y evidencia original. Los hallazgos mantienen el valor real en `installed_version`. Una versión explícita con sufijo no interpretable produce `VERSION_FORMAT_UNVERIFIED`, no se sustituye por una cadena UNKNOWN.
+
+Se agregaron filas oficiales upstream de Azure Disk/File para versiones exactas publicadas en sus READMEs. No se extiende el soporte de un patch a todos los patches de esa minor. Para un build con revisión numérica, una matriz upstream por sí sola produce `VENDOR_BUILD_UNVERIFIED`, incluso si coincide la versión base. Un registro revisado debe enumerar explícitamente los builds cubiertos en `vendor_versions` para acreditarlos. `UNKNOWN` describe entonces soporte no verificado, no desconocimiento de la versión detectada.
+
+Cuando varias filas coinciden, se prioriza un build explícito y después el selector de producto más específico: patch sobre minor/familia. Empates de igual especificidad siguen siendo ambiguos. El detalle conserva todos los selectores coincidentes, no solo el elegido.
+
+### Argo CD y diagnósticos de descubrimiento
+
+El HTML muestra el estado de **todos** los detectores, también cuando Argo CD no aparece en el inventario. `NOT_DETECTED` significa que no coincidieron imágenes, charts o grupos conocidos; `INVENTORY_INCOMPLETE` indica fuentes o permisos pendientes. Ninguno afirma ausencia absoluta del producto. Gatekeeper se examina también en Deployments de todos los namespaces; no se limita a sus CRDs.
+
+Para mirrors privados, registrar identidades explícitas mediante `--detectors-path aliases.json`, también disponible en batch/shell:
+
+```json
+{
+  "schema_version": 1,
+  "products": [
+    {"id": "argocd", "images": ["private.example.com/platform/argocd"]}
+  ]
+}
+```
+
+Los aliases solo amplían repositorios/charts de productos conocidos y quedan reflejados en la evidencia (`configured_repository`) y su hash. No se adivina la identidad a partir de un Deployment que casualmente contenga una palabra del producto.
+
+### Score 2.0
+
+Se conservan los pesos 40/25/15/10/10. Ahora cada producto es una unidad independiente y cada CRD aporta su unidad técnica y de storage, sin que muchos PASS dentro del mismo producto diluyan su FAIL. Se promedian las unidades de cada categoría: un producto UNKNOWN ya no anula todos los productos compatibles de esa categoría.
+
+El reporte distingue:
+
+| Dato | Qué mide |
+|---|---|
+| `score` | Puntos de preparación acreditados, con UNKNOWN/ERROR aportando cero |
+| `evidence_coverage` | Peso con resultados evaluados PASS/WARN/FAIL; UNKNOWN/ERROR son evidencia pendiente |
+| `assessed_compatibility_score` | Compatibilidad de las unidades evaluadas; null si no hay ninguna |
+| `decision` | BLOCKED por cualquier FAIL/ERROR; ATTENTION REQUIRED ante avisos/evidencia pendiente; READY solo al completar los criterios |
+
+Así se distingue una evaluación incompleta de una incompatibilidad documentada, aunque ambas tengan pocos puntos de preparación. Un número alto con poca cobertura no acredita readiness. Todos los bloqueos siguen aplicando aunque otras unidades sumen puntos.
+
+Las categorías incluyen conteos por estado y cobertura; el consolidado muestra cobertura por contexto. Los scores 1.0 y 2.0 no deben compararse directamente: su fórmula cambió y `scoring_version` lo registra. El esquema JSON pasa a 1.4.
+
+### Contextos sin servidor y reproducción
+
+Un contexto puede sobrevivir a la eliminación de su clúster. Fallos reconocidos de DNS/conexión ahora se clasifican como `unreachable` y explican esa posibilidad, sin afirmar automáticamente que el clúster haya sido eliminado. Conservan exit code 2 y el batch sigue con los demás contextos. No se borran contextos ni se interpreta inaccesibilidad como una incompatibilidad de upgrade.
+
+Para comprobar qué código se está ejecutando:
+
+```sh
+python main.py --version
+python batch.py --version
+```
+
+Esta entrega debe mostrar 0.5.0. Un reporte con `OPERATOR-NO-MATRIX` proviene de la nomenclatura anterior al motor actual, que utiliza `NO_SUPPORT_DATA`; revisar también `tool_version` y hashes de archivos antes de comparar resultados.
+
+Reproducir los valores reportados sin un clúster:
+
+```sh
+python main.py --input fixtures/valid-crds.json --platform-input fixtures/reported-platform-cases.json --current 1.34.8 --target-version 1.35.9 --output reports/examples/reported-cases --format all
+```
+
+Es un fixture sintético: Istio FAIL, Calico PASS, versiones completas de Azure CSI con soporte pendiente y diagnóstico de Argo CD no detectado. El comando devuelve 1 por el bloqueo documentado de Istio. No son datos de producción.
+
+Verificación de v0.5: **194 pruebas aprobadas**, incluidos los tags reportados, la selección de matrices por familia/patch, la precedencia de builds explícitos, el descubrimiento de Gatekeeper y Argo CD, la separación entre versiones de componentes y producto, el score con cobertura parcial y los contextos inaccesibles. Los ejemplos HTML individuales y el consolidado se regeneraron con esta versión; el consolidado de demostración utiliza `reported-cases/report.json`.

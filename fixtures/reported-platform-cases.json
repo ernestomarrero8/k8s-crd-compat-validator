@@ -1,0 +1,15 @@
+{
+  "schema_version":1,"context":"synthetic-reported-cases","kubernetes_version":"1.34.8",
+  "deployments.apps":[
+    {"metadata":{"name":"gatekeeper-controller-manager","namespace":"gatekeeper-system"},"spec":{"template":{"spec":{"containers":[{"image":"openpolicyagent/gatekeeper:v3.18.0"}]}}}}
+  ],
+  "daemonsets.apps":[],"statefulsets.apps":[],"nodes":[],"helm":[],
+  "pods":[
+    {"metadata":{"name":"istiod-example","namespace":"istio-system"},"spec":{"containers":[{"image":"docker.io/istio/pilot:1.24.1"}]}},
+    {"metadata":{"name":"calico-example","namespace":"calico-system"},"spec":{"containers":[{"image":"docker.io/calico/node:v3.31.2"}]}},
+    {"metadata":{"name":"azure-file-example","namespace":"kube-system"},"spec":{"containers":[{"image":"mcr.microsoft.com/oss/v2/kubernetes-csi/azurefile-csi:v1.35.11-6"}]}},
+    {"metadata":{"name":"azure-disk-example","namespace":"kube-system"},"spec":{"containers":[{"image":"mcr.microsoft.com/oss/v2/kubernetes-csi/azuredisk-csi:v1.34.7-7"}]}}
+  ],
+  "istio":{"meshVersion":[{"Component":"pilot","Info":{"version":"1.24.1"}}]},
+  "note":"Synthetic regression fixture from reported version strings. No production data. Argo CD deliberately absent to demonstrate detector diagnostics."
+}

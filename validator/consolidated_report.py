@@ -56,11 +56,12 @@ def consolidate(entries, output):
         count = report["summary"]["total_crds"] if report else "—"
         pluto = report.get("pluto", {}).get("status", "UNKNOWN") if report else "UNKNOWN"
         score = report.get("readiness", {}).get("score", "—") if report else "—"
+        evidence_coverage = report.get("readiness", {}).get("evidence_coverage", "—") if report else "—"
         if report and state != "ERROR" and "readiness" in report:
             readiness = report["readiness"]["decision"]
         esc = lambda v: escape(str(v), quote=True)
         rows.append(f'<tr><td><a href="#cluster-{index}">{esc(context)}</a></td><td>{esc(current)} → {esc(target)}</td>'
-                    f'<td>{esc(count)}</td><td class="{state}">{state}</td><td>{esc(pluto)}</td><td>{esc(code)}</td><td>{esc(score)}/100</td><td>{esc(readiness)}</td></tr>')
+                    f'<td>{esc(count)}</td><td class="{state}">{state}</td><td>{esc(pluto)}</td><td>{esc(code)}</td><td>{esc(score)}/100</td><td>{esc(evidence_coverage)}%</td><td>{esc(readiness)}</td></tr>')
         body = fragment if report else "<p>No se obtuvo un reporte JSON válido para este contexto. Consultar su archivo console.txt.</p>"
         if report and state == "ERROR":
             body = "<p class='ERROR'>El proceso terminó con error o timeout; el detalle disponible puede ser parcial.</p>" + body
@@ -73,7 +74,7 @@ def consolidate(entries, output):
     content = (f'<h1 id="summary">Compatibilidad Kubernetes — consolidado</h1><p>Fecha UTC: {datetime.now(timezone.utc).isoformat()}</p>'
                f'<p>Contextos: {len(entries)} · Estado global: <b>{overall}</b> · CRDs analizados: {sum(totals.values())}</p>'
                '<p>Un resultado PASS acredita las comprobaciones realizadas. WARN y UNKNOWN requieren revisión; FAIL contiene bloqueos y ERROR indica una evaluación incompleta.</p>'
-               '<table><thead><tr><th>Contexto</th><th>Upgrade</th><th>CRDs</th><th>Estado</th><th>Pluto</th><th>Exit code</th><th>Score</th><th>Decisión</th></tr></thead><tbody>'
+               '<table><thead><tr><th>Contexto</th><th>Upgrade</th><th>CRDs</th><th>Estado</th><th>Pluto</th><th>Exit code</th><th>Score</th><th>Cobertura</th><th>Decisión</th></tr></thead><tbody>'
                + "".join(rows) + "</tbody></table>" + "".join(details))
     output = Path(output)
     output.parent.mkdir(parents=True, exist_ok=True)

@@ -13,8 +13,12 @@ ROOT = Path(__file__).resolve().parents[1] / "catalogs/operators"
 SUPPORT_ROOT = ROOT.parent / "support"
 
 
-def release(value):
-    match = re.fullmatch(r"v?(\d+)\.(\d+)\.(\d+)(?:\+[\w.-]+|-(?:distroless|fips|aks|azure)[\w.-]*)?", str(value))
+VENDOR_PRODUCTS = {"Azure Disk CSI Driver", "Azure File CSI Driver", "Azure Key Vault CSI Driver", "Azure CNI"}
+
+
+def release(value, product=None):
+    suffix = r"|-[0-9]+" if product in VENDOR_PRODUCTS else ""
+    match = re.fullmatch(r"v?(\d+)\.(\d+)\.(\d+)(?:\+[\w.-]+|-(?:distroless|fips|aks|azure)[\w.-]*" + suffix + r")?", str(value))
     return tuple(map(int, match.groups())) if match else None
 
 
@@ -39,14 +43,32 @@ def in_range(version, lower, upper):
 
 
 class PlatformCatalog:
-    def __init__(self, path=None):
+    def __init__(self, path=None, detectors_path=None):
         self.detectors = read_json(ROOT / "detectors.json")["products"]
+        if detectors_path:
+            aliases = read_json(detectors_path)
+            if not isinstance(aliases, dict) or aliases.get("schema_version") != 1 or not isinstance(aliases.get("products"), list):
+                raise ValueError("Aliases de detectores requiere schema_version: 1 y products: [].")
+            for item in aliases["products"]:
+                if not isinstance(item, dict):
+                    raise ValueError("Alias de producto inválido.")
+                definition = next((d for d in self.detectors if d["id"] == item.get("id")), None)
+                if not definition or set(item) - {"id", "images", "charts"}:
+                    raise ValueError("Alias de producto no reconocido.")
+                for key in ("images", "charts"):
+                    values = item.get(key, [])
+                    if not isinstance(values, list) or any(not isinstance(v, str) or not v or any(c.isspace() for c in v) for v in values):
+                        raise ValueError("Repositorios/charts de alias inválidos.")
+                    definition[key] = sorted(set(definition[key]) | set(values))
+                    definition["configured_" + key] = values
         self.ownership = read_json(ROOT / "ownership.json")["owners"]
         for definition in self.detectors:
             owners = [o for o in self.ownership if o["product_id"] == definition["id"]]
             definition["crd_groups"] = sorted({group for o in owners for group in o["groups"]})
             definition["crds"] = sorted(set(definition["crds"]) | {name for o in owners for name in o["crds"]})
         self.records, self.files, self.notes = {}, [], {}
+        self.product_files = {}
+        self.product_paths = {}
         folder = Path(path) if path else SUPPORT_ROOT
         paths = sorted(folder.glob("*.json")) if folder.is_dir() else [folder]
         if not paths:
@@ -60,7 +82,13 @@ class PlatformCatalog:
             if not isinstance(data, dict) or not isinstance(data.get("product"), str) or not isinstance(data.get("versions"), list):
                 raise ValueError("Catálogo de plataforma requiere product y versions.")
             self.notes[data["product"]] = {"source": data.get("source"), "limitations": data.get("limitations", [])}
+            self.product_files.setdefault(data["product"], []).append(file.name)
+            location = file.resolve()
+            project = ROOT.parents[1]
+            location = location.relative_to(project).as_posix() if location.is_relative_to(project) else str(location)
+            self.product_paths.setdefault(data["product"], []).append(location)
             self.files.append({"file": file.name, "catalog_version": data.get("catalog_version", "unversioned"),
+                               "path": location,
                                "sha256": hashlib.sha256(file.read_bytes()).hexdigest()})
             for record in data["versions"]:
                 try:
@@ -80,6 +108,8 @@ class PlatformCatalog:
                         raise ValueError()
                     if record["matrix_type"] == "tested" and record["exclusive"]:
                         raise ValueError()
+                    if "vendor_versions" in record and (not isinstance(record["vendor_versions"], list) or any(not isinstance(v, str) for v in record["vendor_versions"])):
+                        raise ValueError()
                     if bound(record["version"]) > bound(record["version"], True) or bound(record["min_kubernetes"]) > bound(record["max_kubernetes"], True):
                         raise ValueError()
                     reviewed, expires = date.fromisoformat(record["reviewed_on"]), date.fromisoformat(record["valid_until"])
@@ -93,21 +123,45 @@ class PlatformCatalog:
 
     def evaluate(self, product, version, target, source, today=None):
         today = today or date.today()
-        observed, target_release = release(version), release(str(target))
+        observed, target_release = release(version, product), release(str(target))
+        rows = self.records.get(product, [])
+        records = [r for r in rows if observed and in_range(observed, r["version"], r["version"])]
+        matched_selectors = [r["version"] for r in records]
+        exact_vendor = [r for r in records if version in r.get("vendor_versions", [])]
+        if exact_vendor:
+            records = exact_vendor
+        if records:
+            specificity = lambda r: sum(p.isdigit() for p in r["version"].removeprefix("v").split("."))
+            best = max(map(specificity, records))
+            records = [r for r in records if specificity(r) == best]
+        vendor = bool(re.fullmatch(r"v?\d+\.\d+\.\d+-\d+", str(version))) and product in VENDOR_PRODUCTS
+        lookup = {"catalog_present": product in self.product_files, "files": self.product_files.get(product, []),
+                  "paths": self.product_paths.get(product, []),
+                  "available_selectors": [r["version"] for r in rows], "matched_selectors": matched_selectors,
+                  "selected_selector": records[0]["version"] if len(records) == 1 else None,
+                  "normalized_version": ".".join(map(str, observed)) if observed else None,
+                  "reason": "matched" if len(records) == 1 else "ambiguous_matches" if records else "family_not_catalogued" if rows else "no_numeric_rows" if product in self.product_files else "catalog_missing"}
         def result(id_, status, text, record=None):
             policy = self.notes.get(product, {})
             fallback = policy.get("source") if safe_source(policy.get("source")) else source
             return finding(id_, "operator_compatibility", status, text,
                 source=record["source"] if record else fallback, relation="documented" if record else "limitation",
                 evidence={"product": product, "installed_version": version, "target": str(target), "matrix": record or {},
+                          "detected_version": version, "version_confidence": "detected_tag_or_product_metadata" if version != "UNKNOWN" else "unknown",
+                          "catalog_lookup": dict(lookup), "distribution_revision": str(version).rsplit("-", 1)[-1] if vendor else None,
                           "reviewed_on": record.get("reviewed_on") if record else None, "catalog_limitations": policy.get("limitations", [])},
                 recommendation="Revisar la matriz oficial y actualizar el componente o completar evidencia antes del upgrade.")
         if not observed:
+            lookup["reason"] = "version_missing" if version == "UNKNOWN" else "unrecognized_version_format"
+            if re.match(r"^v?\d+\.\d+\.\d+", str(version)):
+                return [result("VERSION_FORMAT_UNVERIFIED", "UNKNOWN", "Versión explícita detectada; su sufijo/formato no tiene una regla de normalización acreditada para este producto.")]
             return [result("VERSION_UNKNOWN", "UNKNOWN", "No se determinó una versión de producto inequívoca; un chart, digest o tag mutable no demuestra versión efectiva.")]
-        records = [r for r in self.records.get(product, []) if in_range(observed, r["version"], r["version"])]
         if len(records) != 1:
             return [result("NO_SUPPORT_DATA", "UNKNOWN", "No existe una única fila de matriz oficial revisada para esta versión.")]
         record = records[0]
+        if vendor and version not in record.get("vendor_versions", []):
+            lookup["reason"] = "vendor_build_not_covered"
+            return [result("VENDOR_BUILD_UNVERIFIED", "UNKNOWN", "Versión detectada con revisión de distribución; la matriz upstream no acredita este build administrado.", record)]
         findings = []
         if record.get("support_state") == "eol" or (record.get("end_of_support") and today > date.fromisoformat(record["end_of_support"])):
             findings.append(result("VERSION_EOL", "WARN", "Versión fuera de mantenimiento según la evidencia oficial registrada.", record))

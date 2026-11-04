@@ -65,9 +65,14 @@ def detect(data, definitions):
     def add(definition, namespace, version, evidence):
         key = (definition["id"], namespace)
         row = detected.setdefault(key, {"id": definition["id"], "product": definition["product"], "namespace": namespace,
-            "category": definition.get("category", "operator"), "source": definition["source"], "versions": [], "evidence": [], "version_candidates": [], "unknown_version": False})
+            "category": definition.get("category", "operator"), "source": definition["source"], "versions": [], "detected_versions": [], "evidence": [], "version_candidates": [], "unknown_version": False})
         version = str(version) if version is not None else "UNKNOWN"
-        if not release(version) or (definition.get("component_versions") and evidence["from"] != "Helm"):
+        component_version = definition.get("component_versions") and evidence["from"] != "Helm"
+        if component_version:
+            evidence["version_scope"] = "component_not_product_release"
+        if version != "UNKNOWN" and not component_version and version not in row["detected_versions"]:
+            row["detected_versions"].append(version)
+        if not release(version, definition["product"]) or component_version:
             if evidence["from"] not in ("Helm", "CRD") or not row["versions"]:
                 row["unknown_version"] = True
             version = "UNKNOWN"
@@ -96,6 +101,8 @@ def detect(data, definitions):
                     if repository in definition["images"]:
                         evidence = {"from": resource, "namespace": meta.get("namespace", ""), "name": meta.get("name", ""),
                                     "repository": repository, "declared_tag": tag, "revision": meta.get("labels", {}).get("istio.io/rev"),
+                                    "identity_basis": "configured_repository" if repository in definition.get("configured_images", []) else "catalog_repository",
+                                    "confidence": "image_tag",
                                     "version_basis": "pod_image_tag" if resource == "pods" else "workload_template_image_tag"}
                         add(definition, meta.get("namespace", ""), tag, evidence)
     for helm in data.get("helm", []):

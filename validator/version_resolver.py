@@ -9,21 +9,23 @@ PRIORITY = {"istioctl control plane": 0, "istioctl data plane": 0, "Helm": 1,
 def resolve(rows):
     registry = {}
     for row in rows:
-        product = registry.setdefault(row["id"], row | {"namespaces": [], "evidence": [], "version_candidates": [], "versions": []})
+        product = registry.setdefault(row["id"], row | {"namespaces": [], "evidence": [], "version_candidates": [], "versions": [], "detected_versions": []})
         if row["namespace"] not in product["namespaces"]:
             product["namespaces"].append(row["namespace"])
         product["evidence"].extend(row["evidence"])
         product["version_candidates"].extend(row.get("version_candidates", []))
+        product["detected_versions"] = sorted(set(product["detected_versions"]) | set(row.get("detected_versions", [])))
     for row in registry.values():
-        candidates = [c for c in row["version_candidates"] if release(c["version"])]
+        candidates = [c for c in row["version_candidates"] if release(c["version"], row["product"])]
         rank = min((PRIORITY.get(c["from"], 99) for c in candidates), default=99)
-        canonical = lambda c: ".".join(map(str, release(c["version"])))
+        canonical = lambda c: c["version"] if release(c["version"]) is None else ".".join(map(str, release(c["version"])))
         row["resolved_versions"] = sorted({canonical(c) for c in candidates if PRIORITY.get(c["from"], 99) == rank})
         # Keep known older versions: precedence must not conceal an incompatible data plane or rollout.
         row["versions"] = sorted({canonical(c) for c in candidates})
         row["resolution_sources"] = sorted({c["from"] for c in candidates if PRIORITY.get(c["from"], 99) == rank})
         row["unknown_version"] = not bool(candidates)
-        row["version_conflict"] = len({release(c["version"]) for c in candidates}) > 1
+        row["version_conflict"] = len(set(row["versions"])) > 1
+        row["normalized_versions"] = sorted({".".join(map(str, release(c["version"], row["product"]))) for c in candidates})
         row["namespace"] = ", ".join(n for n in row["namespaces"] if n) or "cluster"
         row["resolution_policy"] = "cluster-bound server CLI > Helm appVersion > exact image tags > explicit product resource; all known mixed versions evaluated"
     return list(registry.values())

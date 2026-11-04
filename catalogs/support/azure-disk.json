@@ -1,0 +1,5 @@
+{"product":"Azure Disk CSI Driver","catalog_version":"2026.11.04.1","versions":[
+  {"version":"1.34.5","supported_kubernetes":{"min":"1.21","max":"*"},"source":"https://raw.githubusercontent.com/kubernetes-sigs/azuredisk-csi-driver/master/README.md","reviewed_on":"2026-11-04","evidence":"Tabla upstream: versión 1.34.5, Kubernetes 1.21+. No acredita revisiones específicas compiladas para AKS."},
+  {"version":"1.33.11","supported_kubernetes":{"min":"1.21","max":"*"},"source":"https://raw.githubusercontent.com/kubernetes-sigs/azuredisk-csi-driver/master/README.md","reviewed_on":"2026-11-04","evidence":"Tabla upstream: versión 1.33.11, Kubernetes 1.21+. No acredita builds administrados."},
+  {"version":"1.36.0","supported_kubernetes":{"min":"1.21","max":"*"},"source":"https://raw.githubusercontent.com/kubernetes-sigs/azuredisk-csi-driver/master/README.md","reviewed_on":"2026-11-04","evidence":"Tabla upstream: versión 1.36.0, Kubernetes 1.21+. No acredita builds administrados."}
+],"limitations":["No se extrapolan filas exactas a toda la familia 1.34.x. Los tags con revisión de distribución se conservan; su soporte requiere vendor_versions documentadas."]}

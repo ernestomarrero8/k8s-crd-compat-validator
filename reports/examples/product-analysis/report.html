@@ -5,7 +5,14 @@ body{font:16px/1.55 system-ui,sans-serif;max-width:1100px;margin:40px auto;paddi
 h1,h2{line-height:1.25}table{border-collapse:collapse;width:100%;background:white}td,th{border:1px solid #b8c9d8;padding:10px;text-align:left}
 details{background:white;border:1px solid #bccbdb;border-radius:6px;margin:12px 0;padding:14px}summary{cursor:pointer}pre{white-space:pre-wrap;overflow-wrap:anywhere;background:#eef3f8;padding:12px}
 .FAIL,.ERROR{color:#a81818}.WARN{color:#805000}.UNKNOWN{color:#525b67}.PASS{color:#176232}.limit{color:#4e6073}a{color:#154f91}section{margin:32px 0}p{overflow-wrap:anywhere}
-@media print{body{background:white;margin:0;max-width:none}details{break-inside:avoid}}</style><main><h1>Kubernetes CRD Compatibility Validator</h1><p>offline:product-crds.json · 1.34.8 → 1.35.9</p><p>2026-11-04T19:00:33.058923+00:00 · Estado general: <b>FAIL</b></p><p>3 CRDs · PASS: 0 · UNKNOWN: 2 · WARN: 0 · FAIL: 1 · ERROR: 0</p><p>Riesgos por severidad: CRITICAL: 0 · HIGH: 2 · MEDIUM: 1 · LOW: 0 · INFO: 0</p><section><h2>Upgrade Readiness Score</h2><p style="font-size:1.6em"><b>38.9/100 · BLOCKED</b></p><table><thead><tr><th>Categoría</th><th>Peso</th><th>Estado</th><th>Puntos</th></tr></thead><tbody><tr><td>operators</td><td>40%</td><td>FAIL</td><td>0</td></tr><tr><td>crds</td><td>25%</td><td>PASS</td><td>25</td></tr><tr><td>pluto</td><td>15%</td><td>UNKNOWN</td><td>0</td></tr><tr><td>aks_addons</td><td>10%</td><td>NOT_APPLICABLE</td><td>0</td></tr><tr><td>storage</td><td>10%</td><td>PASS</td><td>10</td></tr></tbody></table><p>Worst finding per category. PASS=100%, WARN=50%, UNKNOWN/FAIL/ERROR=0%; N/A excluded and remaining weights normalized.</p><p>El score es una ayuda de revisión; READY exige ausencia de bloqueos, avisos y evidencia pendiente en todo el informe.</p></section><section><h2>Cluster Platform Compatibility</h2><h3>OPERATOR COMPATIBILITY ANALYSIS</h3><p>Objetivo Kubernetes/AKS: 1.35.9. Una versión de imagen o Helm no demuestra el binario ejecutado ni soporte de la distribución administrada.</p><div style="overflow-x:auto"><table><thead><tr><th>Producto / namespace</th><th>Versiones observadas</th><th>Detectado desde</th><th>Compatibilidad objetivo</th><th>Resultado</th><th>Evidencia</th></tr></thead><tbody><tr><td>Istio<br>istio-system, istioctl</td><td>1.30.7</td><td>deployments.apps, istioctl control plane</td><td>Sí, según evidencia documentada</td><td>PASS</td><td><a href="https://istio.io/latest/docs/releases/supported-releases/" rel="noreferrer">Fuente oficial</a></td></tr><tr><td>Argo CD<br>argocd</td><td>3.2.0</td><td>deployments.apps</td><td>No verificada</td><td>UNKNOWN</td><td><a href="https://argo-cd.readthedocs.io/en/release-3.2/operator-manual/tested-kubernetes-versions/" rel="noreferrer">Fuente oficial</a></td></tr><tr><td>Cert Manager<br>cert-manager</td><td>1.16.0</td><td>deployments.apps</td><td>No</td><td>FAIL</td><td><a href="https://cert-manager.io/docs/releases/" rel="noreferrer">Fuente oficial</a></td></tr></tbody></table></div><details><summary>Istio — resolución y evidencia de detección</summary><pre>{
+@media print{body{background:white;margin:0;max-width:none}details{break-inside:avoid}}</style><main><h1>Kubernetes CRD Compatibility Validator</h1><p>offline:product-crds.json · 1.34.8 → 1.35.9</p><p>2026-11-04T20:12:18.235207+00:00 · Estado general: <b>FAIL</b></p><p>3 CRDs · PASS: 0 · UNKNOWN: 2 · WARN: 0 · FAIL: 1 · ERROR: 0</p><p>Riesgos por severidad: CRITICAL: 0 · HIGH: 2 · MEDIUM: 1 · LOW: 0 · INFO: 0</p><section><h2>Upgrade Readiness Score</h2><p style="font-size:1.6em"><b>53.7/100 · BLOCKED</b></p><p>Cobertura de evidencia: <b>68.5%</b> · Compatibilidad de unidades evaluadas: 78.4/100</p><table><thead><tr><th>Categoría</th><th>Peso</th><th>Estado</th><th>Puntos</th><th>Cobertura</th><th>Unidades por resultado</th></tr></thead><tbody><tr><td>operators</td><td>40%</td><td>FAIL</td><td>13.33</td><td>66.7%</td><td>{&quot;PASS&quot;: 1, &quot;WARN&quot;: 0, &quot;FAIL&quot;: 1, &quot;UNKNOWN&quot;: 1, &quot;ERROR&quot;: 0}</td></tr><tr><td>crds</td><td>25%</td><td>PASS</td><td>25.0</td><td>100.0%</td><td>{&quot;PASS&quot;: 3, &quot;WARN&quot;: 0, &quot;FAIL&quot;: 0, &quot;UNKNOWN&quot;: 0, &quot;ERROR&quot;: 0}</td></tr><tr><td>pluto</td><td>15%</td><td>UNKNOWN</td><td>0.0</td><td>0.0%</td><td>{&quot;PASS&quot;: 0, &quot;WARN&quot;: 0, &quot;FAIL&quot;: 0, &quot;UNKNOWN&quot;: 1, &quot;ERROR&quot;: 0}</td></tr><tr><td>aks_addons</td><td>10%</td><td>NOT_APPLICABLE</td><td>0</td><td>None%</td><td>{}</td></tr><tr><td>storage</td><td>10%</td><td>PASS</td><td>10.0</td><td>100.0%</td><td>{&quot;PASS&quot;: 3, &quot;WARN&quot;: 0, &quot;FAIL&quot;: 0, &quot;UNKNOWN&quot;: 0, &quot;ERROR&quot;: 0}</td></tr></tbody></table><p>Worst finding per product/CRD, then average units within each weighted category. PASS=100%, WARN=50%, UNKNOWN/FAIL/ERROR=0%; N/A excluded. Evidence coverage and compatibility of assessed units reported separately.</p><p>El score es una ayuda de revisión; READY exige ausencia de bloqueos, avisos y evidencia pendiente en todo el informe.</p></section><section><h2>Cluster Platform Compatibility</h2><h3>OPERATOR COMPATIBILITY ANALYSIS</h3><p>Objetivo Kubernetes/AKS: 1.35.9. Una versión de imagen o Helm no demuestra el binario ejecutado ni soporte de la distribución administrada.</p><div style="overflow-x:auto"><table><thead><tr><th>Producto / namespace</th><th>Versiones observadas</th><th>Detectado desde</th><th>Compatibilidad objetivo</th><th>Resultado</th><th>Evidencia</th></tr></thead><tbody><tr><td>Istio<br>istio-system, istioctl</td><td>1.30.7<br><small>server_cli</small></td><td>deployments.apps, istioctl control plane</td><td>Sí, según evidencia documentada</td><td>PASS</td><td><a href="https://istio.io/latest/docs/releases/supported-releases/" rel="noreferrer">Fuente oficial</a></td></tr><tr><td>Argo CD<br>argocd</td><td>v3.2.0<br><small>image_tag</small></td><td>deployments.apps</td><td>No verificada</td><td>UNKNOWN</td><td><a href="https://argo-cd.readthedocs.io/en/release-3.2/operator-manual/tested-kubernetes-versions/" rel="noreferrer">Fuente oficial</a></td></tr><tr><td>Cert Manager<br>cert-manager</td><td>v1.16.0<br><small>image_tag</small></td><td>deployments.apps</td><td>No</td><td>FAIL</td><td><a href="https://cert-manager.io/docs/releases/" rel="noreferrer">Fuente oficial</a></td></tr></tbody></table></div><details><summary>Istio — resolución y evidencia de detección</summary><pre>{
+  &quot;detected_versions&quot;: [
+    &quot;1.30.7&quot;
+  ],
+  &quot;confidence&quot;: &quot;server_cli&quot;,
+  &quot;normalized_versions&quot;: [
+    &quot;1.30.7&quot;
+  ],
   &quot;resolved_versions&quot;: [
     &quot;1.30.7&quot;
   ],
@@ -16,6 +23,35 @@ details{background:white;border:1px solid #bccbdb;border-radius:6px;margin:12px 
     &quot;istioctl control plane&quot;
   ],
   &quot;mixed_versions&quot;: false,
+  &quot;catalog_lookup&quot;: [
+    {
+      &quot;catalog_present&quot;: true,
+      &quot;files&quot;: [
+        &quot;istio.json&quot;
+      ],
+      &quot;paths&quot;: [
+        &quot;catalogs/support/istio.json&quot;
+      ],
+      &quot;available_selectors&quot;: [
+        &quot;1.30.x&quot;,
+        &quot;1.29.x&quot;,
+        &quot;1.28.x&quot;,
+        &quot;1.27.x&quot;,
+        &quot;1.26.x&quot;,
+        &quot;1.25.x&quot;,
+        &quot;1.24.x&quot;,
+        &quot;1.23.x&quot;,
+        &quot;1.22.x&quot;,
+        &quot;1.21.x&quot;
+      ],
+      &quot;matched_selectors&quot;: [
+        &quot;1.30.x&quot;
+      ],
+      &quot;selected_selector&quot;: &quot;1.30.x&quot;,
+      &quot;normalized_version&quot;: &quot;1.30.7&quot;,
+      &quot;reason&quot;: &quot;matched&quot;
+    }
+  ],
   &quot;evidence&quot;: [
     {
       &quot;from&quot;: &quot;deployments.apps&quot;,
@@ -24,6 +60,8 @@ details{background:white;border:1px solid #bccbdb;border-radius:6px;margin:12px 
       &quot;repository&quot;: &quot;docker.io/istio/pilot&quot;,
       &quot;declared_tag&quot;: &quot;1.30.7&quot;,
       &quot;revision&quot;: null,
+      &quot;identity_basis&quot;: &quot;catalog_repository&quot;,
+      &quot;confidence&quot;: &quot;image_tag&quot;,
       &quot;version_basis&quot;: &quot;workload_template_image_tag&quot;
     },
     {
@@ -33,6 +71,13 @@ details{background:white;border:1px solid #bccbdb;border-radius:6px;margin:12px 
     }
   ]
 }</pre></details><details><summary>Argo CD — resolución y evidencia de detección</summary><pre>{
+  &quot;detected_versions&quot;: [
+    &quot;v3.2.0&quot;
+  ],
+  &quot;confidence&quot;: &quot;image_tag&quot;,
+  &quot;normalized_versions&quot;: [
+    &quot;3.2.0&quot;
+  ],
   &quot;resolved_versions&quot;: [
     &quot;3.2.0&quot;
   ],
@@ -43,6 +88,26 @@ details{background:white;border:1px solid #bccbdb;border-radius:6px;margin:12px 
     &quot;deployments.apps&quot;
   ],
   &quot;mixed_versions&quot;: false,
+  &quot;catalog_lookup&quot;: [
+    {
+      &quot;catalog_present&quot;: true,
+      &quot;files&quot;: [
+        &quot;argocd.json&quot;
+      ],
+      &quot;paths&quot;: [
+        &quot;catalogs/support/argocd.json&quot;
+      ],
+      &quot;available_selectors&quot;: [
+        &quot;3.2.x&quot;
+      ],
+      &quot;matched_selectors&quot;: [
+        &quot;3.2.x&quot;
+      ],
+      &quot;selected_selector&quot;: &quot;3.2.x&quot;,
+      &quot;normalized_version&quot;: &quot;3.2.0&quot;,
+      &quot;reason&quot;: &quot;matched&quot;
+    }
+  ],
   &quot;evidence&quot;: [
     {
       &quot;from&quot;: &quot;deployments.apps&quot;,
@@ -51,10 +116,19 @@ details{background:white;border:1px solid #bccbdb;border-radius:6px;margin:12px 
       &quot;repository&quot;: &quot;quay.io/argoproj/argocd&quot;,
       &quot;declared_tag&quot;: &quot;v3.2.0&quot;,
       &quot;revision&quot;: null,
+      &quot;identity_basis&quot;: &quot;catalog_repository&quot;,
+      &quot;confidence&quot;: &quot;image_tag&quot;,
       &quot;version_basis&quot;: &quot;workload_template_image_tag&quot;
     }
   ]
 }</pre></details><details><summary>Cert Manager — resolución y evidencia de detección</summary><pre>{
+  &quot;detected_versions&quot;: [
+    &quot;v1.16.0&quot;
+  ],
+  &quot;confidence&quot;: &quot;image_tag&quot;,
+  &quot;normalized_versions&quot;: [
+    &quot;1.16.0&quot;
+  ],
   &quot;resolved_versions&quot;: [
     &quot;1.16.0&quot;
   ],
@@ -65,6 +139,52 @@ details{background:white;border:1px solid #bccbdb;border-radius:6px;margin:12px 
     &quot;deployments.apps&quot;
   ],
   &quot;mixed_versions&quot;: false,
+  &quot;catalog_lookup&quot;: [
+    {
+      &quot;catalog_present&quot;: true,
+      &quot;files&quot;: [
+        &quot;cert-manager.json&quot;
+      ],
+      &quot;paths&quot;: [
+        &quot;catalogs/support/cert-manager.json&quot;
+      ],
+      &quot;available_selectors&quot;: [
+        &quot;1.16.x&quot;,
+        &quot;1.18.x&quot;,
+        &quot;1.19.x&quot;,
+        &quot;1.20.x&quot;,
+        &quot;1.21.x&quot;
+      ],
+      &quot;matched_selectors&quot;: [
+        &quot;1.16.x&quot;
+      ],
+      &quot;selected_selector&quot;: &quot;1.16.x&quot;,
+      &quot;normalized_version&quot;: &quot;1.16.0&quot;,
+      &quot;reason&quot;: &quot;matched&quot;
+    },
+    {
+      &quot;catalog_present&quot;: true,
+      &quot;files&quot;: [
+        &quot;cert-manager.json&quot;
+      ],
+      &quot;paths&quot;: [
+        &quot;catalogs/support/cert-manager.json&quot;
+      ],
+      &quot;available_selectors&quot;: [
+        &quot;1.16.x&quot;,
+        &quot;1.18.x&quot;,
+        &quot;1.19.x&quot;,
+        &quot;1.20.x&quot;,
+        &quot;1.21.x&quot;
+      ],
+      &quot;matched_selectors&quot;: [
+        &quot;1.16.x&quot;
+      ],
+      &quot;selected_selector&quot;: &quot;1.16.x&quot;,
+      &quot;normalized_version&quot;: &quot;1.16.0&quot;,
+      &quot;reason&quot;: &quot;matched&quot;
+    }
+  ],
   &quot;evidence&quot;: [
     {
       &quot;from&quot;: &quot;deployments.apps&quot;,
@@ -73,10 +193,12 @@ details{background:white;border:1px solid #bccbdb;border-radius:6px;margin:12px 
       &quot;repository&quot;: &quot;quay.io/jetstack/cert-manager-controller&quot;,
       &quot;declared_tag&quot;: &quot;v1.16.0&quot;,
       &quot;revision&quot;: null,
+      &quot;identity_basis&quot;: &quot;catalog_repository&quot;,
+      &quot;confidence&quot;: &quot;image_tag&quot;,
       &quot;version_basis&quot;: &quot;workload_template_image_tag&quot;
     }
   ]
-}</pre></details><h3>AKS Platform Compatibility</h3><pre>{
+}</pre></details><details><summary>Diagnóstico de todos los detectores, incluidos productos no encontrados</summary><table><thead><tr><th>Producto</th><th>Detección</th><th>Catálogo cargado</th><th>Motivo</th></tr></thead><tbody><tr><td>Argo CD</td><td>DETECTED</td><td>True</td><td>Identidad exacta encontrada</td></tr><tr><td>Argo Workflows</td><td>NOT_DETECTED</td><td>False</td><td>Sin coincidencia en repositorios/charts/grupos configurados; no prueba ausencia absoluta.</td></tr><tr><td>Istio</td><td>DETECTED</td><td>True</td><td>Identidad exacta encontrada</td></tr><tr><td>Gatekeeper</td><td>NOT_DETECTED</td><td>True</td><td>Sin coincidencia en repositorios/charts/grupos configurados; no prueba ausencia absoluta.</td></tr><tr><td>Calico</td><td>NOT_DETECTED</td><td>True</td><td>Sin coincidencia en repositorios/charts/grupos configurados; no prueba ausencia absoluta.</td></tr><tr><td>Tigera Operator</td><td>NOT_DETECTED</td><td>True</td><td>Sin coincidencia en repositorios/charts/grupos configurados; no prueba ausencia absoluta.</td></tr><tr><td>Dapr</td><td>NOT_DETECTED</td><td>True</td><td>Sin coincidencia en repositorios/charts/grupos configurados; no prueba ausencia absoluta.</td></tr><tr><td>Secrets Store CSI Driver</td><td>NOT_DETECTED</td><td>True</td><td>Sin coincidencia en repositorios/charts/grupos configurados; no prueba ausencia absoluta.</td></tr><tr><td>Azure Policy Add-on</td><td>NOT_DETECTED</td><td>False</td><td>Sin coincidencia en repositorios/charts/grupos configurados; no prueba ausencia absoluta.</td></tr><tr><td>Defender for Cloud</td><td>NOT_DETECTED</td><td>False</td><td>Sin coincidencia en repositorios/charts/grupos configurados; no prueba ausencia absoluta.</td></tr><tr><td>Cluster Autoscaler</td><td>NOT_DETECTED</td><td>False</td><td>Sin coincidencia en repositorios/charts/grupos configurados; no prueba ausencia absoluta.</td></tr><tr><td>Karpenter</td><td>NOT_DETECTED</td><td>False</td><td>Sin coincidencia en repositorios/charts/grupos configurados; no prueba ausencia absoluta.</td></tr><tr><td>Cert Manager</td><td>DETECTED</td><td>True</td><td>Identidad exacta encontrada</td></tr><tr><td>NGINX Ingress Controller (community)</td><td>NOT_DETECTED</td><td>False</td><td>Sin coincidencia en repositorios/charts/grupos configurados; no prueba ausencia absoluta.</td></tr><tr><td>NGINX Ingress Controller (F5)</td><td>NOT_DETECTED</td><td>False</td><td>Sin coincidencia en repositorios/charts/grupos configurados; no prueba ausencia absoluta.</td></tr><tr><td>AGIC</td><td>NOT_DETECTED</td><td>False</td><td>Sin coincidencia en repositorios/charts/grupos configurados; no prueba ausencia absoluta.</td></tr><tr><td>External DNS</td><td>NOT_DETECTED</td><td>False</td><td>Sin coincidencia en repositorios/charts/grupos configurados; no prueba ausencia absoluta.</td></tr><tr><td>Velero</td><td>NOT_DETECTED</td><td>True</td><td>Sin coincidencia en repositorios/charts/grupos configurados; no prueba ausencia absoluta.</td></tr><tr><td>Snapshot Controller</td><td>NOT_DETECTED</td><td>False</td><td>Sin coincidencia en repositorios/charts/grupos configurados; no prueba ausencia absoluta.</td></tr><tr><td>Prometheus Operator</td><td>NOT_DETECTED</td><td>False</td><td>Sin coincidencia en repositorios/charts/grupos configurados; no prueba ausencia absoluta.</td></tr><tr><td>OpenTelemetry Operator</td><td>NOT_DETECTED</td><td>False</td><td>Sin coincidencia en repositorios/charts/grupos configurados; no prueba ausencia absoluta.</td></tr><tr><td>FluxCD</td><td>NOT_DETECTED</td><td>False</td><td>Sin coincidencia en repositorios/charts/grupos configurados; no prueba ausencia absoluta.</td></tr><tr><td>Kyverno</td><td>NOT_DETECTED</td><td>False</td><td>Sin coincidencia en repositorios/charts/grupos configurados; no prueba ausencia absoluta.</td></tr><tr><td>OMS Agent / AMA</td><td>NOT_DETECTED</td><td>False</td><td>Sin coincidencia en repositorios/charts/grupos configurados; no prueba ausencia absoluta.</td></tr><tr><td>Azure Key Vault CSI Driver</td><td>NOT_DETECTED</td><td>False</td><td>Sin coincidencia en repositorios/charts/grupos configurados; no prueba ausencia absoluta.</td></tr><tr><td>Azure Disk CSI Driver</td><td>NOT_DETECTED</td><td>True</td><td>Sin coincidencia en repositorios/charts/grupos configurados; no prueba ausencia absoluta.</td></tr><tr><td>Azure File CSI Driver</td><td>NOT_DETECTED</td><td>True</td><td>Sin coincidencia en repositorios/charts/grupos configurados; no prueba ausencia absoluta.</td></tr><tr><td>External Secrets Operator</td><td>NOT_DETECTED</td><td>False</td><td>Sin coincidencia en repositorios/charts/grupos configurados; no prueba ausencia absoluta.</td></tr><tr><td>Cilium</td><td>NOT_DETECTED</td><td>False</td><td>Sin coincidencia en repositorios/charts/grupos configurados; no prueba ausencia absoluta.</td></tr><tr><td>Azure CNI</td><td>NOT_DETECTED</td><td>False</td><td>Sin coincidencia en repositorios/charts/grupos configurados; no prueba ausencia absoluta.</td></tr></tbody></table></details><h3>AKS Platform Compatibility</h3><pre>{
   &quot;detected&quot;: false,
   &quot;target_version&quot;: &quot;1.35.9&quot;,
   &quot;current_version&quot;: null,
@@ -98,46 +220,67 @@ details{background:white;border:1px solid #bccbdb;border-radius:6px;margin:12px 
     {
       &quot;file&quot;: &quot;argocd.json&quot;,
       &quot;catalog_version&quot;: &quot;2026.11.04.1&quot;,
+      &quot;path&quot;: &quot;catalogs/support/argocd.json&quot;,
       &quot;sha256&quot;: &quot;7e6aa251a44689ca27c7e2edafeedbabb66649a4886512132679b2e21cad0cb3&quot;
+    },
+    {
+      &quot;file&quot;: &quot;azure-disk.json&quot;,
+      &quot;catalog_version&quot;: &quot;2026.11.04.1&quot;,
+      &quot;path&quot;: &quot;catalogs/support/azure-disk.json&quot;,
+      &quot;sha256&quot;: &quot;98bbb8be675731b14387a7b4d6519a1c8947e3e90ee3849ab056b47c2a71746b&quot;
+    },
+    {
+      &quot;file&quot;: &quot;azure-file.json&quot;,
+      &quot;catalog_version&quot;: &quot;2026.11.04.1&quot;,
+      &quot;path&quot;: &quot;catalogs/support/azure-file.json&quot;,
+      &quot;sha256&quot;: &quot;849250d86351ca7378ca35de9c1cebdb884624b844f48d02a169c81c331eb0af&quot;
     },
     {
       &quot;file&quot;: &quot;calico.json&quot;,
       &quot;catalog_version&quot;: &quot;2026.11.04.2&quot;,
+      &quot;path&quot;: &quot;catalogs/support/calico.json&quot;,
       &quot;sha256&quot;: &quot;5a5baedaf7a225c80f9b438bb027a9df211e8a968f158b903639d5ed05098735&quot;
     },
     {
       &quot;file&quot;: &quot;cert-manager.json&quot;,
       &quot;catalog_version&quot;: &quot;2026.11.04.2&quot;,
+      &quot;path&quot;: &quot;catalogs/support/cert-manager.json&quot;,
       &quot;sha256&quot;: &quot;2a962b9b25a5845a92f5c0931715bc62a149d80236f52da97ce420e9b0c39b33&quot;
     },
     {
       &quot;file&quot;: &quot;dapr.json&quot;,
       &quot;catalog_version&quot;: &quot;2026.11.04.1&quot;,
+      &quot;path&quot;: &quot;catalogs/support/dapr.json&quot;,
       &quot;sha256&quot;: &quot;b78c40182115ad48e293b2fcbb0a624fd29f7b161eeef81347079939cfada73e&quot;
     },
     {
       &quot;file&quot;: &quot;gatekeeper.json&quot;,
       &quot;catalog_version&quot;: &quot;2026.11.04.1&quot;,
+      &quot;path&quot;: &quot;catalogs/support/gatekeeper.json&quot;,
       &quot;sha256&quot;: &quot;9372efa0202bbf81b36ef56251419a2497241bb8df5eb964859dd81485cf6029&quot;
     },
     {
       &quot;file&quot;: &quot;istio.json&quot;,
-      &quot;catalog_version&quot;: &quot;2026.11.04.1&quot;,
-      &quot;sha256&quot;: &quot;305d2234bda17176a363c8878a2553e79df1bf57fd27808b0bb57ad1cffad431&quot;
+      &quot;catalog_version&quot;: &quot;2026.11.04.3&quot;,
+      &quot;path&quot;: &quot;catalogs/support/istio.json&quot;,
+      &quot;sha256&quot;: &quot;9672086115807861fd7c911f06c8d33bbc3a4dff28993d419df76ff799df4a6d&quot;
     },
     {
       &quot;file&quot;: &quot;secrets-store-csi.json&quot;,
       &quot;catalog_version&quot;: &quot;2026.11.04.2&quot;,
+      &quot;path&quot;: &quot;catalogs/support/secrets-store-csi.json&quot;,
       &quot;sha256&quot;: &quot;2f82f9af9bc500fb2ca3892c8102010c87cecc6828fd18b1e190d299b91f8f09&quot;
     },
     {
       &quot;file&quot;: &quot;tigera-operator.json&quot;,
       &quot;catalog_version&quot;: &quot;2026.11.04.2&quot;,
+      &quot;path&quot;: &quot;catalogs/support/tigera-operator.json&quot;,
       &quot;sha256&quot;: &quot;bc3ea82928cec948d5c3565a4b5b9fb83c27a4a8ec402453f2a7097ad7d42063&quot;
     },
     {
       &quot;file&quot;: &quot;velero.json&quot;,
       &quot;catalog_version&quot;: &quot;2026.11.04.2&quot;,
+      &quot;path&quot;: &quot;catalogs/support/velero.json&quot;,
       &quot;sha256&quot;: &quot;fb6c3f8f579c95a86a6e0eac8b01b7302e174ab988826a125703871a26711662&quot;
     }
   ],
@@ -203,6 +346,36 @@ details{background:white;border:1px solid #bccbdb;border-radius:6px;margin:12px 
     &quot;evidence&quot;: &quot;Fila 1.30: Kubernetes soportados 1.32 a 1.36; evaluar también vigencia de mantenimiento.&quot;,
     &quot;support_state&quot;: &quot;supported&quot;
   },
+  &quot;detected_version&quot;: &quot;1.30.7&quot;,
+  &quot;version_confidence&quot;: &quot;server_cli&quot;,
+  &quot;catalog_lookup&quot;: {
+    &quot;catalog_present&quot;: true,
+    &quot;files&quot;: [
+      &quot;istio.json&quot;
+    ],
+    &quot;paths&quot;: [
+      &quot;catalogs/support/istio.json&quot;
+    ],
+    &quot;available_selectors&quot;: [
+      &quot;1.30.x&quot;,
+      &quot;1.29.x&quot;,
+      &quot;1.28.x&quot;,
+      &quot;1.27.x&quot;,
+      &quot;1.26.x&quot;,
+      &quot;1.25.x&quot;,
+      &quot;1.24.x&quot;,
+      &quot;1.23.x&quot;,
+      &quot;1.22.x&quot;,
+      &quot;1.21.x&quot;
+    ],
+    &quot;matched_selectors&quot;: [
+      &quot;1.30.x&quot;
+    ],
+    &quot;selected_selector&quot;: &quot;1.30.x&quot;,
+    &quot;normalized_version&quot;: &quot;1.30.7&quot;,
+    &quot;reason&quot;: &quot;matched&quot;
+  },
+  &quot;distribution_revision&quot;: null,
   &quot;reviewed_on&quot;: &quot;2026-11-04&quot;,
   &quot;catalog_limitations&quot;: [],
   &quot;detection_sources&quot;: [
@@ -213,6 +386,8 @@ details{background:white;border:1px solid #bccbdb;border-radius:6px;margin:12px 
       &quot;repository&quot;: &quot;docker.io/istio/pilot&quot;,
       &quot;declared_tag&quot;: &quot;1.30.7&quot;,
       &quot;revision&quot;: null,
+      &quot;identity_basis&quot;: &quot;catalog_repository&quot;,
+      &quot;confidence&quot;: &quot;image_tag&quot;,
       &quot;version_basis&quot;: &quot;workload_template_image_tag&quot;
     },
     {
@@ -225,6 +400,9 @@ details{background:white;border:1px solid #bccbdb;border-radius:6px;margin:12px 
     &quot;istioctl control plane&quot;
   ],
   &quot;resolved_versions&quot;: [
+    &quot;1.30.7&quot;
+  ],
+  &quot;raw_detected_versions&quot;: [
     &quot;1.30.7&quot;
   ]
 }</pre><p><b>Recomendación:</b> Revisar la matriz oficial y actualizar el componente o completar evidencia antes del upgrade.</p><p><a href='https://istio.io/latest/docs/releases/supported-releases/' rel='noreferrer'>Fuente técnica</a></p></details><details open><summary><b>NO_SUPPORT_DATA</b> <span class='UNKNOWN'>UNKNOWN / INFO</span></summary><p>Objetivo fuera de las versiones probadas; esto no demuestra incompatibilidad.</p><p>operator_compatibility · documented · static</p><pre>{
@@ -243,6 +421,27 @@ details{background:white;border:1px solid #bccbdb;border-radius:6px;margin:12px 
     &quot;evidence&quot;: &quot;La tabla de la rama release-3.2 enumera Kubernetes 1.31 a 1.34 como probados. Fuera de esa lista no se acredita incompatibilidad ni soporte.&quot;,
     &quot;support_state&quot;: &quot;supported&quot;
   },
+  &quot;detected_version&quot;: &quot;3.2.0&quot;,
+  &quot;version_confidence&quot;: &quot;image_tag&quot;,
+  &quot;catalog_lookup&quot;: {
+    &quot;catalog_present&quot;: true,
+    &quot;files&quot;: [
+      &quot;argocd.json&quot;
+    ],
+    &quot;paths&quot;: [
+      &quot;catalogs/support/argocd.json&quot;
+    ],
+    &quot;available_selectors&quot;: [
+      &quot;3.2.x&quot;
+    ],
+    &quot;matched_selectors&quot;: [
+      &quot;3.2.x&quot;
+    ],
+    &quot;selected_selector&quot;: &quot;3.2.x&quot;,
+    &quot;normalized_version&quot;: &quot;3.2.0&quot;,
+    &quot;reason&quot;: &quot;matched&quot;
+  },
+  &quot;distribution_revision&quot;: null,
   &quot;reviewed_on&quot;: &quot;2026-11-04&quot;,
   &quot;catalog_limitations&quot;: [],
   &quot;detection_sources&quot;: [
@@ -253,6 +452,8 @@ details{background:white;border:1px solid #bccbdb;border-radius:6px;margin:12px 
       &quot;repository&quot;: &quot;quay.io/argoproj/argocd&quot;,
       &quot;declared_tag&quot;: &quot;v3.2.0&quot;,
       &quot;revision&quot;: null,
+      &quot;identity_basis&quot;: &quot;catalog_repository&quot;,
+      &quot;confidence&quot;: &quot;image_tag&quot;,
       &quot;version_basis&quot;: &quot;workload_template_image_tag&quot;
     }
   ],
@@ -261,6 +462,9 @@ details{background:white;border:1px solid #bccbdb;border-radius:6px;margin:12px 
   ],
   &quot;resolved_versions&quot;: [
     &quot;3.2.0&quot;
+  ],
+  &quot;raw_detected_versions&quot;: [
+    &quot;v3.2.0&quot;
   ]
 }</pre><p><b>Recomendación:</b> Revisar la matriz oficial y actualizar el componente o completar evidencia antes del upgrade.</p><p><a href='https://argo-cd.readthedocs.io/en/release-3.2/operator-manual/tested-kubernetes-versions/' rel='noreferrer'>Fuente técnica</a></p></details><details open><summary><b>VERSION_EOL</b> <span class='WARN'>WARN / MEDIUM</span></summary><p>Versión fuera de mantenimiento según la evidencia oficial registrada.</p><p>operator_compatibility · documented · static</p><pre>{
   &quot;product&quot;: &quot;Cert Manager&quot;,
@@ -283,6 +487,31 @@ details{background:white;border:1px solid #bccbdb;border-radius:6px;margin:12px 
     &quot;exclusive&quot;: true,
     &quot;valid_until&quot;: &quot;2027-02-02&quot;
   },
+  &quot;detected_version&quot;: &quot;1.16.0&quot;,
+  &quot;version_confidence&quot;: &quot;image_tag&quot;,
+  &quot;catalog_lookup&quot;: {
+    &quot;catalog_present&quot;: true,
+    &quot;files&quot;: [
+      &quot;cert-manager.json&quot;
+    ],
+    &quot;paths&quot;: [
+      &quot;catalogs/support/cert-manager.json&quot;
+    ],
+    &quot;available_selectors&quot;: [
+      &quot;1.16.x&quot;,
+      &quot;1.18.x&quot;,
+      &quot;1.19.x&quot;,
+      &quot;1.20.x&quot;,
+      &quot;1.21.x&quot;
+    ],
+    &quot;matched_selectors&quot;: [
+      &quot;1.16.x&quot;
+    ],
+    &quot;selected_selector&quot;: &quot;1.16.x&quot;,
+    &quot;normalized_version&quot;: &quot;1.16.0&quot;,
+    &quot;reason&quot;: &quot;matched&quot;
+  },
+  &quot;distribution_revision&quot;: null,
   &quot;reviewed_on&quot;: &quot;2026-11-04&quot;,
   &quot;catalog_limitations&quot;: [],
   &quot;detection_sources&quot;: [
@@ -293,6 +522,8 @@ details{background:white;border:1px solid #bccbdb;border-radius:6px;margin:12px 
       &quot;repository&quot;: &quot;quay.io/jetstack/cert-manager-controller&quot;,
       &quot;declared_tag&quot;: &quot;v1.16.0&quot;,
       &quot;revision&quot;: null,
+      &quot;identity_basis&quot;: &quot;catalog_repository&quot;,
+      &quot;confidence&quot;: &quot;image_tag&quot;,
       &quot;version_basis&quot;: &quot;workload_template_image_tag&quot;
     }
   ],
@@ -301,6 +532,9 @@ details{background:white;border:1px solid #bccbdb;border-radius:6px;margin:12px 
   ],
   &quot;resolved_versions&quot;: [
     &quot;1.16.0&quot;
+  ],
+  &quot;raw_detected_versions&quot;: [
+    &quot;v1.16.0&quot;
   ]
 }</pre><p><b>Recomendación:</b> Revisar la matriz oficial y actualizar el componente o completar evidencia antes del upgrade.</p><p><a href='https://cert-manager.io/docs/releases/' rel='noreferrer'>Fuente técnica</a></p></details><details open><summary><b>NOT_COMPATIBLE</b> <span class='FAIL'>FAIL / HIGH</span></summary><p>Objetivo fuera del rango de soporte explícito del proveedor; no se recomienda este upgrade con la versión instalada.</p><p>operator_compatibility · documented · static</p><pre>{
   &quot;product&quot;: &quot;Cert Manager&quot;,
@@ -323,6 +557,31 @@ details{background:white;border:1px solid #bccbdb;border-radius:6px;margin:12px 
     &quot;exclusive&quot;: true,
     &quot;valid_until&quot;: &quot;2027-02-02&quot;
   },
+  &quot;detected_version&quot;: &quot;1.16.0&quot;,
+  &quot;version_confidence&quot;: &quot;image_tag&quot;,
+  &quot;catalog_lookup&quot;: {
+    &quot;catalog_present&quot;: true,
+    &quot;files&quot;: [
+      &quot;cert-manager.json&quot;
+    ],
+    &quot;paths&quot;: [
+      &quot;catalogs/support/cert-manager.json&quot;
+    ],
+    &quot;available_selectors&quot;: [
+      &quot;1.16.x&quot;,
+      &quot;1.18.x&quot;,
+      &quot;1.19.x&quot;,
+      &quot;1.20.x&quot;,
+      &quot;1.21.x&quot;
+    ],
+    &quot;matched_selectors&quot;: [
+      &quot;1.16.x&quot;
+    ],
+    &quot;selected_selector&quot;: &quot;1.16.x&quot;,
+    &quot;normalized_version&quot;: &quot;1.16.0&quot;,
+    &quot;reason&quot;: &quot;matched&quot;
+  },
+  &quot;distribution_revision&quot;: null,
   &quot;reviewed_on&quot;: &quot;2026-11-04&quot;,
   &quot;catalog_limitations&quot;: [],
   &quot;detection_sources&quot;: [
@@ -333,6 +592,8 @@ details{background:white;border:1px solid #bccbdb;border-radius:6px;margin:12px 
       &quot;repository&quot;: &quot;quay.io/jetstack/cert-manager-controller&quot;,
       &quot;declared_tag&quot;: &quot;v1.16.0&quot;,
       &quot;revision&quot;: null,
+      &quot;identity_basis&quot;: &quot;catalog_repository&quot;,
+      &quot;confidence&quot;: &quot;image_tag&quot;,
       &quot;version_basis&quot;: &quot;workload_template_image_tag&quot;
     }
   ],
@@ -341,6 +602,9 @@ details{background:white;border:1px solid #bccbdb;border-radius:6px;margin:12px 
   ],
   &quot;resolved_versions&quot;: [
     &quot;1.16.0&quot;
+  ],
+  &quot;raw_detected_versions&quot;: [
+    &quot;v1.16.0&quot;
   ]
 }</pre><p><b>Recomendación:</b> Revisar la matriz oficial y actualizar el componente o completar evidencia antes del upgrade.</p><p><a href='https://cert-manager.io/docs/releases/' rel='noreferrer'>Fuente técnica</a></p></details><details open><summary><b>PLATFORM-DISCOVERY</b> <span class='PASS'>PASS / INFO</span></summary><p>Cobertura del descubrimiento de plataformas.</p><p>operator_compatibility · tested · snapshot</p><pre>{
   &quot;errors&quot;: [],

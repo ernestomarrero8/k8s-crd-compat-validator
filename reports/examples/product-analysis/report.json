@@ -1,8 +1,8 @@
 {
-  "schema_version": "1.3",
+  "schema_version": "1.4",
   "tool": "k8s-crd-compat-validator",
-  "tool_version": "0.4.0",
-  "analyzed_at": "2026-11-04T19:00:33.058923+00:00",
+  "tool_version": "0.5.0",
+  "analyzed_at": "2026-11-04T20:12:18.235207+00:00",
   "cluster": "offline:product-crds.json",
   "current_version": "1.34.8",
   "target_version": "1.35.9",
@@ -121,6 +121,36 @@
           "evidence": "Fila 1.30: Kubernetes soportados 1.32 a 1.36; evaluar también vigencia de mantenimiento.",
           "support_state": "supported"
         },
+        "detected_version": "1.30.7",
+        "version_confidence": "server_cli",
+        "catalog_lookup": {
+          "catalog_present": true,
+          "files": [
+            "istio.json"
+          ],
+          "paths": [
+            "catalogs/support/istio.json"
+          ],
+          "available_selectors": [
+            "1.30.x",
+            "1.29.x",
+            "1.28.x",
+            "1.27.x",
+            "1.26.x",
+            "1.25.x",
+            "1.24.x",
+            "1.23.x",
+            "1.22.x",
+            "1.21.x"
+          ],
+          "matched_selectors": [
+            "1.30.x"
+          ],
+          "selected_selector": "1.30.x",
+          "normalized_version": "1.30.7",
+          "reason": "matched"
+        },
+        "distribution_revision": null,
         "reviewed_on": "2026-11-04",
         "catalog_limitations": [],
         "detection_sources": [
@@ -131,6 +161,8 @@
             "repository": "docker.io/istio/pilot",
             "declared_tag": "1.30.7",
             "revision": null,
+            "identity_basis": "catalog_repository",
+            "confidence": "image_tag",
             "version_basis": "workload_template_image_tag"
           },
           {
@@ -143,6 +175,9 @@
           "istioctl control plane"
         ],
         "resolved_versions": [
+          "1.30.7"
+        ],
+        "raw_detected_versions": [
           "1.30.7"
         ]
       },
@@ -174,6 +209,27 @@
           "evidence": "La tabla de la rama release-3.2 enumera Kubernetes 1.31 a 1.34 como probados. Fuera de esa lista no se acredita incompatibilidad ni soporte.",
           "support_state": "supported"
         },
+        "detected_version": "3.2.0",
+        "version_confidence": "image_tag",
+        "catalog_lookup": {
+          "catalog_present": true,
+          "files": [
+            "argocd.json"
+          ],
+          "paths": [
+            "catalogs/support/argocd.json"
+          ],
+          "available_selectors": [
+            "3.2.x"
+          ],
+          "matched_selectors": [
+            "3.2.x"
+          ],
+          "selected_selector": "3.2.x",
+          "normalized_version": "3.2.0",
+          "reason": "matched"
+        },
+        "distribution_revision": null,
         "reviewed_on": "2026-11-04",
         "catalog_limitations": [],
         "detection_sources": [
@@ -184,6 +240,8 @@
             "repository": "quay.io/argoproj/argocd",
             "declared_tag": "v3.2.0",
             "revision": null,
+            "identity_basis": "catalog_repository",
+            "confidence": "image_tag",
             "version_basis": "workload_template_image_tag"
           }
         ],
@@ -192,6 +250,9 @@
         ],
         "resolved_versions": [
           "3.2.0"
+        ],
+        "raw_detected_versions": [
+          "v3.2.0"
         ]
       },
       "recommendation": "Revisar la matriz oficial y actualizar el componente o completar evidencia antes del upgrade.",
@@ -227,6 +288,31 @@
           "exclusive": true,
           "valid_until": "2027-02-02"
         },
+        "detected_version": "1.16.0",
+        "version_confidence": "image_tag",
+        "catalog_lookup": {
+          "catalog_present": true,
+          "files": [
+            "cert-manager.json"
+          ],
+          "paths": [
+            "catalogs/support/cert-manager.json"
+          ],
+          "available_selectors": [
+            "1.16.x",
+            "1.18.x",
+            "1.19.x",
+            "1.20.x",
+            "1.21.x"
+          ],
+          "matched_selectors": [
+            "1.16.x"
+          ],
+          "selected_selector": "1.16.x",
+          "normalized_version": "1.16.0",
+          "reason": "matched"
+        },
+        "distribution_revision": null,
         "reviewed_on": "2026-11-04",
         "catalog_limitations": [],
         "detection_sources": [
@@ -237,6 +323,8 @@
             "repository": "quay.io/jetstack/cert-manager-controller",
             "declared_tag": "v1.16.0",
             "revision": null,
+            "identity_basis": "catalog_repository",
+            "confidence": "image_tag",
             "version_basis": "workload_template_image_tag"
           }
         ],
@@ -245,6 +333,9 @@
         ],
         "resolved_versions": [
           "1.16.0"
+        ],
+        "raw_detected_versions": [
+          "v1.16.0"
         ]
       },
       "recommendation": "Revisar la matriz oficial y actualizar el componente o completar evidencia antes del upgrade.",
@@ -280,6 +371,31 @@
           "exclusive": true,
           "valid_until": "2027-02-02"
         },
+        "detected_version": "1.16.0",
+        "version_confidence": "image_tag",
+        "catalog_lookup": {
+          "catalog_present": true,
+          "files": [
+            "cert-manager.json"
+          ],
+          "paths": [
+            "catalogs/support/cert-manager.json"
+          ],
+          "available_selectors": [
+            "1.16.x",
+            "1.18.x",
+            "1.19.x",
+            "1.20.x",
+            "1.21.x"
+          ],
+          "matched_selectors": [
+            "1.16.x"
+          ],
+          "selected_selector": "1.16.x",
+          "normalized_version": "1.16.0",
+          "reason": "matched"
+        },
+        "distribution_revision": null,
         "reviewed_on": "2026-11-04",
         "catalog_limitations": [],
         "detection_sources": [
@@ -290,6 +406,8 @@
             "repository": "quay.io/jetstack/cert-manager-controller",
             "declared_tag": "v1.16.0",
             "revision": null,
+            "identity_basis": "catalog_repository",
+            "confidence": "image_tag",
             "version_basis": "workload_template_image_tag"
           }
         ],
@@ -298,6 +416,9 @@
         ],
         "resolved_versions": [
           "1.16.0"
+        ],
+        "raw_detected_versions": [
+          "v1.16.0"
         ]
       },
       "recommendation": "Revisar la matriz oficial y actualizar el componente o completar evidencia antes del upgrade.",
@@ -835,6 +956,9 @@
         "versions": [
           "1.30.7"
         ],
+        "detected_versions": [
+          "1.30.7"
+        ],
         "evidence": [
           {
             "from": "deployments.apps",
@@ -843,6 +967,8 @@
             "repository": "docker.io/istio/pilot",
             "declared_tag": "1.30.7",
             "revision": null,
+            "identity_basis": "catalog_repository",
+            "confidence": "image_tag",
             "version_basis": "workload_template_image_tag"
           },
           {
@@ -877,7 +1003,12 @@
           "istioctl control plane"
         ],
         "version_conflict": false,
+        "normalized_versions": [
+          "1.30.7"
+        ],
         "resolution_policy": "cluster-bound server CLI > Helm appVersion > exact image tags > explicit product resource; all known mixed versions evaluated",
+        "confidence": "server_cli",
+        "detected_version": "1.30.7",
         "status": "PASS",
         "compatibility": "Sí, según evidencia documentada",
         "findings": [
@@ -903,6 +1034,36 @@
                 "evidence": "Fila 1.30: Kubernetes soportados 1.32 a 1.36; evaluar también vigencia de mantenimiento.",
                 "support_state": "supported"
               },
+              "detected_version": "1.30.7",
+              "version_confidence": "server_cli",
+              "catalog_lookup": {
+                "catalog_present": true,
+                "files": [
+                  "istio.json"
+                ],
+                "paths": [
+                  "catalogs/support/istio.json"
+                ],
+                "available_selectors": [
+                  "1.30.x",
+                  "1.29.x",
+                  "1.28.x",
+                  "1.27.x",
+                  "1.26.x",
+                  "1.25.x",
+                  "1.24.x",
+                  "1.23.x",
+                  "1.22.x",
+                  "1.21.x"
+                ],
+                "matched_selectors": [
+                  "1.30.x"
+                ],
+                "selected_selector": "1.30.x",
+                "normalized_version": "1.30.7",
+                "reason": "matched"
+              },
+              "distribution_revision": null,
               "reviewed_on": "2026-11-04",
               "catalog_limitations": [],
               "detection_sources": [
@@ -913,6 +1074,8 @@
                   "repository": "docker.io/istio/pilot",
                   "declared_tag": "1.30.7",
                   "revision": null,
+                  "identity_basis": "catalog_repository",
+                  "confidence": "image_tag",
                   "version_basis": "workload_template_image_tag"
                 },
                 {
@@ -925,6 +1088,9 @@
                 "istioctl control plane"
               ],
               "resolved_versions": [
+                "1.30.7"
+              ],
+              "raw_detected_versions": [
                 "1.30.7"
               ]
             },
@@ -945,6 +1111,9 @@
         "versions": [
           "3.2.0"
         ],
+        "detected_versions": [
+          "v3.2.0"
+        ],
         "evidence": [
           {
             "from": "deployments.apps",
@@ -953,6 +1122,8 @@
             "repository": "quay.io/argoproj/argocd",
             "declared_tag": "v3.2.0",
             "revision": null,
+            "identity_basis": "catalog_repository",
+            "confidence": "image_tag",
             "version_basis": "workload_template_image_tag"
           }
         ],
@@ -975,7 +1146,12 @@
           "deployments.apps"
         ],
         "version_conflict": false,
+        "normalized_versions": [
+          "3.2.0"
+        ],
         "resolution_policy": "cluster-bound server CLI > Helm appVersion > exact image tags > explicit product resource; all known mixed versions evaluated",
+        "confidence": "image_tag",
+        "detected_version": "v3.2.0",
         "status": "UNKNOWN",
         "compatibility": "No verificada",
         "findings": [
@@ -1001,6 +1177,27 @@
                 "evidence": "La tabla de la rama release-3.2 enumera Kubernetes 1.31 a 1.34 como probados. Fuera de esa lista no se acredita incompatibilidad ni soporte.",
                 "support_state": "supported"
               },
+              "detected_version": "3.2.0",
+              "version_confidence": "image_tag",
+              "catalog_lookup": {
+                "catalog_present": true,
+                "files": [
+                  "argocd.json"
+                ],
+                "paths": [
+                  "catalogs/support/argocd.json"
+                ],
+                "available_selectors": [
+                  "3.2.x"
+                ],
+                "matched_selectors": [
+                  "3.2.x"
+                ],
+                "selected_selector": "3.2.x",
+                "normalized_version": "3.2.0",
+                "reason": "matched"
+              },
+              "distribution_revision": null,
               "reviewed_on": "2026-11-04",
               "catalog_limitations": [],
               "detection_sources": [
@@ -1011,6 +1208,8 @@
                   "repository": "quay.io/argoproj/argocd",
                   "declared_tag": "v3.2.0",
                   "revision": null,
+                  "identity_basis": "catalog_repository",
+                  "confidence": "image_tag",
                   "version_basis": "workload_template_image_tag"
                 }
               ],
@@ -1019,6 +1218,9 @@
               ],
               "resolved_versions": [
                 "3.2.0"
+              ],
+              "raw_detected_versions": [
+                "v3.2.0"
               ]
             },
             "recommendation": "Revisar la matriz oficial y actualizar el componente o completar evidencia antes del upgrade.",
@@ -1038,6 +1240,9 @@
         "versions": [
           "1.16.0"
         ],
+        "detected_versions": [
+          "v1.16.0"
+        ],
         "evidence": [
           {
             "from": "deployments.apps",
@@ -1046,6 +1251,8 @@
             "repository": "quay.io/jetstack/cert-manager-controller",
             "declared_tag": "v1.16.0",
             "revision": null,
+            "identity_basis": "catalog_repository",
+            "confidence": "image_tag",
             "version_basis": "workload_template_image_tag"
           }
         ],
@@ -1068,7 +1275,12 @@
           "deployments.apps"
         ],
         "version_conflict": false,
+        "normalized_versions": [
+          "1.16.0"
+        ],
         "resolution_policy": "cluster-bound server CLI > Helm appVersion > exact image tags > explicit product resource; all known mixed versions evaluated",
+        "confidence": "image_tag",
+        "detected_version": "v1.16.0",
         "status": "FAIL",
         "compatibility": "No",
         "findings": [
@@ -1099,6 +1311,31 @@
                 "exclusive": true,
                 "valid_until": "2027-02-02"
               },
+              "detected_version": "1.16.0",
+              "version_confidence": "image_tag",
+              "catalog_lookup": {
+                "catalog_present": true,
+                "files": [
+                  "cert-manager.json"
+                ],
+                "paths": [
+                  "catalogs/support/cert-manager.json"
+                ],
+                "available_selectors": [
+                  "1.16.x",
+                  "1.18.x",
+                  "1.19.x",
+                  "1.20.x",
+                  "1.21.x"
+                ],
+                "matched_selectors": [
+                  "1.16.x"
+                ],
+                "selected_selector": "1.16.x",
+                "normalized_version": "1.16.0",
+                "reason": "matched"
+              },
+              "distribution_revision": null,
               "reviewed_on": "2026-11-04",
               "catalog_limitations": [],
               "detection_sources": [
@@ -1109,6 +1346,8 @@
                   "repository": "quay.io/jetstack/cert-manager-controller",
                   "declared_tag": "v1.16.0",
                   "revision": null,
+                  "identity_basis": "catalog_repository",
+                  "confidence": "image_tag",
                   "version_basis": "workload_template_image_tag"
                 }
               ],
@@ -1117,6 +1356,9 @@
               ],
               "resolved_versions": [
                 "1.16.0"
+              ],
+              "raw_detected_versions": [
+                "v1.16.0"
               ]
             },
             "recommendation": "Revisar la matriz oficial y actualizar el componente o completar evidencia antes del upgrade.",
@@ -1152,6 +1394,31 @@
                 "exclusive": true,
                 "valid_until": "2027-02-02"
               },
+              "detected_version": "1.16.0",
+              "version_confidence": "image_tag",
+              "catalog_lookup": {
+                "catalog_present": true,
+                "files": [
+                  "cert-manager.json"
+                ],
+                "paths": [
+                  "catalogs/support/cert-manager.json"
+                ],
+                "available_selectors": [
+                  "1.16.x",
+                  "1.18.x",
+                  "1.19.x",
+                  "1.20.x",
+                  "1.21.x"
+                ],
+                "matched_selectors": [
+                  "1.16.x"
+                ],
+                "selected_selector": "1.16.x",
+                "normalized_version": "1.16.0",
+                "reason": "matched"
+              },
+              "distribution_revision": null,
               "reviewed_on": "2026-11-04",
               "catalog_limitations": [],
               "detection_sources": [
@@ -1162,6 +1429,8 @@
                   "repository": "quay.io/jetstack/cert-manager-controller",
                   "declared_tag": "v1.16.0",
                   "revision": null,
+                  "identity_basis": "catalog_repository",
+                  "confidence": "image_tag",
                   "version_basis": "workload_template_image_tag"
                 }
               ],
@@ -1170,6 +1439,9 @@
               ],
               "resolved_versions": [
                 "1.16.0"
+              ],
+              "raw_detected_versions": [
+                "v1.16.0"
               ]
             },
             "recommendation": "Revisar la matriz oficial y actualizar el componente o completar evidencia antes del upgrade.",
@@ -1214,6 +1486,248 @@
         "Node images se inventarían; no se infiere compatibilidad futura por su nombre."
       ]
     },
+    "detector_diagnostics": [
+      {
+        "product": "Argo CD",
+        "id": "argocd",
+        "status": "DETECTED",
+        "catalog_present": true,
+        "reason": "Identidad exacta encontrada",
+        "inventory_errors": []
+      },
+      {
+        "product": "Argo Workflows",
+        "id": "argo-workflows",
+        "status": "NOT_DETECTED",
+        "catalog_present": false,
+        "reason": "Sin coincidencia en repositorios/charts/grupos configurados; no prueba ausencia absoluta.",
+        "inventory_errors": []
+      },
+      {
+        "product": "Istio",
+        "id": "istio",
+        "status": "DETECTED",
+        "catalog_present": true,
+        "reason": "Identidad exacta encontrada",
+        "inventory_errors": []
+      },
+      {
+        "product": "Gatekeeper",
+        "id": "gatekeeper",
+        "status": "NOT_DETECTED",
+        "catalog_present": true,
+        "reason": "Sin coincidencia en repositorios/charts/grupos configurados; no prueba ausencia absoluta.",
+        "inventory_errors": []
+      },
+      {
+        "product": "Calico",
+        "id": "calico",
+        "status": "NOT_DETECTED",
+        "catalog_present": true,
+        "reason": "Sin coincidencia en repositorios/charts/grupos configurados; no prueba ausencia absoluta.",
+        "inventory_errors": []
+      },
+      {
+        "product": "Tigera Operator",
+        "id": "tigera",
+        "status": "NOT_DETECTED",
+        "catalog_present": true,
+        "reason": "Sin coincidencia en repositorios/charts/grupos configurados; no prueba ausencia absoluta.",
+        "inventory_errors": []
+      },
+      {
+        "product": "Dapr",
+        "id": "dapr",
+        "status": "NOT_DETECTED",
+        "catalog_present": true,
+        "reason": "Sin coincidencia en repositorios/charts/grupos configurados; no prueba ausencia absoluta.",
+        "inventory_errors": []
+      },
+      {
+        "product": "Secrets Store CSI Driver",
+        "id": "secrets-store-csi",
+        "status": "NOT_DETECTED",
+        "catalog_present": true,
+        "reason": "Sin coincidencia en repositorios/charts/grupos configurados; no prueba ausencia absoluta.",
+        "inventory_errors": []
+      },
+      {
+        "product": "Azure Policy Add-on",
+        "id": "azure-policy",
+        "status": "NOT_DETECTED",
+        "catalog_present": false,
+        "reason": "Sin coincidencia en repositorios/charts/grupos configurados; no prueba ausencia absoluta.",
+        "inventory_errors": []
+      },
+      {
+        "product": "Defender for Cloud",
+        "id": "defender",
+        "status": "NOT_DETECTED",
+        "catalog_present": false,
+        "reason": "Sin coincidencia en repositorios/charts/grupos configurados; no prueba ausencia absoluta.",
+        "inventory_errors": []
+      },
+      {
+        "product": "Cluster Autoscaler",
+        "id": "autoscaler",
+        "status": "NOT_DETECTED",
+        "catalog_present": false,
+        "reason": "Sin coincidencia en repositorios/charts/grupos configurados; no prueba ausencia absoluta.",
+        "inventory_errors": []
+      },
+      {
+        "product": "Karpenter",
+        "id": "karpenter",
+        "status": "NOT_DETECTED",
+        "catalog_present": false,
+        "reason": "Sin coincidencia en repositorios/charts/grupos configurados; no prueba ausencia absoluta.",
+        "inventory_errors": []
+      },
+      {
+        "product": "Cert Manager",
+        "id": "cert-manager",
+        "status": "DETECTED",
+        "catalog_present": true,
+        "reason": "Identidad exacta encontrada",
+        "inventory_errors": []
+      },
+      {
+        "product": "NGINX Ingress Controller (community)",
+        "id": "ingress-nginx",
+        "status": "NOT_DETECTED",
+        "catalog_present": false,
+        "reason": "Sin coincidencia en repositorios/charts/grupos configurados; no prueba ausencia absoluta.",
+        "inventory_errors": []
+      },
+      {
+        "product": "NGINX Ingress Controller (F5)",
+        "id": "nginx",
+        "status": "NOT_DETECTED",
+        "catalog_present": false,
+        "reason": "Sin coincidencia en repositorios/charts/grupos configurados; no prueba ausencia absoluta.",
+        "inventory_errors": []
+      },
+      {
+        "product": "AGIC",
+        "id": "agic",
+        "status": "NOT_DETECTED",
+        "catalog_present": false,
+        "reason": "Sin coincidencia en repositorios/charts/grupos configurados; no prueba ausencia absoluta.",
+        "inventory_errors": []
+      },
+      {
+        "product": "External DNS",
+        "id": "external-dns",
+        "status": "NOT_DETECTED",
+        "catalog_present": false,
+        "reason": "Sin coincidencia en repositorios/charts/grupos configurados; no prueba ausencia absoluta.",
+        "inventory_errors": []
+      },
+      {
+        "product": "Velero",
+        "id": "velero",
+        "status": "NOT_DETECTED",
+        "catalog_present": true,
+        "reason": "Sin coincidencia en repositorios/charts/grupos configurados; no prueba ausencia absoluta.",
+        "inventory_errors": []
+      },
+      {
+        "product": "Snapshot Controller",
+        "id": "snapshot",
+        "status": "NOT_DETECTED",
+        "catalog_present": false,
+        "reason": "Sin coincidencia en repositorios/charts/grupos configurados; no prueba ausencia absoluta.",
+        "inventory_errors": []
+      },
+      {
+        "product": "Prometheus Operator",
+        "id": "prometheus",
+        "status": "NOT_DETECTED",
+        "catalog_present": false,
+        "reason": "Sin coincidencia en repositorios/charts/grupos configurados; no prueba ausencia absoluta.",
+        "inventory_errors": []
+      },
+      {
+        "product": "OpenTelemetry Operator",
+        "id": "otel",
+        "status": "NOT_DETECTED",
+        "catalog_present": false,
+        "reason": "Sin coincidencia en repositorios/charts/grupos configurados; no prueba ausencia absoluta.",
+        "inventory_errors": []
+      },
+      {
+        "product": "FluxCD",
+        "id": "flux",
+        "status": "NOT_DETECTED",
+        "catalog_present": false,
+        "reason": "Sin coincidencia en repositorios/charts/grupos configurados; no prueba ausencia absoluta.",
+        "inventory_errors": []
+      },
+      {
+        "product": "Kyverno",
+        "id": "kyverno",
+        "status": "NOT_DETECTED",
+        "catalog_present": false,
+        "reason": "Sin coincidencia en repositorios/charts/grupos configurados; no prueba ausencia absoluta.",
+        "inventory_errors": []
+      },
+      {
+        "product": "OMS Agent / AMA",
+        "id": "ama",
+        "status": "NOT_DETECTED",
+        "catalog_present": false,
+        "reason": "Sin coincidencia en repositorios/charts/grupos configurados; no prueba ausencia absoluta.",
+        "inventory_errors": []
+      },
+      {
+        "product": "Azure Key Vault CSI Driver",
+        "id": "azure-keyvault",
+        "status": "NOT_DETECTED",
+        "catalog_present": false,
+        "reason": "Sin coincidencia en repositorios/charts/grupos configurados; no prueba ausencia absoluta.",
+        "inventory_errors": []
+      },
+      {
+        "product": "Azure Disk CSI Driver",
+        "id": "azure-disk",
+        "status": "NOT_DETECTED",
+        "catalog_present": true,
+        "reason": "Sin coincidencia en repositorios/charts/grupos configurados; no prueba ausencia absoluta.",
+        "inventory_errors": []
+      },
+      {
+        "product": "Azure File CSI Driver",
+        "id": "azure-file",
+        "status": "NOT_DETECTED",
+        "catalog_present": true,
+        "reason": "Sin coincidencia en repositorios/charts/grupos configurados; no prueba ausencia absoluta.",
+        "inventory_errors": []
+      },
+      {
+        "product": "External Secrets Operator",
+        "id": "external-secrets",
+        "status": "NOT_DETECTED",
+        "catalog_present": false,
+        "reason": "Sin coincidencia en repositorios/charts/grupos configurados; no prueba ausencia absoluta.",
+        "inventory_errors": []
+      },
+      {
+        "product": "Cilium",
+        "id": "cilium",
+        "status": "NOT_DETECTED",
+        "catalog_present": false,
+        "reason": "Sin coincidencia en repositorios/charts/grupos configurados; no prueba ausencia absoluta.",
+        "inventory_errors": []
+      },
+      {
+        "product": "Azure CNI",
+        "id": "azure-cni",
+        "status": "NOT_DETECTED",
+        "catalog_present": false,
+        "reason": "Sin coincidencia en repositorios/charts/grupos configurados; no prueba ausencia absoluta.",
+        "inventory_errors": []
+      }
+    ],
     "support_coverage": {
       "products": 3,
       "unknown_products": 1,
@@ -1225,46 +1739,67 @@
         {
           "file": "argocd.json",
           "catalog_version": "2026.11.04.1",
+          "path": "catalogs/support/argocd.json",
           "sha256": "7e6aa251a44689ca27c7e2edafeedbabb66649a4886512132679b2e21cad0cb3"
+        },
+        {
+          "file": "azure-disk.json",
+          "catalog_version": "2026.11.04.1",
+          "path": "catalogs/support/azure-disk.json",
+          "sha256": "98bbb8be675731b14387a7b4d6519a1c8947e3e90ee3849ab056b47c2a71746b"
+        },
+        {
+          "file": "azure-file.json",
+          "catalog_version": "2026.11.04.1",
+          "path": "catalogs/support/azure-file.json",
+          "sha256": "849250d86351ca7378ca35de9c1cebdb884624b844f48d02a169c81c331eb0af"
         },
         {
           "file": "calico.json",
           "catalog_version": "2026.11.04.2",
+          "path": "catalogs/support/calico.json",
           "sha256": "5a5baedaf7a225c80f9b438bb027a9df211e8a968f158b903639d5ed05098735"
         },
         {
           "file": "cert-manager.json",
           "catalog_version": "2026.11.04.2",
+          "path": "catalogs/support/cert-manager.json",
           "sha256": "2a962b9b25a5845a92f5c0931715bc62a149d80236f52da97ce420e9b0c39b33"
         },
         {
           "file": "dapr.json",
           "catalog_version": "2026.11.04.1",
+          "path": "catalogs/support/dapr.json",
           "sha256": "b78c40182115ad48e293b2fcbb0a624fd29f7b161eeef81347079939cfada73e"
         },
         {
           "file": "gatekeeper.json",
           "catalog_version": "2026.11.04.1",
+          "path": "catalogs/support/gatekeeper.json",
           "sha256": "9372efa0202bbf81b36ef56251419a2497241bb8df5eb964859dd81485cf6029"
         },
         {
           "file": "istio.json",
-          "catalog_version": "2026.11.04.1",
-          "sha256": "305d2234bda17176a363c8878a2553e79df1bf57fd27808b0bb57ad1cffad431"
+          "catalog_version": "2026.11.04.3",
+          "path": "catalogs/support/istio.json",
+          "sha256": "9672086115807861fd7c911f06c8d33bbc3a4dff28993d419df76ff799df4a6d"
         },
         {
           "file": "secrets-store-csi.json",
           "catalog_version": "2026.11.04.2",
+          "path": "catalogs/support/secrets-store-csi.json",
           "sha256": "2f82f9af9bc500fb2ca3892c8102010c87cecc6828fd18b1e190d299b91f8f09"
         },
         {
           "file": "tigera-operator.json",
           "catalog_version": "2026.11.04.2",
+          "path": "catalogs/support/tigera-operator.json",
           "sha256": "bc3ea82928cec948d5c3565a4b5b9fb83c27a4a8ec402453f2a7097ad7d42063"
         },
         {
           "file": "velero.json",
           "catalog_version": "2026.11.04.2",
+          "path": "catalogs/support/velero.json",
           "sha256": "fb6c3f8f579c95a86a6e0eac8b01b7302e174ab988826a125703871a26711662"
         }
       ],
@@ -1274,45 +1809,82 @@
     "analyzed_on": "2026-11-04"
   },
   "readiness": {
-    "score": 38.9,
+    "score": 53.7,
     "scale": 100,
     "decision": "BLOCKED",
     "categories": {
       "operators": {
         "weight": 40,
         "status": "FAIL",
-        "earned_points": 0,
-        "observations": 4
+        "earned_points": 13.33,
+        "observations": 3,
+        "evidence_coverage": 66.7,
+        "counts": {
+          "PASS": 1,
+          "WARN": 0,
+          "FAIL": 1,
+          "UNKNOWN": 1,
+          "ERROR": 0
+        }
       },
       "crds": {
         "weight": 25,
         "status": "PASS",
-        "earned_points": 25,
-        "observations": 12
+        "earned_points": 25.0,
+        "observations": 3,
+        "evidence_coverage": 100.0,
+        "counts": {
+          "PASS": 3,
+          "WARN": 0,
+          "FAIL": 0,
+          "UNKNOWN": 0,
+          "ERROR": 0
+        }
       },
       "pluto": {
         "weight": 15,
         "status": "UNKNOWN",
-        "earned_points": 0,
-        "observations": 1
+        "earned_points": 0.0,
+        "observations": 1,
+        "evidence_coverage": 0.0,
+        "counts": {
+          "PASS": 0,
+          "WARN": 0,
+          "FAIL": 0,
+          "UNKNOWN": 1,
+          "ERROR": 0
+        }
       },
       "aks_addons": {
         "weight": 10,
         "status": "NOT_APPLICABLE",
         "earned_points": 0,
-        "observations": 0
+        "observations": 0,
+        "evidence_coverage": null,
+        "counts": {}
       },
       "storage": {
         "weight": 10,
         "status": "PASS",
-        "earned_points": 10,
-        "observations": 3
+        "earned_points": 10.0,
+        "observations": 3,
+        "evidence_coverage": 100.0,
+        "counts": {
+          "PASS": 3,
+          "WARN": 0,
+          "FAIL": 0,
+          "UNKNOWN": 0,
+          "ERROR": 0
+        }
       }
     },
+    "scoring_version": "2.0",
+    "evidence_coverage": 68.5,
+    "assessed_compatibility_score": 78.4,
     "applicable_weight": 90,
     "confirmed_blockers": true,
     "pending_evidence": true,
-    "method": "Worst finding per category. PASS=100%, WARN=50%, UNKNOWN/FAIL/ERROR=0%; N/A excluded and remaining weights normalized.",
+    "method": "Worst finding per product/CRD, then average units within each weighted category. PASS=100%, WARN=50%, UNKNOWN/FAIL/ERROR=0%; N/A excluded. Evidence coverage and compatibility of assessed units reported separately.",
     "limitation": "El score es una ayuda de revisión; READY exige ausencia de bloqueos, avisos y evidencia pendiente en todo el informe."
   },
   "knowledge": {

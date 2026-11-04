@@ -1,8 +1,8 @@
 {
-  "schema_version": "1.3",
+  "schema_version": "1.4",
   "tool": "k8s-crd-compat-validator",
-  "tool_version": "0.4.0",
-  "analyzed_at": "2026-11-04T19:00:33.058923+00:00",
+  "tool_version": "0.5.0",
+  "analyzed_at": "2026-11-04T20:12:18.201945+00:00",
   "cluster": "demo-cluster-b",
   "current_version": "1.34.8",
   "target_version": "1.35.9",
@@ -16,30 +16,30 @@
   "kubectl_queries": 0,
   "overall_status": "FAIL",
   "summary": {
-    "total_crds": 3,
+    "total_crds": 1,
     "states": {
       "PASS": 0,
-      "UNKNOWN": 2,
+      "UNKNOWN": 1,
       "WARN": 0,
-      "FAIL": 1,
+      "FAIL": 0,
       "ERROR": 0
     },
     "risks_by_severity": {
       "CRITICAL": 0,
-      "HIGH": 2,
+      "HIGH": 1,
       "MEDIUM": 1,
       "LOW": 0,
       "INFO": 0
     },
     "unknown_findings": 7,
-    "platform_products": 3,
-    "unknown_products": 1,
-    "unknown_product_percentage": 33.3,
-    "crds_linked_to_product": 3,
-    "crds_without_product": 0,
+    "platform_products": 5,
+    "unknown_products": 3,
+    "unknown_product_percentage": 60.0,
+    "crds_linked_to_product": 0,
+    "crds_without_product": 1,
     "platform_states": {
       "PASS": 1,
-      "UNKNOWN": 1,
+      "UNKNOWN": 3,
       "WARN": 0,
       "FAIL": 1,
       "ERROR": 0
@@ -100,38 +100,132 @@
       ]
     },
     {
-      "rule_id": "COMPATIBLE",
+      "rule_id": "NO_SUPPORT_DATA",
       "category": "operator_compatibility",
-      "status": "PASS",
+      "status": "UNKNOWN",
       "severity": "INFO",
-      "description": "Objetivo dentro del rango documentado; consultar si la evidencia acredita soporte o pruebas upstream.",
+      "description": "No existe una única fila de matriz oficial revisada para esta versión.",
+      "evidence": {
+        "product": "Gatekeeper",
+        "installed_version": "3.18.0",
+        "target": "1.35.9",
+        "matrix": {},
+        "detected_version": "3.18.0",
+        "version_confidence": "image_tag",
+        "catalog_lookup": {
+          "catalog_present": true,
+          "files": [
+            "gatekeeper.json"
+          ],
+          "paths": [
+            "catalogs/support/gatekeeper.json"
+          ],
+          "available_selectors": [],
+          "matched_selectors": [],
+          "selected_selector": null,
+          "normalized_version": "3.18.0",
+          "reason": "no_numeric_rows"
+        },
+        "distribution_revision": null,
+        "reviewed_on": null,
+        "catalog_limitations": [
+          "La política general de versiones soportadas no prueba una matriz de cada binario antiguo. Sin fila revisada se informa UNKNOWN."
+        ],
+        "detection_sources": [
+          {
+            "from": "deployments.apps",
+            "namespace": "gatekeeper-system",
+            "name": "gatekeeper-controller-manager",
+            "repository": "openpolicyagent/gatekeeper",
+            "declared_tag": "v3.18.0",
+            "revision": null,
+            "identity_basis": "catalog_repository",
+            "confidence": "image_tag",
+            "version_basis": "workload_template_image_tag"
+          }
+        ],
+        "resolution_sources": [
+          "deployments.apps"
+        ],
+        "resolved_versions": [
+          "3.18.0"
+        ],
+        "raw_detected_versions": [
+          "v3.18.0"
+        ]
+      },
+      "recommendation": "Revisar la matriz oficial y actualizar el componente o completar evidencia antes del upgrade.",
+      "source": "https://github.com/open-policy-agent/gatekeeper/blob/master/docs/Release_Management.md",
+      "relation": "limitation",
+      "validation_type": "static",
+      "limitations": []
+    },
+    {
+      "rule_id": "VERSION_EOL",
+      "category": "operator_compatibility",
+      "status": "WARN",
+      "severity": "MEDIUM",
+      "description": "Versión fuera de mantenimiento según la evidencia oficial registrada.",
       "evidence": {
         "product": "Istio",
-        "installed_version": "1.30.7",
+        "installed_version": "1.24.1",
         "target": "1.35.9",
         "matrix": {
-          "version": "1.30.x",
-          "min_kubernetes": "1.32.0",
-          "max_kubernetes": "1.36.x",
+          "version": "1.24.x",
+          "min_kubernetes": "1.28.0",
+          "max_kubernetes": "1.31.x",
           "matrix_type": "supported",
           "exclusive": true,
+          "end_of_support": "2025-06-24",
           "source": "https://istio.io/latest/docs/releases/supported-releases/",
           "reviewed_on": "2026-11-04",
           "valid_until": "2027-02-02",
-          "evidence": "Fila 1.30: Kubernetes soportados 1.32 a 1.36; evaluar también vigencia de mantenimiento.",
+          "evidence": "Fila oficial 1.24: soporte Kubernetes 1.28–1.31; EOL 24 junio 2025.",
           "support_state": "supported"
         },
+        "detected_version": "1.24.1",
+        "version_confidence": "server_cli",
+        "catalog_lookup": {
+          "catalog_present": true,
+          "files": [
+            "istio.json"
+          ],
+          "paths": [
+            "catalogs/support/istio.json"
+          ],
+          "available_selectors": [
+            "1.30.x",
+            "1.29.x",
+            "1.28.x",
+            "1.27.x",
+            "1.26.x",
+            "1.25.x",
+            "1.24.x",
+            "1.23.x",
+            "1.22.x",
+            "1.21.x"
+          ],
+          "matched_selectors": [
+            "1.24.x"
+          ],
+          "selected_selector": "1.24.x",
+          "normalized_version": "1.24.1",
+          "reason": "matched"
+        },
+        "distribution_revision": null,
         "reviewed_on": "2026-11-04",
         "catalog_limitations": [],
         "detection_sources": [
           {
-            "from": "deployments.apps",
+            "from": "pods",
             "namespace": "istio-system",
-            "name": "istiod",
+            "name": "istiod-example",
             "repository": "docker.io/istio/pilot",
-            "declared_tag": "1.30.7",
+            "declared_tag": "1.24.1",
             "revision": null,
-            "version_basis": "workload_template_image_tag"
+            "identity_basis": "catalog_repository",
+            "confidence": "image_tag",
+            "version_basis": "pod_image_tag"
           },
           {
             "from": "istioctl control plane",
@@ -143,112 +237,14 @@
           "istioctl control plane"
         ],
         "resolved_versions": [
-          "1.30.7"
+          "1.24.1"
+        ],
+        "raw_detected_versions": [
+          "1.24.1"
         ]
       },
       "recommendation": "Revisar la matriz oficial y actualizar el componente o completar evidencia antes del upgrade.",
       "source": "https://istio.io/latest/docs/releases/supported-releases/",
-      "relation": "documented",
-      "validation_type": "static",
-      "limitations": []
-    },
-    {
-      "rule_id": "NO_SUPPORT_DATA",
-      "category": "operator_compatibility",
-      "status": "UNKNOWN",
-      "severity": "INFO",
-      "description": "Objetivo fuera de las versiones probadas; esto no demuestra incompatibilidad.",
-      "evidence": {
-        "product": "Argo CD",
-        "installed_version": "3.2.0",
-        "target": "1.35.9",
-        "matrix": {
-          "version": "3.2.x",
-          "min_kubernetes": "1.31.0",
-          "max_kubernetes": "1.34.x",
-          "matrix_type": "tested",
-          "exclusive": false,
-          "source": "https://argo-cd.readthedocs.io/en/release-3.2/operator-manual/tested-kubernetes-versions/",
-          "reviewed_on": "2026-11-04",
-          "valid_until": "2027-02-02",
-          "evidence": "La tabla de la rama release-3.2 enumera Kubernetes 1.31 a 1.34 como probados. Fuera de esa lista no se acredita incompatibilidad ni soporte.",
-          "support_state": "supported"
-        },
-        "reviewed_on": "2026-11-04",
-        "catalog_limitations": [],
-        "detection_sources": [
-          {
-            "from": "deployments.apps",
-            "namespace": "argocd",
-            "name": "argocd-server",
-            "repository": "quay.io/argoproj/argocd",
-            "declared_tag": "v3.2.0",
-            "revision": null,
-            "version_basis": "workload_template_image_tag"
-          }
-        ],
-        "resolution_sources": [
-          "deployments.apps"
-        ],
-        "resolved_versions": [
-          "3.2.0"
-        ]
-      },
-      "recommendation": "Revisar la matriz oficial y actualizar el componente o completar evidencia antes del upgrade.",
-      "source": "https://argo-cd.readthedocs.io/en/release-3.2/operator-manual/tested-kubernetes-versions/",
-      "relation": "documented",
-      "validation_type": "static",
-      "limitations": []
-    },
-    {
-      "rule_id": "VERSION_EOL",
-      "category": "operator_compatibility",
-      "status": "WARN",
-      "severity": "MEDIUM",
-      "description": "Versión fuera de mantenimiento según la evidencia oficial registrada.",
-      "evidence": {
-        "product": "Cert Manager",
-        "installed_version": "1.16.0",
-        "target": "1.35.9",
-        "matrix": {
-          "version": "1.16.x",
-          "supported_kubernetes": {
-            "min": "1.25",
-            "max": "1.32"
-          },
-          "support_state": "eol",
-          "end_of_support": "2025-06-10",
-          "source": "https://cert-manager.io/docs/releases/",
-          "reviewed_on": "2026-11-04",
-          "evidence": "La tabla oficial de releases antiguas enumera compatibilidad 1.25–1.32 y EOL 10 junio 2025.",
-          "min_kubernetes": "1.25",
-          "max_kubernetes": "1.32",
-          "matrix_type": "supported",
-          "exclusive": true,
-          "valid_until": "2027-02-02"
-        },
-        "reviewed_on": "2026-11-04",
-        "catalog_limitations": [],
-        "detection_sources": [
-          {
-            "from": "deployments.apps",
-            "namespace": "cert-manager",
-            "name": "cert-manager",
-            "repository": "quay.io/jetstack/cert-manager-controller",
-            "declared_tag": "v1.16.0",
-            "revision": null,
-            "version_basis": "workload_template_image_tag"
-          }
-        ],
-        "resolution_sources": [
-          "deployments.apps"
-        ],
-        "resolved_versions": [
-          "1.16.0"
-        ]
-      },
-      "recommendation": "Revisar la matriz oficial y actualizar el componente o completar evidencia antes del upgrade.",
-      "source": "https://cert-manager.io/docs/releases/",
       "relation": "documented",
       "validation_type": "static",
       "limitations": []
@@ -260,49 +256,296 @@
       "severity": "HIGH",
       "description": "Objetivo fuera del rango de soporte explícito del proveedor; no se recomienda este upgrade con la versión instalada.",
       "evidence": {
-        "product": "Cert Manager",
-        "installed_version": "1.16.0",
+        "product": "Istio",
+        "installed_version": "1.24.1",
         "target": "1.35.9",
         "matrix": {
-          "version": "1.16.x",
-          "supported_kubernetes": {
-            "min": "1.25",
-            "max": "1.32"
-          },
-          "support_state": "eol",
-          "end_of_support": "2025-06-10",
-          "source": "https://cert-manager.io/docs/releases/",
-          "reviewed_on": "2026-11-04",
-          "evidence": "La tabla oficial de releases antiguas enumera compatibilidad 1.25–1.32 y EOL 10 junio 2025.",
-          "min_kubernetes": "1.25",
-          "max_kubernetes": "1.32",
+          "version": "1.24.x",
+          "min_kubernetes": "1.28.0",
+          "max_kubernetes": "1.31.x",
           "matrix_type": "supported",
           "exclusive": true,
-          "valid_until": "2027-02-02"
+          "end_of_support": "2025-06-24",
+          "source": "https://istio.io/latest/docs/releases/supported-releases/",
+          "reviewed_on": "2026-11-04",
+          "valid_until": "2027-02-02",
+          "evidence": "Fila oficial 1.24: soporte Kubernetes 1.28–1.31; EOL 24 junio 2025.",
+          "support_state": "supported"
         },
+        "detected_version": "1.24.1",
+        "version_confidence": "server_cli",
+        "catalog_lookup": {
+          "catalog_present": true,
+          "files": [
+            "istio.json"
+          ],
+          "paths": [
+            "catalogs/support/istio.json"
+          ],
+          "available_selectors": [
+            "1.30.x",
+            "1.29.x",
+            "1.28.x",
+            "1.27.x",
+            "1.26.x",
+            "1.25.x",
+            "1.24.x",
+            "1.23.x",
+            "1.22.x",
+            "1.21.x"
+          ],
+          "matched_selectors": [
+            "1.24.x"
+          ],
+          "selected_selector": "1.24.x",
+          "normalized_version": "1.24.1",
+          "reason": "matched"
+        },
+        "distribution_revision": null,
         "reviewed_on": "2026-11-04",
         "catalog_limitations": [],
         "detection_sources": [
           {
-            "from": "deployments.apps",
-            "namespace": "cert-manager",
-            "name": "cert-manager",
-            "repository": "quay.io/jetstack/cert-manager-controller",
-            "declared_tag": "v1.16.0",
+            "from": "pods",
+            "namespace": "istio-system",
+            "name": "istiod-example",
+            "repository": "docker.io/istio/pilot",
+            "declared_tag": "1.24.1",
             "revision": null,
-            "version_basis": "workload_template_image_tag"
+            "identity_basis": "catalog_repository",
+            "confidence": "image_tag",
+            "version_basis": "pod_image_tag"
+          },
+          {
+            "from": "istioctl control plane",
+            "component": "pilot",
+            "revision": null
           }
         ],
         "resolution_sources": [
-          "deployments.apps"
+          "istioctl control plane"
         ],
         "resolved_versions": [
-          "1.16.0"
+          "1.24.1"
+        ],
+        "raw_detected_versions": [
+          "1.24.1"
         ]
       },
       "recommendation": "Revisar la matriz oficial y actualizar el componente o completar evidencia antes del upgrade.",
-      "source": "https://cert-manager.io/docs/releases/",
+      "source": "https://istio.io/latest/docs/releases/supported-releases/",
       "relation": "documented",
+      "validation_type": "static",
+      "limitations": []
+    },
+    {
+      "rule_id": "COMPATIBLE",
+      "category": "operator_compatibility",
+      "status": "PASS",
+      "severity": "INFO",
+      "description": "Objetivo dentro del rango documentado; consultar si la evidencia acredita soporte o pruebas upstream.",
+      "evidence": {
+        "product": "Calico",
+        "installed_version": "3.31.2",
+        "target": "1.35.9",
+        "matrix": {
+          "version": "3.31.x",
+          "supported_kubernetes": {
+            "min": "1.32",
+            "max": "1.35"
+          },
+          "matrix_type": "tested",
+          "exclusive": false,
+          "support_state": "supported",
+          "source": "https://raw.githubusercontent.com/tigera/docs/master/calico_versioned_docs/version-3.31/_includes/partials/_system-requirements.mdx",
+          "reviewed_on": "2026-11-04",
+          "evidence": "Requisitos de Calico 3.31: versiones activamente probadas 1.32, 1.33, 1.34 y 1.35. Otras pueden funcionar; no es un máximo de soporte estricto.",
+          "min_kubernetes": "1.32",
+          "max_kubernetes": "1.35",
+          "valid_until": "2027-02-02"
+        },
+        "detected_version": "3.31.2",
+        "version_confidence": "image_tag",
+        "catalog_lookup": {
+          "catalog_present": true,
+          "files": [
+            "calico.json"
+          ],
+          "paths": [
+            "catalogs/support/calico.json"
+          ],
+          "available_selectors": [
+            "3.31.x",
+            "3.32.x"
+          ],
+          "matched_selectors": [
+            "3.31.x"
+          ],
+          "selected_selector": "3.31.x",
+          "normalized_version": "3.31.2",
+          "reason": "matched"
+        },
+        "distribution_revision": null,
+        "reviewed_on": "2026-11-04",
+        "catalog_limitations": [
+          "No se pudo verificar la documentación archivada 3.30: permanece sin rango. Tigera Operator tiene su propia versión, distinta de Calico."
+        ],
+        "detection_sources": [
+          {
+            "from": "pods",
+            "namespace": "calico-system",
+            "name": "calico-example",
+            "repository": "docker.io/calico/node",
+            "declared_tag": "v3.31.2",
+            "revision": null,
+            "identity_basis": "catalog_repository",
+            "confidence": "image_tag",
+            "version_basis": "pod_image_tag"
+          }
+        ],
+        "resolution_sources": [
+          "pods"
+        ],
+        "resolved_versions": [
+          "3.31.2"
+        ],
+        "raw_detected_versions": [
+          "v3.31.2"
+        ]
+      },
+      "recommendation": "Revisar la matriz oficial y actualizar el componente o completar evidencia antes del upgrade.",
+      "source": "https://raw.githubusercontent.com/tigera/docs/master/calico_versioned_docs/version-3.31/_includes/partials/_system-requirements.mdx",
+      "relation": "documented",
+      "validation_type": "static",
+      "limitations": []
+    },
+    {
+      "rule_id": "NO_SUPPORT_DATA",
+      "category": "operator_compatibility",
+      "status": "UNKNOWN",
+      "severity": "INFO",
+      "description": "No existe una única fila de matriz oficial revisada para esta versión.",
+      "evidence": {
+        "product": "Azure File CSI Driver",
+        "installed_version": "v1.35.11-6",
+        "target": "1.35.9",
+        "matrix": {},
+        "detected_version": "v1.35.11-6",
+        "version_confidence": "image_tag",
+        "catalog_lookup": {
+          "catalog_present": true,
+          "files": [
+            "azure-file.json"
+          ],
+          "paths": [
+            "catalogs/support/azure-file.json"
+          ],
+          "available_selectors": [
+            "1.35.7",
+            "1.34.8",
+            "1.33.10"
+          ],
+          "matched_selectors": [],
+          "selected_selector": null,
+          "normalized_version": "1.35.11",
+          "reason": "family_not_catalogued"
+        },
+        "distribution_revision": "6",
+        "reviewed_on": null,
+        "catalog_limitations": [
+          "No se encontró una matriz para v1.35.11-6. No se sustituye su versión detectada por UNKNOWN ni se extiende el soporte de 1.35.7 por similitud de minor."
+        ],
+        "detection_sources": [
+          {
+            "from": "pods",
+            "namespace": "kube-system",
+            "name": "azure-file-example",
+            "repository": "mcr.microsoft.com/oss/v2/kubernetes-csi/azurefile-csi",
+            "declared_tag": "v1.35.11-6",
+            "revision": null,
+            "identity_basis": "catalog_repository",
+            "confidence": "image_tag",
+            "version_basis": "pod_image_tag"
+          }
+        ],
+        "resolution_sources": [
+          "pods"
+        ],
+        "resolved_versions": [
+          "v1.35.11-6"
+        ],
+        "raw_detected_versions": [
+          "v1.35.11-6"
+        ]
+      },
+      "recommendation": "Revisar la matriz oficial y actualizar el componente o completar evidencia antes del upgrade.",
+      "source": "https://github.com/kubernetes-sigs/azurefile-csi-driver",
+      "relation": "limitation",
+      "validation_type": "static",
+      "limitations": []
+    },
+    {
+      "rule_id": "NO_SUPPORT_DATA",
+      "category": "operator_compatibility",
+      "status": "UNKNOWN",
+      "severity": "INFO",
+      "description": "No existe una única fila de matriz oficial revisada para esta versión.",
+      "evidence": {
+        "product": "Azure Disk CSI Driver",
+        "installed_version": "v1.34.7-7",
+        "target": "1.35.9",
+        "matrix": {},
+        "detected_version": "v1.34.7-7",
+        "version_confidence": "image_tag",
+        "catalog_lookup": {
+          "catalog_present": true,
+          "files": [
+            "azure-disk.json"
+          ],
+          "paths": [
+            "catalogs/support/azure-disk.json"
+          ],
+          "available_selectors": [
+            "1.34.5",
+            "1.33.11",
+            "1.36.0"
+          ],
+          "matched_selectors": [],
+          "selected_selector": null,
+          "normalized_version": "1.34.7",
+          "reason": "family_not_catalogued"
+        },
+        "distribution_revision": "7",
+        "reviewed_on": null,
+        "catalog_limitations": [
+          "No se extrapolan filas exactas a toda la familia 1.34.x. Los tags con revisión de distribución se conservan; su soporte requiere vendor_versions documentadas."
+        ],
+        "detection_sources": [
+          {
+            "from": "pods",
+            "namespace": "kube-system",
+            "name": "azure-disk-example",
+            "repository": "mcr.microsoft.com/oss/v2/kubernetes-csi/azuredisk-csi",
+            "declared_tag": "v1.34.7-7",
+            "revision": null,
+            "identity_basis": "catalog_repository",
+            "confidence": "image_tag",
+            "version_basis": "pod_image_tag"
+          }
+        ],
+        "resolution_sources": [
+          "pods"
+        ],
+        "resolved_versions": [
+          "v1.34.7-7"
+        ],
+        "raw_detected_versions": [
+          "v1.34.7-7"
+        ]
+      },
+      "recommendation": "Revisar la matriz oficial y actualizar el componente o completar evidencia antes del upgrade.",
+      "source": "https://github.com/kubernetes-sigs/azuredisk-csi-driver",
+      "relation": "limitation",
       "validation_type": "static",
       "limitations": []
     },
@@ -314,7 +557,7 @@
       "description": "Cobertura del descubrimiento de plataformas.",
       "evidence": {
         "errors": [],
-        "products_detected": 3
+        "products_detected": 5
       },
       "recommendation": "Revisar la evidencia antes del upgrade.",
       "source": "https://v1-35.docs.kubernetes.io/docs/tasks/extend-kubernetes/custom-resources/custom-resource-definitions/",
@@ -348,160 +591,7 @@
   ],
   "crds": [
     {
-      "name": "virtualservices.networking.istio.io",
-      "status": "UNKNOWN",
-      "severity": "INFO",
-      "findings": [
-        {
-          "rule_id": "STRUCTURE-BASIC",
-          "category": "structure",
-          "status": "PASS",
-          "severity": "INFO",
-          "description": "Identidad, scope, nombres y versiones con estructura válida.",
-          "evidence": {},
-          "recommendation": "Revisar la evidencia antes del upgrade.",
-          "source": "https://v1-35.docs.kubernetes.io/docs/tasks/extend-kubernetes/custom-resources/custom-resource-definitions/",
-          "relation": "preexisting",
-          "validation_type": "static",
-          "limitations": []
-        },
-        {
-          "rule_id": "STORAGE-CONSISTENT",
-          "category": "storage",
-          "status": "PASS",
-          "severity": "INFO",
-          "description": "Declaraciones served, storage y storedVersions coherentes.",
-          "evidence": {
-            "served": [
-              "v1"
-            ],
-            "storage": [
-              "v1"
-            ],
-            "stored_versions": [
-              "v1"
-            ]
-          },
-          "recommendation": "Revisar la evidencia antes del upgrade.",
-          "source": "https://v1-35.docs.kubernetes.io/docs/tasks/extend-kubernetes/custom-resources/custom-resource-definition-versioning/",
-          "relation": "preexisting",
-          "validation_type": "static",
-          "limitations": []
-        },
-        {
-          "rule_id": "SCHEMA-STATIC",
-          "category": "schema",
-          "status": "PASS",
-          "severity": "INFO",
-          "description": "No se detectaron errores en el subconjunto estático del esquema.",
-          "evidence": {
-            "path": "spec.versions[v1].schema.openAPIV3Schema"
-          },
-          "recommendation": "Revisar la evidencia antes del upgrade.",
-          "source": "https://v1-35.docs.kubernetes.io/docs/tasks/extend-kubernetes/custom-resources/custom-resource-definitions/",
-          "relation": "preexisting",
-          "validation_type": "static",
-          "limitations": [
-            "No valida completamente defaults, regex RE2, formatos, CEL, admisión o datos persistidos."
-          ]
-        },
-        {
-          "rule_id": "CONVERSION-NONE",
-          "category": "conversion_webhook",
-          "status": "PASS",
-          "severity": "INFO",
-          "description": "Conversión None: no hay dependencia de un webhook.",
-          "evidence": {},
-          "recommendation": "Revisar la evidencia antes del upgrade.",
-          "source": "https://v1-35.docs.kubernetes.io/docs/tasks/extend-kubernetes/custom-resources/custom-resource-definition-versioning/",
-          "relation": "preexisting",
-          "validation_type": "static",
-          "limitations": []
-        },
-        {
-          "rule_id": "PRODUCT_SUPPORT",
-          "category": "operator",
-          "status": "PASS",
-          "severity": "INFO",
-          "description": "Compatibilidad del producto propietario evaluada una vez en el registro de plataformas.",
-          "evidence": {
-            "product": "Istio",
-            "installed_versions": [
-              "1.30.7"
-            ],
-            "resolved_versions": [
-              "1.30.7"
-            ],
-            "resolution_sources": [
-              "istioctl control plane"
-            ],
-            "reviewed_on": [
-              "2026-11-04"
-            ],
-            "target": "1.35.9",
-            "product_registry_ref": "istio",
-            "support_status": "PASS",
-            "support_findings": [
-              "COMPATIBLE"
-            ]
-          },
-          "recommendation": "Consultar el detalle único de la matriz del producto; resolver por separado los defectos técnicos del CRD.",
-          "source": "https://istio.io/latest/docs/releases/supported-releases/",
-          "relation": "documented",
-          "validation_type": "static",
-          "limitations": [
-            "El soporte del producto no prueba que la definición, conversión o datos persistidos del CRD sean correctos."
-          ]
-        },
-        {
-          "rule_id": "K135-CONDITION-GENERATION",
-          "category": "structure",
-          "status": "PASS",
-          "severity": "INFO",
-          "description": "1.35 incorpora observedGeneration en condiciones de CRDs.",
-          "evidence": {
-            "basis": "Cambio aditivo documentado en las notas 1.35, PR 134984.",
-            "applicability": {
-              "crosses": "1.35.0"
-            },
-            "condition_matched": true
-          },
-          "recommendation": "Revisar deserializadores estrictos en clientes propios que consuman condiciones de CRDs.",
-          "source": "https://github.com/kubernetes/kubernetes/blob/master/CHANGELOG/CHANGELOG-1.35.md",
-          "relation": "release_change",
-          "validation_type": "static",
-          "limitations": [
-            "No se inspecciona el cÃ³digo del operador; este cambio no es un bloqueo por sÃ­ mismo."
-          ]
-        },
-        {
-          "rule_id": "INSTANCES-NOT-REQUESTED",
-          "category": "instances",
-          "status": "UNKNOWN",
-          "severity": "INFO",
-          "description": "Instancias no inspeccionadas; usar --include-instances para lectura limitada.",
-          "evidence": {},
-          "recommendation": "Revisar la evidencia antes del upgrade.",
-          "source": "https://v1-35.docs.kubernetes.io/docs/tasks/extend-kubernetes/custom-resources/custom-resource-definitions/",
-          "relation": "limitation",
-          "validation_type": "static",
-          "limitations": []
-        }
-      ],
-      "product_compatibility": {
-        "product": "Istio",
-        "versions": [
-          "1.30.7"
-        ],
-        "status": "PASS",
-        "sources": [
-          "https://istio.io/latest/docs/releases/supported-releases/"
-        ]
-      },
-      "upgrade_risk": "INFO"
-    },
-    {
-      "name": "appprojects.argoproj.io",
+      "name": "widgets.example.com",
       "status": "UNKNOWN",
       "severity": "INFO",
       "findings": [
@@ -572,39 +662,17 @@
           "limitations": []
         },
         {
-          "rule_id": "PRODUCT_SUPPORT",
+          "rule_id": "NO_PRODUCT_OWNER",
           "category": "operator",
           "status": "UNKNOWN",
           "severity": "INFO",
-          "description": "Compatibilidad del producto propietario evaluada una vez en el registro de plataformas.",
-          "evidence": {
-            "product": "Argo CD",
-            "installed_versions": [
-              "3.2.0"
-            ],
-            "resolved_versions": [
-              "3.2.0"
-            ],
-            "resolution_sources": [
-              "deployments.apps"
-            ],
-            "reviewed_on": [
-              "2026-11-04"
-            ],
-            "target": "1.35.9",
-            "product_registry_ref": "argocd",
-            "support_status": "UNKNOWN",
-            "support_findings": [
-              "NO_SUPPORT_DATA"
-            ]
-          },
-          "recommendation": "Consultar el detalle único de la matriz del producto; resolver por separado los defectos técnicos del CRD.",
-          "source": "https://argo-cd.readthedocs.io/en/release-3.2/operator-manual/tested-kubernetes-versions/",
-          "relation": "documented",
+          "description": "No existe una asociación explícita entre este CRD y un producto detectado.",
+          "evidence": {},
+          "recommendation": "Registrar ownership documentado y detectar la versión del producto; no inferirla por labels o por la existencia del CRD.",
+          "source": "https://v1-35.docs.kubernetes.io/docs/tasks/extend-kubernetes/custom-resources/custom-resource-definitions/",
+          "relation": "limitation",
           "validation_type": "static",
-          "limitations": [
-            "El soporte del producto no prueba que la definición, conversión o datos persistidos del CRD sean correctos."
-          ]
+          "limitations": []
         },
         {
           "rule_id": "K135-CONDITION-GENERATION",
@@ -640,178 +708,13 @@
           "validation_type": "static",
           "limitations": []
         }
-      ],
-      "product_compatibility": {
-        "product": "Argo CD",
-        "versions": [
-          "3.2.0"
-        ],
-        "status": "UNKNOWN",
-        "sources": [
-          "https://argo-cd.readthedocs.io/en/release-3.2/operator-manual/tested-kubernetes-versions/"
-        ]
-      },
-      "upgrade_risk": "INFO"
-    },
-    {
-      "name": "certificates.cert-manager.io",
-      "status": "FAIL",
-      "severity": "HIGH",
-      "findings": [
-        {
-          "rule_id": "STRUCTURE-BASIC",
-          "category": "structure",
-          "status": "PASS",
-          "severity": "INFO",
-          "description": "Identidad, scope, nombres y versiones con estructura válida.",
-          "evidence": {},
-          "recommendation": "Revisar la evidencia antes del upgrade.",
-          "source": "https://v1-35.docs.kubernetes.io/docs/tasks/extend-kubernetes/custom-resources/custom-resource-definitions/",
-          "relation": "preexisting",
-          "validation_type": "static",
-          "limitations": []
-        },
-        {
-          "rule_id": "STORAGE-CONSISTENT",
-          "category": "storage",
-          "status": "PASS",
-          "severity": "INFO",
-          "description": "Declaraciones served, storage y storedVersions coherentes.",
-          "evidence": {
-            "served": [
-              "v1"
-            ],
-            "storage": [
-              "v1"
-            ],
-            "stored_versions": [
-              "v1"
-            ]
-          },
-          "recommendation": "Revisar la evidencia antes del upgrade.",
-          "source": "https://v1-35.docs.kubernetes.io/docs/tasks/extend-kubernetes/custom-resources/custom-resource-definition-versioning/",
-          "relation": "preexisting",
-          "validation_type": "static",
-          "limitations": []
-        },
-        {
-          "rule_id": "SCHEMA-STATIC",
-          "category": "schema",
-          "status": "PASS",
-          "severity": "INFO",
-          "description": "No se detectaron errores en el subconjunto estático del esquema.",
-          "evidence": {
-            "path": "spec.versions[v1].schema.openAPIV3Schema"
-          },
-          "recommendation": "Revisar la evidencia antes del upgrade.",
-          "source": "https://v1-35.docs.kubernetes.io/docs/tasks/extend-kubernetes/custom-resources/custom-resource-definitions/",
-          "relation": "preexisting",
-          "validation_type": "static",
-          "limitations": [
-            "No valida completamente defaults, regex RE2, formatos, CEL, admisión o datos persistidos."
-          ]
-        },
-        {
-          "rule_id": "CONVERSION-NONE",
-          "category": "conversion_webhook",
-          "status": "PASS",
-          "severity": "INFO",
-          "description": "Conversión None: no hay dependencia de un webhook.",
-          "evidence": {},
-          "recommendation": "Revisar la evidencia antes del upgrade.",
-          "source": "https://v1-35.docs.kubernetes.io/docs/tasks/extend-kubernetes/custom-resources/custom-resource-definition-versioning/",
-          "relation": "preexisting",
-          "validation_type": "static",
-          "limitations": []
-        },
-        {
-          "rule_id": "PRODUCT_SUPPORT",
-          "category": "operator",
-          "status": "FAIL",
-          "severity": "HIGH",
-          "description": "Compatibilidad del producto propietario evaluada una vez en el registro de plataformas.",
-          "evidence": {
-            "product": "Cert Manager",
-            "installed_versions": [
-              "1.16.0"
-            ],
-            "resolved_versions": [
-              "1.16.0"
-            ],
-            "resolution_sources": [
-              "deployments.apps"
-            ],
-            "reviewed_on": [
-              "2026-11-04"
-            ],
-            "target": "1.35.9",
-            "product_registry_ref": "cert-manager",
-            "support_status": "FAIL",
-            "support_findings": [
-              "VERSION_EOL",
-              "NOT_COMPATIBLE"
-            ]
-          },
-          "recommendation": "Consultar el detalle único de la matriz del producto; resolver por separado los defectos técnicos del CRD.",
-          "source": "https://cert-manager.io/docs/releases/",
-          "relation": "documented",
-          "validation_type": "static",
-          "limitations": [
-            "El soporte del producto no prueba que la definición, conversión o datos persistidos del CRD sean correctos."
-          ]
-        },
-        {
-          "rule_id": "K135-CONDITION-GENERATION",
-          "category": "structure",
-          "status": "PASS",
-          "severity": "INFO",
-          "description": "1.35 incorpora observedGeneration en condiciones de CRDs.",
-          "evidence": {
-            "basis": "Cambio aditivo documentado en las notas 1.35, PR 134984.",
-            "applicability": {
-              "crosses": "1.35.0"
-            },
-            "condition_matched": true
-          },
-          "recommendation": "Revisar deserializadores estrictos en clientes propios que consuman condiciones de CRDs.",
-          "source": "https://github.com/kubernetes/kubernetes/blob/master/CHANGELOG/CHANGELOG-1.35.md",
-          "relation": "release_change",
-          "validation_type": "static",
-          "limitations": [
-            "No se inspecciona el cÃ³digo del operador; este cambio no es un bloqueo por sÃ­ mismo."
-          ]
-        },
-        {
-          "rule_id": "INSTANCES-NOT-REQUESTED",
-          "category": "instances",
-          "status": "UNKNOWN",
-          "severity": "INFO",
-          "description": "Instancias no inspeccionadas; usar --include-instances para lectura limitada.",
-          "evidence": {},
-          "recommendation": "Revisar la evidencia antes del upgrade.",
-          "source": "https://v1-35.docs.kubernetes.io/docs/tasks/extend-kubernetes/custom-resources/custom-resource-definitions/",
-          "relation": "limitation",
-          "validation_type": "static",
-          "limitations": []
-        }
-      ],
-      "product_compatibility": {
-        "product": "Cert Manager",
-        "versions": [
-          "1.16.0"
-        ],
-        "status": "FAIL",
-        "sources": [
-          "https://cert-manager.io/docs/releases/"
-        ]
-      },
-      "upgrade_risk": "HIGH"
+      ]
     }
   ],
   "pluto": {
     "executed": false,
     "command": [],
-    "context": "offline:product-crds.json",
+    "context": "offline:valid-crds.json",
     "target_version": "1.35.9",
     "exit_code": null,
     "stdout": "",
@@ -827,23 +730,144 @@
     "title": "OPERATOR COMPATIBILITY ANALYSIS",
     "products": [
       {
+        "id": "gatekeeper",
+        "product": "Gatekeeper",
+        "namespace": "gatekeeper-system",
+        "category": "operator",
+        "source": "https://open-policy-agent.github.io/gatekeeper/",
+        "versions": [
+          "3.18.0"
+        ],
+        "detected_versions": [
+          "v3.18.0"
+        ],
+        "evidence": [
+          {
+            "from": "deployments.apps",
+            "namespace": "gatekeeper-system",
+            "name": "gatekeeper-controller-manager",
+            "repository": "openpolicyagent/gatekeeper",
+            "declared_tag": "v3.18.0",
+            "revision": null,
+            "identity_basis": "catalog_repository",
+            "confidence": "image_tag",
+            "version_basis": "workload_template_image_tag"
+          }
+        ],
+        "version_candidates": [
+          {
+            "version": "v3.18.0",
+            "from": "deployments.apps",
+            "namespace": "gatekeeper-system",
+            "revision": null
+          }
+        ],
+        "unknown_version": false,
+        "namespaces": [
+          "gatekeeper-system"
+        ],
+        "resolved_versions": [
+          "3.18.0"
+        ],
+        "resolution_sources": [
+          "deployments.apps"
+        ],
+        "version_conflict": false,
+        "normalized_versions": [
+          "3.18.0"
+        ],
+        "resolution_policy": "cluster-bound server CLI > Helm appVersion > exact image tags > explicit product resource; all known mixed versions evaluated",
+        "confidence": "image_tag",
+        "detected_version": "v3.18.0",
+        "status": "UNKNOWN",
+        "compatibility": "No verificada",
+        "findings": [
+          {
+            "rule_id": "NO_SUPPORT_DATA",
+            "category": "operator_compatibility",
+            "status": "UNKNOWN",
+            "severity": "INFO",
+            "description": "No existe una única fila de matriz oficial revisada para esta versión.",
+            "evidence": {
+              "product": "Gatekeeper",
+              "installed_version": "3.18.0",
+              "target": "1.35.9",
+              "matrix": {},
+              "detected_version": "3.18.0",
+              "version_confidence": "image_tag",
+              "catalog_lookup": {
+                "catalog_present": true,
+                "files": [
+                  "gatekeeper.json"
+                ],
+                "paths": [
+                  "catalogs/support/gatekeeper.json"
+                ],
+                "available_selectors": [],
+                "matched_selectors": [],
+                "selected_selector": null,
+                "normalized_version": "3.18.0",
+                "reason": "no_numeric_rows"
+              },
+              "distribution_revision": null,
+              "reviewed_on": null,
+              "catalog_limitations": [
+                "La política general de versiones soportadas no prueba una matriz de cada binario antiguo. Sin fila revisada se informa UNKNOWN."
+              ],
+              "detection_sources": [
+                {
+                  "from": "deployments.apps",
+                  "namespace": "gatekeeper-system",
+                  "name": "gatekeeper-controller-manager",
+                  "repository": "openpolicyagent/gatekeeper",
+                  "declared_tag": "v3.18.0",
+                  "revision": null,
+                  "identity_basis": "catalog_repository",
+                  "confidence": "image_tag",
+                  "version_basis": "workload_template_image_tag"
+                }
+              ],
+              "resolution_sources": [
+                "deployments.apps"
+              ],
+              "resolved_versions": [
+                "3.18.0"
+              ],
+              "raw_detected_versions": [
+                "v3.18.0"
+              ]
+            },
+            "recommendation": "Revisar la matriz oficial y actualizar el componente o completar evidencia antes del upgrade.",
+            "source": "https://github.com/open-policy-agent/gatekeeper/blob/master/docs/Release_Management.md",
+            "relation": "limitation",
+            "validation_type": "static",
+            "limitations": []
+          }
+        ]
+      },
+      {
         "id": "istio",
         "product": "Istio",
         "namespace": "istio-system, istioctl",
         "category": "operator",
         "source": "https://istio.io/latest/docs/releases/supported-releases/",
         "versions": [
-          "1.30.7"
+          "1.24.1"
+        ],
+        "detected_versions": [
+          "1.24.1"
         ],
         "evidence": [
           {
-            "from": "deployments.apps",
+            "from": "pods",
             "namespace": "istio-system",
-            "name": "istiod",
+            "name": "istiod-example",
             "repository": "docker.io/istio/pilot",
-            "declared_tag": "1.30.7",
+            "declared_tag": "1.24.1",
             "revision": null,
-            "version_basis": "workload_template_image_tag"
+            "identity_basis": "catalog_repository",
+            "confidence": "image_tag",
+            "version_basis": "pod_image_tag"
           },
           {
             "from": "istioctl control plane",
@@ -853,13 +877,13 @@
         ],
         "version_candidates": [
           {
-            "version": "1.30.7",
-            "from": "deployments.apps",
+            "version": "1.24.1",
+            "from": "pods",
             "namespace": "istio-system",
             "revision": null
           },
           {
-            "version": "1.30.7",
+            "version": "1.24.1",
             "from": "istioctl control plane",
             "namespace": "istioctl",
             "revision": null
@@ -871,49 +895,87 @@
           "istioctl"
         ],
         "resolved_versions": [
-          "1.30.7"
+          "1.24.1"
         ],
         "resolution_sources": [
           "istioctl control plane"
         ],
         "version_conflict": false,
+        "normalized_versions": [
+          "1.24.1"
+        ],
         "resolution_policy": "cluster-bound server CLI > Helm appVersion > exact image tags > explicit product resource; all known mixed versions evaluated",
-        "status": "PASS",
-        "compatibility": "Sí, según evidencia documentada",
+        "confidence": "server_cli",
+        "detected_version": "1.24.1",
+        "status": "FAIL",
+        "compatibility": "No",
         "findings": [
           {
-            "rule_id": "COMPATIBLE",
+            "rule_id": "VERSION_EOL",
             "category": "operator_compatibility",
-            "status": "PASS",
-            "severity": "INFO",
-            "description": "Objetivo dentro del rango documentado; consultar si la evidencia acredita soporte o pruebas upstream.",
+            "status": "WARN",
+            "severity": "MEDIUM",
+            "description": "Versión fuera de mantenimiento según la evidencia oficial registrada.",
             "evidence": {
               "product": "Istio",
-              "installed_version": "1.30.7",
+              "installed_version": "1.24.1",
               "target": "1.35.9",
               "matrix": {
-                "version": "1.30.x",
-                "min_kubernetes": "1.32.0",
-                "max_kubernetes": "1.36.x",
+                "version": "1.24.x",
+                "min_kubernetes": "1.28.0",
+                "max_kubernetes": "1.31.x",
                 "matrix_type": "supported",
                 "exclusive": true,
+                "end_of_support": "2025-06-24",
                 "source": "https://istio.io/latest/docs/releases/supported-releases/",
                 "reviewed_on": "2026-11-04",
                 "valid_until": "2027-02-02",
-                "evidence": "Fila 1.30: Kubernetes soportados 1.32 a 1.36; evaluar también vigencia de mantenimiento.",
+                "evidence": "Fila oficial 1.24: soporte Kubernetes 1.28–1.31; EOL 24 junio 2025.",
                 "support_state": "supported"
               },
+              "detected_version": "1.24.1",
+              "version_confidence": "server_cli",
+              "catalog_lookup": {
+                "catalog_present": true,
+                "files": [
+                  "istio.json"
+                ],
+                "paths": [
+                  "catalogs/support/istio.json"
+                ],
+                "available_selectors": [
+                  "1.30.x",
+                  "1.29.x",
+                  "1.28.x",
+                  "1.27.x",
+                  "1.26.x",
+                  "1.25.x",
+                  "1.24.x",
+                  "1.23.x",
+                  "1.22.x",
+                  "1.21.x"
+                ],
+                "matched_selectors": [
+                  "1.24.x"
+                ],
+                "selected_selector": "1.24.x",
+                "normalized_version": "1.24.1",
+                "reason": "matched"
+              },
+              "distribution_revision": null,
               "reviewed_on": "2026-11-04",
               "catalog_limitations": [],
               "detection_sources": [
                 {
-                  "from": "deployments.apps",
+                  "from": "pods",
                   "namespace": "istio-system",
-                  "name": "istiod",
+                  "name": "istiod-example",
                   "repository": "docker.io/istio/pilot",
-                  "declared_tag": "1.30.7",
+                  "declared_tag": "1.24.1",
                   "revision": null,
-                  "version_basis": "workload_template_image_tag"
+                  "identity_basis": "catalog_repository",
+                  "confidence": "image_tag",
+                  "version_basis": "pod_image_tag"
                 },
                 {
                   "from": "istioctl control plane",
@@ -925,202 +987,14 @@
                 "istioctl control plane"
               ],
               "resolved_versions": [
-                "1.30.7"
+                "1.24.1"
+              ],
+              "raw_detected_versions": [
+                "1.24.1"
               ]
             },
             "recommendation": "Revisar la matriz oficial y actualizar el componente o completar evidencia antes del upgrade.",
             "source": "https://istio.io/latest/docs/releases/supported-releases/",
-            "relation": "documented",
-            "validation_type": "static",
-            "limitations": []
-          }
-        ]
-      },
-      {
-        "id": "argocd",
-        "product": "Argo CD",
-        "namespace": "argocd",
-        "category": "operator",
-        "source": "https://argo-cd.readthedocs.io/",
-        "versions": [
-          "3.2.0"
-        ],
-        "evidence": [
-          {
-            "from": "deployments.apps",
-            "namespace": "argocd",
-            "name": "argocd-server",
-            "repository": "quay.io/argoproj/argocd",
-            "declared_tag": "v3.2.0",
-            "revision": null,
-            "version_basis": "workload_template_image_tag"
-          }
-        ],
-        "version_candidates": [
-          {
-            "version": "v3.2.0",
-            "from": "deployments.apps",
-            "namespace": "argocd",
-            "revision": null
-          }
-        ],
-        "unknown_version": false,
-        "namespaces": [
-          "argocd"
-        ],
-        "resolved_versions": [
-          "3.2.0"
-        ],
-        "resolution_sources": [
-          "deployments.apps"
-        ],
-        "version_conflict": false,
-        "resolution_policy": "cluster-bound server CLI > Helm appVersion > exact image tags > explicit product resource; all known mixed versions evaluated",
-        "status": "UNKNOWN",
-        "compatibility": "No verificada",
-        "findings": [
-          {
-            "rule_id": "NO_SUPPORT_DATA",
-            "category": "operator_compatibility",
-            "status": "UNKNOWN",
-            "severity": "INFO",
-            "description": "Objetivo fuera de las versiones probadas; esto no demuestra incompatibilidad.",
-            "evidence": {
-              "product": "Argo CD",
-              "installed_version": "3.2.0",
-              "target": "1.35.9",
-              "matrix": {
-                "version": "3.2.x",
-                "min_kubernetes": "1.31.0",
-                "max_kubernetes": "1.34.x",
-                "matrix_type": "tested",
-                "exclusive": false,
-                "source": "https://argo-cd.readthedocs.io/en/release-3.2/operator-manual/tested-kubernetes-versions/",
-                "reviewed_on": "2026-11-04",
-                "valid_until": "2027-02-02",
-                "evidence": "La tabla de la rama release-3.2 enumera Kubernetes 1.31 a 1.34 como probados. Fuera de esa lista no se acredita incompatibilidad ni soporte.",
-                "support_state": "supported"
-              },
-              "reviewed_on": "2026-11-04",
-              "catalog_limitations": [],
-              "detection_sources": [
-                {
-                  "from": "deployments.apps",
-                  "namespace": "argocd",
-                  "name": "argocd-server",
-                  "repository": "quay.io/argoproj/argocd",
-                  "declared_tag": "v3.2.0",
-                  "revision": null,
-                  "version_basis": "workload_template_image_tag"
-                }
-              ],
-              "resolution_sources": [
-                "deployments.apps"
-              ],
-              "resolved_versions": [
-                "3.2.0"
-              ]
-            },
-            "recommendation": "Revisar la matriz oficial y actualizar el componente o completar evidencia antes del upgrade.",
-            "source": "https://argo-cd.readthedocs.io/en/release-3.2/operator-manual/tested-kubernetes-versions/",
-            "relation": "documented",
-            "validation_type": "static",
-            "limitations": []
-          }
-        ]
-      },
-      {
-        "id": "cert-manager",
-        "product": "Cert Manager",
-        "namespace": "cert-manager",
-        "category": "operator",
-        "source": "https://cert-manager.io/docs/releases/",
-        "versions": [
-          "1.16.0"
-        ],
-        "evidence": [
-          {
-            "from": "deployments.apps",
-            "namespace": "cert-manager",
-            "name": "cert-manager",
-            "repository": "quay.io/jetstack/cert-manager-controller",
-            "declared_tag": "v1.16.0",
-            "revision": null,
-            "version_basis": "workload_template_image_tag"
-          }
-        ],
-        "version_candidates": [
-          {
-            "version": "v1.16.0",
-            "from": "deployments.apps",
-            "namespace": "cert-manager",
-            "revision": null
-          }
-        ],
-        "unknown_version": false,
-        "namespaces": [
-          "cert-manager"
-        ],
-        "resolved_versions": [
-          "1.16.0"
-        ],
-        "resolution_sources": [
-          "deployments.apps"
-        ],
-        "version_conflict": false,
-        "resolution_policy": "cluster-bound server CLI > Helm appVersion > exact image tags > explicit product resource; all known mixed versions evaluated",
-        "status": "FAIL",
-        "compatibility": "No",
-        "findings": [
-          {
-            "rule_id": "VERSION_EOL",
-            "category": "operator_compatibility",
-            "status": "WARN",
-            "severity": "MEDIUM",
-            "description": "Versión fuera de mantenimiento según la evidencia oficial registrada.",
-            "evidence": {
-              "product": "Cert Manager",
-              "installed_version": "1.16.0",
-              "target": "1.35.9",
-              "matrix": {
-                "version": "1.16.x",
-                "supported_kubernetes": {
-                  "min": "1.25",
-                  "max": "1.32"
-                },
-                "support_state": "eol",
-                "end_of_support": "2025-06-10",
-                "source": "https://cert-manager.io/docs/releases/",
-                "reviewed_on": "2026-11-04",
-                "evidence": "La tabla oficial de releases antiguas enumera compatibilidad 1.25–1.32 y EOL 10 junio 2025.",
-                "min_kubernetes": "1.25",
-                "max_kubernetes": "1.32",
-                "matrix_type": "supported",
-                "exclusive": true,
-                "valid_until": "2027-02-02"
-              },
-              "reviewed_on": "2026-11-04",
-              "catalog_limitations": [],
-              "detection_sources": [
-                {
-                  "from": "deployments.apps",
-                  "namespace": "cert-manager",
-                  "name": "cert-manager",
-                  "repository": "quay.io/jetstack/cert-manager-controller",
-                  "declared_tag": "v1.16.0",
-                  "revision": null,
-                  "version_basis": "workload_template_image_tag"
-                }
-              ],
-              "resolution_sources": [
-                "deployments.apps"
-              ],
-              "resolved_versions": [
-                "1.16.0"
-              ]
-            },
-            "recommendation": "Revisar la matriz oficial y actualizar el componente o completar evidencia antes del upgrade.",
-            "source": "https://cert-manager.io/docs/releases/",
             "relation": "documented",
             "validation_type": "static",
             "limitations": []
@@ -1132,49 +1006,461 @@
             "severity": "HIGH",
             "description": "Objetivo fuera del rango de soporte explícito del proveedor; no se recomienda este upgrade con la versión instalada.",
             "evidence": {
-              "product": "Cert Manager",
-              "installed_version": "1.16.0",
+              "product": "Istio",
+              "installed_version": "1.24.1",
               "target": "1.35.9",
               "matrix": {
-                "version": "1.16.x",
-                "supported_kubernetes": {
-                  "min": "1.25",
-                  "max": "1.32"
-                },
-                "support_state": "eol",
-                "end_of_support": "2025-06-10",
-                "source": "https://cert-manager.io/docs/releases/",
-                "reviewed_on": "2026-11-04",
-                "evidence": "La tabla oficial de releases antiguas enumera compatibilidad 1.25–1.32 y EOL 10 junio 2025.",
-                "min_kubernetes": "1.25",
-                "max_kubernetes": "1.32",
+                "version": "1.24.x",
+                "min_kubernetes": "1.28.0",
+                "max_kubernetes": "1.31.x",
                 "matrix_type": "supported",
                 "exclusive": true,
-                "valid_until": "2027-02-02"
+                "end_of_support": "2025-06-24",
+                "source": "https://istio.io/latest/docs/releases/supported-releases/",
+                "reviewed_on": "2026-11-04",
+                "valid_until": "2027-02-02",
+                "evidence": "Fila oficial 1.24: soporte Kubernetes 1.28–1.31; EOL 24 junio 2025.",
+                "support_state": "supported"
               },
+              "detected_version": "1.24.1",
+              "version_confidence": "server_cli",
+              "catalog_lookup": {
+                "catalog_present": true,
+                "files": [
+                  "istio.json"
+                ],
+                "paths": [
+                  "catalogs/support/istio.json"
+                ],
+                "available_selectors": [
+                  "1.30.x",
+                  "1.29.x",
+                  "1.28.x",
+                  "1.27.x",
+                  "1.26.x",
+                  "1.25.x",
+                  "1.24.x",
+                  "1.23.x",
+                  "1.22.x",
+                  "1.21.x"
+                ],
+                "matched_selectors": [
+                  "1.24.x"
+                ],
+                "selected_selector": "1.24.x",
+                "normalized_version": "1.24.1",
+                "reason": "matched"
+              },
+              "distribution_revision": null,
               "reviewed_on": "2026-11-04",
               "catalog_limitations": [],
               "detection_sources": [
                 {
-                  "from": "deployments.apps",
-                  "namespace": "cert-manager",
-                  "name": "cert-manager",
-                  "repository": "quay.io/jetstack/cert-manager-controller",
-                  "declared_tag": "v1.16.0",
+                  "from": "pods",
+                  "namespace": "istio-system",
+                  "name": "istiod-example",
+                  "repository": "docker.io/istio/pilot",
+                  "declared_tag": "1.24.1",
                   "revision": null,
-                  "version_basis": "workload_template_image_tag"
+                  "identity_basis": "catalog_repository",
+                  "confidence": "image_tag",
+                  "version_basis": "pod_image_tag"
+                },
+                {
+                  "from": "istioctl control plane",
+                  "component": "pilot",
+                  "revision": null
                 }
               ],
               "resolution_sources": [
-                "deployments.apps"
+                "istioctl control plane"
               ],
               "resolved_versions": [
-                "1.16.0"
+                "1.24.1"
+              ],
+              "raw_detected_versions": [
+                "1.24.1"
               ]
             },
             "recommendation": "Revisar la matriz oficial y actualizar el componente o completar evidencia antes del upgrade.",
-            "source": "https://cert-manager.io/docs/releases/",
+            "source": "https://istio.io/latest/docs/releases/supported-releases/",
             "relation": "documented",
+            "validation_type": "static",
+            "limitations": []
+          }
+        ]
+      },
+      {
+        "id": "calico",
+        "product": "Calico",
+        "namespace": "calico-system",
+        "category": "operator",
+        "source": "https://docs.tigera.io/calico/latest/getting-started/kubernetes/requirements",
+        "versions": [
+          "3.31.2"
+        ],
+        "detected_versions": [
+          "v3.31.2"
+        ],
+        "evidence": [
+          {
+            "from": "pods",
+            "namespace": "calico-system",
+            "name": "calico-example",
+            "repository": "docker.io/calico/node",
+            "declared_tag": "v3.31.2",
+            "revision": null,
+            "identity_basis": "catalog_repository",
+            "confidence": "image_tag",
+            "version_basis": "pod_image_tag"
+          }
+        ],
+        "version_candidates": [
+          {
+            "version": "v3.31.2",
+            "from": "pods",
+            "namespace": "calico-system",
+            "revision": null
+          }
+        ],
+        "unknown_version": false,
+        "namespaces": [
+          "calico-system"
+        ],
+        "resolved_versions": [
+          "3.31.2"
+        ],
+        "resolution_sources": [
+          "pods"
+        ],
+        "version_conflict": false,
+        "normalized_versions": [
+          "3.31.2"
+        ],
+        "resolution_policy": "cluster-bound server CLI > Helm appVersion > exact image tags > explicit product resource; all known mixed versions evaluated",
+        "confidence": "image_tag",
+        "detected_version": "v3.31.2",
+        "status": "PASS",
+        "compatibility": "Sí, según evidencia documentada",
+        "findings": [
+          {
+            "rule_id": "COMPATIBLE",
+            "category": "operator_compatibility",
+            "status": "PASS",
+            "severity": "INFO",
+            "description": "Objetivo dentro del rango documentado; consultar si la evidencia acredita soporte o pruebas upstream.",
+            "evidence": {
+              "product": "Calico",
+              "installed_version": "3.31.2",
+              "target": "1.35.9",
+              "matrix": {
+                "version": "3.31.x",
+                "supported_kubernetes": {
+                  "min": "1.32",
+                  "max": "1.35"
+                },
+                "matrix_type": "tested",
+                "exclusive": false,
+                "support_state": "supported",
+                "source": "https://raw.githubusercontent.com/tigera/docs/master/calico_versioned_docs/version-3.31/_includes/partials/_system-requirements.mdx",
+                "reviewed_on": "2026-11-04",
+                "evidence": "Requisitos de Calico 3.31: versiones activamente probadas 1.32, 1.33, 1.34 y 1.35. Otras pueden funcionar; no es un máximo de soporte estricto.",
+                "min_kubernetes": "1.32",
+                "max_kubernetes": "1.35",
+                "valid_until": "2027-02-02"
+              },
+              "detected_version": "3.31.2",
+              "version_confidence": "image_tag",
+              "catalog_lookup": {
+                "catalog_present": true,
+                "files": [
+                  "calico.json"
+                ],
+                "paths": [
+                  "catalogs/support/calico.json"
+                ],
+                "available_selectors": [
+                  "3.31.x",
+                  "3.32.x"
+                ],
+                "matched_selectors": [
+                  "3.31.x"
+                ],
+                "selected_selector": "3.31.x",
+                "normalized_version": "3.31.2",
+                "reason": "matched"
+              },
+              "distribution_revision": null,
+              "reviewed_on": "2026-11-04",
+              "catalog_limitations": [
+                "No se pudo verificar la documentación archivada 3.30: permanece sin rango. Tigera Operator tiene su propia versión, distinta de Calico."
+              ],
+              "detection_sources": [
+                {
+                  "from": "pods",
+                  "namespace": "calico-system",
+                  "name": "calico-example",
+                  "repository": "docker.io/calico/node",
+                  "declared_tag": "v3.31.2",
+                  "revision": null,
+                  "identity_basis": "catalog_repository",
+                  "confidence": "image_tag",
+                  "version_basis": "pod_image_tag"
+                }
+              ],
+              "resolution_sources": [
+                "pods"
+              ],
+              "resolved_versions": [
+                "3.31.2"
+              ],
+              "raw_detected_versions": [
+                "v3.31.2"
+              ]
+            },
+            "recommendation": "Revisar la matriz oficial y actualizar el componente o completar evidencia antes del upgrade.",
+            "source": "https://raw.githubusercontent.com/tigera/docs/master/calico_versioned_docs/version-3.31/_includes/partials/_system-requirements.mdx",
+            "relation": "documented",
+            "validation_type": "static",
+            "limitations": []
+          }
+        ]
+      },
+      {
+        "id": "azure-file",
+        "product": "Azure File CSI Driver",
+        "namespace": "kube-system",
+        "category": "storage",
+        "source": "https://github.com/kubernetes-sigs/azurefile-csi-driver",
+        "versions": [
+          "v1.35.11-6"
+        ],
+        "detected_versions": [
+          "v1.35.11-6"
+        ],
+        "evidence": [
+          {
+            "from": "pods",
+            "namespace": "kube-system",
+            "name": "azure-file-example",
+            "repository": "mcr.microsoft.com/oss/v2/kubernetes-csi/azurefile-csi",
+            "declared_tag": "v1.35.11-6",
+            "revision": null,
+            "identity_basis": "catalog_repository",
+            "confidence": "image_tag",
+            "version_basis": "pod_image_tag"
+          }
+        ],
+        "version_candidates": [
+          {
+            "version": "v1.35.11-6",
+            "from": "pods",
+            "namespace": "kube-system",
+            "revision": null
+          }
+        ],
+        "unknown_version": false,
+        "namespaces": [
+          "kube-system"
+        ],
+        "resolved_versions": [
+          "v1.35.11-6"
+        ],
+        "resolution_sources": [
+          "pods"
+        ],
+        "version_conflict": false,
+        "normalized_versions": [
+          "1.35.11"
+        ],
+        "resolution_policy": "cluster-bound server CLI > Helm appVersion > exact image tags > explicit product resource; all known mixed versions evaluated",
+        "confidence": "image_tag",
+        "detected_version": "v1.35.11-6",
+        "status": "UNKNOWN",
+        "compatibility": "No verificada",
+        "findings": [
+          {
+            "rule_id": "NO_SUPPORT_DATA",
+            "category": "operator_compatibility",
+            "status": "UNKNOWN",
+            "severity": "INFO",
+            "description": "No existe una única fila de matriz oficial revisada para esta versión.",
+            "evidence": {
+              "product": "Azure File CSI Driver",
+              "installed_version": "v1.35.11-6",
+              "target": "1.35.9",
+              "matrix": {},
+              "detected_version": "v1.35.11-6",
+              "version_confidence": "image_tag",
+              "catalog_lookup": {
+                "catalog_present": true,
+                "files": [
+                  "azure-file.json"
+                ],
+                "paths": [
+                  "catalogs/support/azure-file.json"
+                ],
+                "available_selectors": [
+                  "1.35.7",
+                  "1.34.8",
+                  "1.33.10"
+                ],
+                "matched_selectors": [],
+                "selected_selector": null,
+                "normalized_version": "1.35.11",
+                "reason": "family_not_catalogued"
+              },
+              "distribution_revision": "6",
+              "reviewed_on": null,
+              "catalog_limitations": [
+                "No se encontró una matriz para v1.35.11-6. No se sustituye su versión detectada por UNKNOWN ni se extiende el soporte de 1.35.7 por similitud de minor."
+              ],
+              "detection_sources": [
+                {
+                  "from": "pods",
+                  "namespace": "kube-system",
+                  "name": "azure-file-example",
+                  "repository": "mcr.microsoft.com/oss/v2/kubernetes-csi/azurefile-csi",
+                  "declared_tag": "v1.35.11-6",
+                  "revision": null,
+                  "identity_basis": "catalog_repository",
+                  "confidence": "image_tag",
+                  "version_basis": "pod_image_tag"
+                }
+              ],
+              "resolution_sources": [
+                "pods"
+              ],
+              "resolved_versions": [
+                "v1.35.11-6"
+              ],
+              "raw_detected_versions": [
+                "v1.35.11-6"
+              ]
+            },
+            "recommendation": "Revisar la matriz oficial y actualizar el componente o completar evidencia antes del upgrade.",
+            "source": "https://github.com/kubernetes-sigs/azurefile-csi-driver",
+            "relation": "limitation",
+            "validation_type": "static",
+            "limitations": []
+          }
+        ]
+      },
+      {
+        "id": "azure-disk",
+        "product": "Azure Disk CSI Driver",
+        "namespace": "kube-system",
+        "category": "storage",
+        "source": "https://github.com/kubernetes-sigs/azuredisk-csi-driver",
+        "versions": [
+          "v1.34.7-7"
+        ],
+        "detected_versions": [
+          "v1.34.7-7"
+        ],
+        "evidence": [
+          {
+            "from": "pods",
+            "namespace": "kube-system",
+            "name": "azure-disk-example",
+            "repository": "mcr.microsoft.com/oss/v2/kubernetes-csi/azuredisk-csi",
+            "declared_tag": "v1.34.7-7",
+            "revision": null,
+            "identity_basis": "catalog_repository",
+            "confidence": "image_tag",
+            "version_basis": "pod_image_tag"
+          }
+        ],
+        "version_candidates": [
+          {
+            "version": "v1.34.7-7",
+            "from": "pods",
+            "namespace": "kube-system",
+            "revision": null
+          }
+        ],
+        "unknown_version": false,
+        "namespaces": [
+          "kube-system"
+        ],
+        "resolved_versions": [
+          "v1.34.7-7"
+        ],
+        "resolution_sources": [
+          "pods"
+        ],
+        "version_conflict": false,
+        "normalized_versions": [
+          "1.34.7"
+        ],
+        "resolution_policy": "cluster-bound server CLI > Helm appVersion > exact image tags > explicit product resource; all known mixed versions evaluated",
+        "confidence": "image_tag",
+        "detected_version": "v1.34.7-7",
+        "status": "UNKNOWN",
+        "compatibility": "No verificada",
+        "findings": [
+          {
+            "rule_id": "NO_SUPPORT_DATA",
+            "category": "operator_compatibility",
+            "status": "UNKNOWN",
+            "severity": "INFO",
+            "description": "No existe una única fila de matriz oficial revisada para esta versión.",
+            "evidence": {
+              "product": "Azure Disk CSI Driver",
+              "installed_version": "v1.34.7-7",
+              "target": "1.35.9",
+              "matrix": {},
+              "detected_version": "v1.34.7-7",
+              "version_confidence": "image_tag",
+              "catalog_lookup": {
+                "catalog_present": true,
+                "files": [
+                  "azure-disk.json"
+                ],
+                "paths": [
+                  "catalogs/support/azure-disk.json"
+                ],
+                "available_selectors": [
+                  "1.34.5",
+                  "1.33.11",
+                  "1.36.0"
+                ],
+                "matched_selectors": [],
+                "selected_selector": null,
+                "normalized_version": "1.34.7",
+                "reason": "family_not_catalogued"
+              },
+              "distribution_revision": "7",
+              "reviewed_on": null,
+              "catalog_limitations": [
+                "No se extrapolan filas exactas a toda la familia 1.34.x. Los tags con revisión de distribución se conservan; su soporte requiere vendor_versions documentadas."
+              ],
+              "detection_sources": [
+                {
+                  "from": "pods",
+                  "namespace": "kube-system",
+                  "name": "azure-disk-example",
+                  "repository": "mcr.microsoft.com/oss/v2/kubernetes-csi/azuredisk-csi",
+                  "declared_tag": "v1.34.7-7",
+                  "revision": null,
+                  "identity_basis": "catalog_repository",
+                  "confidence": "image_tag",
+                  "version_basis": "pod_image_tag"
+                }
+              ],
+              "resolution_sources": [
+                "pods"
+              ],
+              "resolved_versions": [
+                "v1.34.7-7"
+              ],
+              "raw_detected_versions": [
+                "v1.34.7-7"
+              ]
+            },
+            "recommendation": "Revisar la matriz oficial y actualizar el componente o completar evidencia antes del upgrade.",
+            "source": "https://github.com/kubernetes-sigs/azuredisk-csi-driver",
+            "relation": "limitation",
             "validation_type": "static",
             "limitations": []
           }
@@ -1189,7 +1475,7 @@
       "description": "Cobertura del descubrimiento de plataformas.",
       "evidence": {
         "errors": [],
-        "products_detected": 3
+        "products_detected": 5
       },
       "recommendation": "Revisar la evidencia antes del upgrade.",
       "source": "https://v1-35.docs.kubernetes.io/docs/tasks/extend-kubernetes/custom-resources/custom-resource-definitions/",
@@ -1214,10 +1500,252 @@
         "Node images se inventarían; no se infiere compatibilidad futura por su nombre."
       ]
     },
+    "detector_diagnostics": [
+      {
+        "product": "Argo CD",
+        "id": "argocd",
+        "status": "NOT_DETECTED",
+        "catalog_present": true,
+        "reason": "Sin coincidencia en repositorios/charts/grupos configurados; no prueba ausencia absoluta.",
+        "inventory_errors": []
+      },
+      {
+        "product": "Argo Workflows",
+        "id": "argo-workflows",
+        "status": "NOT_DETECTED",
+        "catalog_present": false,
+        "reason": "Sin coincidencia en repositorios/charts/grupos configurados; no prueba ausencia absoluta.",
+        "inventory_errors": []
+      },
+      {
+        "product": "Istio",
+        "id": "istio",
+        "status": "DETECTED",
+        "catalog_present": true,
+        "reason": "Identidad exacta encontrada",
+        "inventory_errors": []
+      },
+      {
+        "product": "Gatekeeper",
+        "id": "gatekeeper",
+        "status": "DETECTED",
+        "catalog_present": true,
+        "reason": "Identidad exacta encontrada",
+        "inventory_errors": []
+      },
+      {
+        "product": "Calico",
+        "id": "calico",
+        "status": "DETECTED",
+        "catalog_present": true,
+        "reason": "Identidad exacta encontrada",
+        "inventory_errors": []
+      },
+      {
+        "product": "Tigera Operator",
+        "id": "tigera",
+        "status": "NOT_DETECTED",
+        "catalog_present": true,
+        "reason": "Sin coincidencia en repositorios/charts/grupos configurados; no prueba ausencia absoluta.",
+        "inventory_errors": []
+      },
+      {
+        "product": "Dapr",
+        "id": "dapr",
+        "status": "NOT_DETECTED",
+        "catalog_present": true,
+        "reason": "Sin coincidencia en repositorios/charts/grupos configurados; no prueba ausencia absoluta.",
+        "inventory_errors": []
+      },
+      {
+        "product": "Secrets Store CSI Driver",
+        "id": "secrets-store-csi",
+        "status": "NOT_DETECTED",
+        "catalog_present": true,
+        "reason": "Sin coincidencia en repositorios/charts/grupos configurados; no prueba ausencia absoluta.",
+        "inventory_errors": []
+      },
+      {
+        "product": "Azure Policy Add-on",
+        "id": "azure-policy",
+        "status": "NOT_DETECTED",
+        "catalog_present": false,
+        "reason": "Sin coincidencia en repositorios/charts/grupos configurados; no prueba ausencia absoluta.",
+        "inventory_errors": []
+      },
+      {
+        "product": "Defender for Cloud",
+        "id": "defender",
+        "status": "NOT_DETECTED",
+        "catalog_present": false,
+        "reason": "Sin coincidencia en repositorios/charts/grupos configurados; no prueba ausencia absoluta.",
+        "inventory_errors": []
+      },
+      {
+        "product": "Cluster Autoscaler",
+        "id": "autoscaler",
+        "status": "NOT_DETECTED",
+        "catalog_present": false,
+        "reason": "Sin coincidencia en repositorios/charts/grupos configurados; no prueba ausencia absoluta.",
+        "inventory_errors": []
+      },
+      {
+        "product": "Karpenter",
+        "id": "karpenter",
+        "status": "NOT_DETECTED",
+        "catalog_present": false,
+        "reason": "Sin coincidencia en repositorios/charts/grupos configurados; no prueba ausencia absoluta.",
+        "inventory_errors": []
+      },
+      {
+        "product": "Cert Manager",
+        "id": "cert-manager",
+        "status": "NOT_DETECTED",
+        "catalog_present": true,
+        "reason": "Sin coincidencia en repositorios/charts/grupos configurados; no prueba ausencia absoluta.",
+        "inventory_errors": []
+      },
+      {
+        "product": "NGINX Ingress Controller (community)",
+        "id": "ingress-nginx",
+        "status": "NOT_DETECTED",
+        "catalog_present": false,
+        "reason": "Sin coincidencia en repositorios/charts/grupos configurados; no prueba ausencia absoluta.",
+        "inventory_errors": []
+      },
+      {
+        "product": "NGINX Ingress Controller (F5)",
+        "id": "nginx",
+        "status": "NOT_DETECTED",
+        "catalog_present": false,
+        "reason": "Sin coincidencia en repositorios/charts/grupos configurados; no prueba ausencia absoluta.",
+        "inventory_errors": []
+      },
+      {
+        "product": "AGIC",
+        "id": "agic",
+        "status": "NOT_DETECTED",
+        "catalog_present": false,
+        "reason": "Sin coincidencia en repositorios/charts/grupos configurados; no prueba ausencia absoluta.",
+        "inventory_errors": []
+      },
+      {
+        "product": "External DNS",
+        "id": "external-dns",
+        "status": "NOT_DETECTED",
+        "catalog_present": false,
+        "reason": "Sin coincidencia en repositorios/charts/grupos configurados; no prueba ausencia absoluta.",
+        "inventory_errors": []
+      },
+      {
+        "product": "Velero",
+        "id": "velero",
+        "status": "NOT_DETECTED",
+        "catalog_present": true,
+        "reason": "Sin coincidencia en repositorios/charts/grupos configurados; no prueba ausencia absoluta.",
+        "inventory_errors": []
+      },
+      {
+        "product": "Snapshot Controller",
+        "id": "snapshot",
+        "status": "NOT_DETECTED",
+        "catalog_present": false,
+        "reason": "Sin coincidencia en repositorios/charts/grupos configurados; no prueba ausencia absoluta.",
+        "inventory_errors": []
+      },
+      {
+        "product": "Prometheus Operator",
+        "id": "prometheus",
+        "status": "NOT_DETECTED",
+        "catalog_present": false,
+        "reason": "Sin coincidencia en repositorios/charts/grupos configurados; no prueba ausencia absoluta.",
+        "inventory_errors": []
+      },
+      {
+        "product": "OpenTelemetry Operator",
+        "id": "otel",
+        "status": "NOT_DETECTED",
+        "catalog_present": false,
+        "reason": "Sin coincidencia en repositorios/charts/grupos configurados; no prueba ausencia absoluta.",
+        "inventory_errors": []
+      },
+      {
+        "product": "FluxCD",
+        "id": "flux",
+        "status": "NOT_DETECTED",
+        "catalog_present": false,
+        "reason": "Sin coincidencia en repositorios/charts/grupos configurados; no prueba ausencia absoluta.",
+        "inventory_errors": []
+      },
+      {
+        "product": "Kyverno",
+        "id": "kyverno",
+        "status": "NOT_DETECTED",
+        "catalog_present": false,
+        "reason": "Sin coincidencia en repositorios/charts/grupos configurados; no prueba ausencia absoluta.",
+        "inventory_errors": []
+      },
+      {
+        "product": "OMS Agent / AMA",
+        "id": "ama",
+        "status": "NOT_DETECTED",
+        "catalog_present": false,
+        "reason": "Sin coincidencia en repositorios/charts/grupos configurados; no prueba ausencia absoluta.",
+        "inventory_errors": []
+      },
+      {
+        "product": "Azure Key Vault CSI Driver",
+        "id": "azure-keyvault",
+        "status": "NOT_DETECTED",
+        "catalog_present": false,
+        "reason": "Sin coincidencia en repositorios/charts/grupos configurados; no prueba ausencia absoluta.",
+        "inventory_errors": []
+      },
+      {
+        "product": "Azure Disk CSI Driver",
+        "id": "azure-disk",
+        "status": "DETECTED",
+        "catalog_present": true,
+        "reason": "Identidad exacta encontrada",
+        "inventory_errors": []
+      },
+      {
+        "product": "Azure File CSI Driver",
+        "id": "azure-file",
+        "status": "DETECTED",
+        "catalog_present": true,
+        "reason": "Identidad exacta encontrada",
+        "inventory_errors": []
+      },
+      {
+        "product": "External Secrets Operator",
+        "id": "external-secrets",
+        "status": "NOT_DETECTED",
+        "catalog_present": false,
+        "reason": "Sin coincidencia en repositorios/charts/grupos configurados; no prueba ausencia absoluta.",
+        "inventory_errors": []
+      },
+      {
+        "product": "Cilium",
+        "id": "cilium",
+        "status": "NOT_DETECTED",
+        "catalog_present": false,
+        "reason": "Sin coincidencia en repositorios/charts/grupos configurados; no prueba ausencia absoluta.",
+        "inventory_errors": []
+      },
+      {
+        "product": "Azure CNI",
+        "id": "azure-cni",
+        "status": "NOT_DETECTED",
+        "catalog_present": false,
+        "reason": "Sin coincidencia en repositorios/charts/grupos configurados; no prueba ausencia absoluta.",
+        "inventory_errors": []
+      }
+    ],
     "support_coverage": {
-      "products": 3,
-      "unknown_products": 1,
-      "unknown_percentage": 33.3,
+      "products": 5,
+      "unknown_products": 3,
+      "unknown_percentage": 60.0,
       "note": "Métrica de productos, no promesa de menos de 10%; no se excluyen limitaciones técnicas reales."
     },
     "catalog": {
@@ -1225,46 +1753,67 @@
         {
           "file": "argocd.json",
           "catalog_version": "2026.11.04.1",
+          "path": "catalogs/support/argocd.json",
           "sha256": "7e6aa251a44689ca27c7e2edafeedbabb66649a4886512132679b2e21cad0cb3"
+        },
+        {
+          "file": "azure-disk.json",
+          "catalog_version": "2026.11.04.1",
+          "path": "catalogs/support/azure-disk.json",
+          "sha256": "98bbb8be675731b14387a7b4d6519a1c8947e3e90ee3849ab056b47c2a71746b"
+        },
+        {
+          "file": "azure-file.json",
+          "catalog_version": "2026.11.04.1",
+          "path": "catalogs/support/azure-file.json",
+          "sha256": "849250d86351ca7378ca35de9c1cebdb884624b844f48d02a169c81c331eb0af"
         },
         {
           "file": "calico.json",
           "catalog_version": "2026.11.04.2",
+          "path": "catalogs/support/calico.json",
           "sha256": "5a5baedaf7a225c80f9b438bb027a9df211e8a968f158b903639d5ed05098735"
         },
         {
           "file": "cert-manager.json",
           "catalog_version": "2026.11.04.2",
+          "path": "catalogs/support/cert-manager.json",
           "sha256": "2a962b9b25a5845a92f5c0931715bc62a149d80236f52da97ce420e9b0c39b33"
         },
         {
           "file": "dapr.json",
           "catalog_version": "2026.11.04.1",
+          "path": "catalogs/support/dapr.json",
           "sha256": "b78c40182115ad48e293b2fcbb0a624fd29f7b161eeef81347079939cfada73e"
         },
         {
           "file": "gatekeeper.json",
           "catalog_version": "2026.11.04.1",
+          "path": "catalogs/support/gatekeeper.json",
           "sha256": "9372efa0202bbf81b36ef56251419a2497241bb8df5eb964859dd81485cf6029"
         },
         {
           "file": "istio.json",
-          "catalog_version": "2026.11.04.1",
-          "sha256": "305d2234bda17176a363c8878a2553e79df1bf57fd27808b0bb57ad1cffad431"
+          "catalog_version": "2026.11.04.3",
+          "path": "catalogs/support/istio.json",
+          "sha256": "9672086115807861fd7c911f06c8d33bbc3a4dff28993d419df76ff799df4a6d"
         },
         {
           "file": "secrets-store-csi.json",
           "catalog_version": "2026.11.04.2",
+          "path": "catalogs/support/secrets-store-csi.json",
           "sha256": "2f82f9af9bc500fb2ca3892c8102010c87cecc6828fd18b1e190d299b91f8f09"
         },
         {
           "file": "tigera-operator.json",
           "catalog_version": "2026.11.04.2",
+          "path": "catalogs/support/tigera-operator.json",
           "sha256": "bc3ea82928cec948d5c3565a4b5b9fb83c27a4a8ec402453f2a7097ad7d42063"
         },
         {
           "file": "velero.json",
           "catalog_version": "2026.11.04.2",
+          "path": "catalogs/support/velero.json",
           "sha256": "fb6c3f8f579c95a86a6e0eac8b01b7302e174ab988826a125703871a26711662"
         }
       ],
@@ -1274,45 +1823,82 @@
     "analyzed_on": "2026-11-04"
   },
   "readiness": {
-    "score": 38.9,
+    "score": 46.3,
     "scale": 100,
     "decision": "BLOCKED",
     "categories": {
       "operators": {
         "weight": 40,
         "status": "FAIL",
-        "earned_points": 0,
-        "observations": 4
+        "earned_points": 13.33,
+        "observations": 3,
+        "evidence_coverage": 66.7,
+        "counts": {
+          "PASS": 1,
+          "WARN": 0,
+          "FAIL": 1,
+          "UNKNOWN": 1,
+          "ERROR": 0
+        }
       },
       "crds": {
         "weight": 25,
         "status": "PASS",
-        "earned_points": 25,
-        "observations": 12
+        "earned_points": 25.0,
+        "observations": 1,
+        "evidence_coverage": 100.0,
+        "counts": {
+          "PASS": 1,
+          "WARN": 0,
+          "FAIL": 0,
+          "UNKNOWN": 0,
+          "ERROR": 0
+        }
       },
       "pluto": {
         "weight": 15,
         "status": "UNKNOWN",
-        "earned_points": 0,
-        "observations": 1
+        "earned_points": 0.0,
+        "observations": 1,
+        "evidence_coverage": 0.0,
+        "counts": {
+          "PASS": 0,
+          "WARN": 0,
+          "FAIL": 0,
+          "UNKNOWN": 1,
+          "ERROR": 0
+        }
       },
       "aks_addons": {
         "weight": 10,
         "status": "NOT_APPLICABLE",
         "earned_points": 0,
-        "observations": 0
+        "observations": 0,
+        "evidence_coverage": null,
+        "counts": {}
       },
       "storage": {
         "weight": 10,
-        "status": "PASS",
-        "earned_points": 10,
-        "observations": 3
+        "status": "UNKNOWN",
+        "earned_points": 3.33,
+        "observations": 3,
+        "evidence_coverage": 33.3,
+        "counts": {
+          "PASS": 1,
+          "WARN": 0,
+          "FAIL": 0,
+          "UNKNOWN": 2,
+          "ERROR": 0
+        }
       }
     },
+    "scoring_version": "2.0",
+    "evidence_coverage": 61.1,
+    "assessed_compatibility_score": 75.8,
     "applicable_weight": 90,
     "confirmed_blockers": true,
     "pending_evidence": true,
-    "method": "Worst finding per category. PASS=100%, WARN=50%, UNKNOWN/FAIL/ERROR=0%; N/A excluded and remaining weights normalized.",
+    "method": "Worst finding per product/CRD, then average units within each weighted category. PASS=100%, WARN=50%, UNKNOWN/FAIL/ERROR=0%; N/A excluded. Evidence coverage and compatibility of assessed units reported separately.",
     "limitation": "El score es una ayuda de revisión; READY exige ausencia de bloqueos, avisos y evidencia pendiente en todo el informe."
   },
   "knowledge": {
