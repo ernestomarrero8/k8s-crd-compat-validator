@@ -154,7 +154,9 @@ def test_snapshot_sidecar_is_not_the_controller_and_aks_managed_is_explicit():
     data["aks"] = {"kubernetesVersion": "1.34.8", "storageProfile": {"snapshotController": {"enabled": True}}}
     row = next(r for r in platform(data)["products"] if r["id"] == "snapshot")
     assert row["detection_status"] == "DETECTED_ACTIVE"
-    assert row["detected_version"] == "MANAGED" and row["compatibility"] == "MANAGED_BY_AKS"
+    assert row["detected_version"] == "MANAGED" and row["compatibility"] == "UNKNOWN"
+    assert row["compatibility_legacy"] == "MANAGED_BY_AKS"
+    assert row["reason"] == "MANAGED_VERSION_NOT_EXPOSED"
     assert row["status"] == "UNKNOWN"
     assert row["versions"] == ["MANAGED"]
     assert "VERSION_UNKNOWN" not in {f["rule_id"] for f in row["findings"]}

@@ -45,6 +45,7 @@ def parser():
     p.add_argument("--platform-catalog", "--support-catalog", type=Path, help="Directorio de matrices oficiales de plataformas (reemplaza las incluidas)")
     p.add_argument("--platform-input", type=Path, help="Snapshot JSON de inventario de plataformas; permite análisis offline")
     p.add_argument("--platform-limit", type=positive, default=2000, help="Máximo de objetos examinados por fuente de plataformas")
+    p.add_argument("--full-platform-evidence", action="store_true", help="Conservar en JSON toda la evidencia permitida del inventario examinado; el HTML usa resúmenes de Istio")
     p.add_argument("--detectors-path", type=Path, help="Aliases explícitos de repositorios/charts para productos conocidos")
     p.add_argument("--readiness-config", type=Path, help="Configuración readiness JSON o YAML de escalares documentados")
     p.add_argument("--verify-sources", action="store_true", help="Consulta documentos HTTPS del catálogo y verifica SHA256; solo LIVE")
@@ -129,7 +130,7 @@ def main(argv=None):
         options = {"page_size": args.page_size, "max_pages": args.max_pages, "max_instances": args.max_instances}
         try:
             platform, platform_findings = analyze_platform(collector, crds, current, target, platform_catalog,
-                read_json(args.platform_input) if args.platform_input else None, args.platform_limit)
+                read_json(args.platform_input) if args.platform_input else None, args.platform_limit, args.full_platform_evidence)
         except (KeyError, TypeError, AttributeError):
             failure = finding("PLATFORM-DISCOVERY-ERROR", "operator_compatibility", "ERROR",
                 "No se pudo interpretar una respuesta del inventario de plataformas; el análisis de CRDs se conserva.", relation="limitation")

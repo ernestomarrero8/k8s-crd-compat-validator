@@ -1,0 +1,544 @@
+{
+  "clusters": [
+    {
+      "cluster_identity": "/subscriptions/synthetic/resourcegroups/demo/providers/microsoft.containerservice/managedclusters/followup",
+      "primary_context": "demo-platform",
+      "contexts": [
+        "demo-platform",
+        "demo-platform-admin"
+      ],
+      "data_mismatch": true,
+      "current_version": "1.34.8",
+      "target_version": "1.35.9",
+      "pluto": {
+        "status": "UNKNOWN",
+        "exit_code": null,
+        "exit_code_origin": "unavailable"
+      },
+      "validator": {
+        "status": "ERROR",
+        "exit_code": 2,
+        "exit_code_origin": "consolidation"
+      },
+      "compatibility_score": 82.0,
+      "evidence_coverage": 36.4,
+      "decision": "BLOCKED",
+      "context_diff": {
+        "crds": {
+          "counts": {
+            "demo-platform": 1,
+            "demo-platform-admin": 0
+          },
+          "only_in": {
+            "demo-platform": [
+              "widgets.example.com"
+            ],
+            "demo-platform-admin": []
+          },
+          "changed": []
+        },
+        "products": {
+          "counts": {
+            "demo-platform": 7,
+            "demo-platform-admin": 4
+          },
+          "only_in": {
+            "demo-platform": [
+              "Argo CD",
+              "Gatekeeper",
+              "Tigera Operator"
+            ],
+            "demo-platform-admin": []
+          },
+          "changed": [
+            "Calico",
+            "Istio",
+            "Secrets Store CSI Driver",
+            "Snapshot Controller"
+          ]
+        },
+        "inventory_errors": {
+          "by_context": {
+            "demo-platform": [],
+            "demo-platform-admin": [
+              {
+                "source": "deployments.apps",
+                "error": "forbidden",
+                "required": true,
+                "items_scanned": 0
+              }
+            ]
+          },
+          "changed_sources": [
+            "crds",
+            "deployments.apps"
+          ]
+        },
+        "versions": {
+          "argocd": {
+            "demo-platform": [
+              "3.2.0"
+            ],
+            "demo-platform-admin": [
+              "NOT_DETECTED"
+            ]
+          },
+          "gatekeeper": {
+            "demo-platform": [
+              "3.18.0"
+            ],
+            "demo-platform-admin": [
+              "NOT_DETECTED"
+            ]
+          },
+          "tigera": {
+            "demo-platform": [
+              "1.38.0"
+            ],
+            "demo-platform-admin": [
+              "NOT_DETECTED"
+            ]
+          }
+        },
+        "kubernetes_versions": {
+          "demo-platform": {
+            "current": "1.34.8",
+            "target": "1.35.9"
+          },
+          "demo-platform-admin": {
+            "current": "1.34.8",
+            "target": "1.35.9"
+          }
+        },
+        "areas": [
+          "CRDs",
+          "Productos detectados / evidencia",
+          "Consultas fallidas / cobertura del inventario",
+          "Versiones",
+          "Hallazgos globales",
+          "Readiness",
+          "Resultado del validador"
+        ]
+      },
+      "products_fail": [
+        "Istio"
+      ],
+      "products_unknown": [
+        "Argo CD",
+        "Gatekeeper",
+        "Tigera Operator",
+        "Secrets Store CSI Driver",
+        "Snapshot Controller"
+      ],
+      "blocking_reasons": [
+        {
+          "rule_id": "NOT_COMPATIBLE",
+          "status": "FAIL",
+          "severity": "HIGH",
+          "description": "Istio 1.24.1 — Objetivo fuera del rango de soporte explícito del proveedor; no se recomienda este upgrade con la versión instalada."
+        },
+        {
+          "rule_id": "NOT_COMPATIBLE",
+          "status": "FAIL",
+          "severity": "HIGH",
+          "description": "Istio 1.25.0 — Objetivo fuera del rango de soporte explícito del proveedor; no se recomienda este upgrade con la versión instalada."
+        },
+        {
+          "rule_id": "CONTEXT_DATA_MISMATCH",
+          "status": "ERROR",
+          "severity": "HIGH",
+          "description": "CONTEXT_DATA_MISMATCH: datos distintos entre contextos de una misma identidad; revisar todos los detalles."
+        },
+        {
+          "rule_id": "VERSION_EOL",
+          "status": "WARN",
+          "severity": "MEDIUM",
+          "description": "Istio 1.24.1 — Versión fuera de mantenimiento según la evidencia oficial registrada."
+        },
+        {
+          "rule_id": "VERSION_EOL",
+          "status": "WARN",
+          "severity": "MEDIUM",
+          "description": "Istio 1.25.0 — Versión fuera de mantenimiento según la evidencia oficial registrada."
+        },
+        {
+          "rule_id": "RULE-COVERAGE",
+          "status": "UNKNOWN",
+          "severity": "INFO",
+          "description": "Cobertura documental del trayecto solicitado; el alcance se limita a las categorías registradas."
+        },
+        {
+          "rule_id": "NO_SUPPORT_DATA",
+          "status": "UNKNOWN",
+          "severity": "INFO",
+          "description": "Argo CD 3.2.0 — Objetivo fuera de las versiones probadas; esto no demuestra incompatibilidad."
+        },
+        {
+          "rule_id": "NO_SUPPORT_DATA",
+          "status": "UNKNOWN",
+          "severity": "INFO",
+          "description": "Gatekeeper 3.18.0 — No existe una única fila de matriz oficial revisada para esta versión."
+        },
+        {
+          "rule_id": "NO_SUPPORT_DATA",
+          "status": "UNKNOWN",
+          "severity": "INFO",
+          "description": "Tigera Operator 1.38.0 — No existe una única fila de matriz oficial revisada para esta versión."
+        },
+        {
+          "rule_id": "NO_OFFICIAL_KUBERNETES_MATRIX",
+          "status": "UNKNOWN",
+          "severity": "INFO",
+          "description": "Secrets Store CSI Driver 1.1.2 — La versión 1.1.2 fue detectada, pero no se encontró en las fuentes oficiales revisadas una matriz numérica verificable que la vincule con Kubernetes 1.35.9."
+        },
+        {
+          "rule_id": "MANAGED_VERSION_NOT_EXPOSED",
+          "status": "UNKNOWN",
+          "severity": "INFO",
+          "description": "Snapshot Controller MANAGED — Snapshot Controller habilitado en metadata AKS; la versión efectiva y su soporte para el objetivo no están expuestos."
+        },
+        {
+          "rule_id": "AKS-SUPPORT-UNVERIFIED",
+          "status": "UNKNOWN",
+          "severity": "INFO",
+          "description": "Soporte de AKS y sus add-ons para el objetivo requiere evidencia específica de Microsoft."
+        },
+        {
+          "rule_id": "PLUTO-SCAN",
+          "status": "UNKNOWN",
+          "severity": "INFO",
+          "description": "Pluto no se ejecuta en modo offline."
+        },
+        {
+          "rule_id": "NO_PRODUCT_OWNER",
+          "status": "UNKNOWN",
+          "severity": "INFO",
+          "description": "widgets.example.com — No existe una asociación explícita entre este CRD y un producto detectado."
+        },
+        {
+          "rule_id": "INSTANCES-NOT-REQUESTED",
+          "status": "UNKNOWN",
+          "severity": "INFO",
+          "description": "widgets.example.com — Instancias no inspeccionadas; usar --include-instances para lectura limitada."
+        }
+      ],
+      "context_results": [
+        {
+          "context": "demo-platform",
+          "validator_exit": 1,
+          "pluto": {
+            "executed": false,
+            "command": [],
+            "context": "offline:crds.json",
+            "target_version": "1.35.9",
+            "exit_code": null,
+            "stdout": "",
+            "stderr_omitted": true,
+            "limitations": [
+              "Pluto tiene su propio catálogo de APIs; un resultado limpio no prueba cobertura de versiones futuras.",
+              "La detección depende de los objetos y metadatos disponibles para Pluto."
+            ],
+            "status": "UNKNOWN",
+            "message": "Pluto no se ejecuta en modo offline."
+          }
+        },
+        {
+          "context": "demo-platform-admin",
+          "validator_exit": 2,
+          "pluto": {
+            "executed": false,
+            "command": [],
+            "context": "offline:crds.json",
+            "target_version": "1.35.9",
+            "exit_code": null,
+            "stdout": "",
+            "stderr_omitted": true,
+            "limitations": [
+              "Pluto tiene su propio catálogo de APIs; un resultado limpio no prueba cobertura de versiones futuras.",
+              "La detección depende de los objetos y metadatos disponibles para Pluto."
+            ],
+            "status": "UNKNOWN",
+            "message": "Pluto no se ejecuta en modo offline."
+          }
+        }
+      ]
+    },
+    {
+      "cluster_identity": "/subscriptions/synthetic/resourcegroups/demo/providers/microsoft.containerservice/managedclusters/followup-truncated",
+      "primary_context": "demo-truncated",
+      "contexts": [
+        "demo-truncated"
+      ],
+      "data_mismatch": false,
+      "current_version": "1.34.8",
+      "target_version": "1.35.9",
+      "pluto": {
+        "status": "UNKNOWN",
+        "exit_code": null,
+        "exit_code_origin": "unavailable"
+      },
+      "validator": {
+        "status": "ERROR",
+        "exit_code": 2,
+        "exit_code_origin": "validator_process"
+      },
+      "compatibility_score": 83.7,
+      "evidence_coverage": 28.6,
+      "decision": "BLOCKED",
+      "context_diff": null,
+      "products_fail": [
+        "Istio"
+      ],
+      "products_unknown": [
+        "Argo CD",
+        "Gatekeeper",
+        "Tigera Operator",
+        "Secrets Store CSI Driver",
+        "Snapshot Controller"
+      ],
+      "blocking_reasons": [
+        {
+          "rule_id": "NOT_COMPATIBLE",
+          "status": "FAIL",
+          "severity": "HIGH",
+          "description": "Istio 1.24.1 — Objetivo fuera del rango de soporte explícito del proveedor; no se recomienda este upgrade con la versión instalada."
+        },
+        {
+          "rule_id": "VERSION_EOL",
+          "status": "WARN",
+          "severity": "MEDIUM",
+          "description": "Istio 1.24.1 — Versión fuera de mantenimiento según la evidencia oficial registrada."
+        },
+        {
+          "rule_id": "RULE-COVERAGE",
+          "status": "UNKNOWN",
+          "severity": "INFO",
+          "description": "Cobertura documental del trayecto solicitado; el alcance se limita a las categorías registradas."
+        },
+        {
+          "rule_id": "NO_SUPPORT_DATA",
+          "status": "UNKNOWN",
+          "severity": "INFO",
+          "description": "Argo CD 3.2.0 — Objetivo fuera de las versiones probadas; esto no demuestra incompatibilidad."
+        },
+        {
+          "rule_id": "NO_SUPPORT_DATA",
+          "status": "UNKNOWN",
+          "severity": "INFO",
+          "description": "Gatekeeper 3.18.0 — No existe una única fila de matriz oficial revisada para esta versión."
+        },
+        {
+          "rule_id": "NO_SUPPORT_DATA",
+          "status": "UNKNOWN",
+          "severity": "INFO",
+          "description": "Tigera Operator 1.38.0 — No existe una única fila de matriz oficial revisada para esta versión."
+        },
+        {
+          "rule_id": "NO_OFFICIAL_KUBERNETES_MATRIX",
+          "status": "UNKNOWN",
+          "severity": "INFO",
+          "description": "Secrets Store CSI Driver 1.1.2 — La versión 1.1.2 fue detectada, pero no se encontró en las fuentes oficiales revisadas una matriz numérica verificable que la vincule con Kubernetes 1.35.9."
+        },
+        {
+          "rule_id": "MANAGED_VERSION_NOT_EXPOSED",
+          "status": "UNKNOWN",
+          "severity": "INFO",
+          "description": "Snapshot Controller MANAGED — Snapshot Controller habilitado en metadata AKS; la versión efectiva y su soporte para el objetivo no están expuestos."
+        },
+        {
+          "rule_id": "PLATFORM-DISCOVERY",
+          "status": "UNKNOWN",
+          "severity": "INFO",
+          "description": "Cobertura del descubrimiento de plataformas."
+        },
+        {
+          "rule_id": "AKS-SUPPORT-UNVERIFIED",
+          "status": "UNKNOWN",
+          "severity": "INFO",
+          "description": "Soporte de AKS y sus add-ons para el objetivo requiere evidencia específica de Microsoft."
+        },
+        {
+          "rule_id": "PLUTO-SCAN",
+          "status": "UNKNOWN",
+          "severity": "INFO",
+          "description": "Pluto no se ejecuta en modo offline."
+        },
+        {
+          "rule_id": "NO_PRODUCT_OWNER",
+          "status": "UNKNOWN",
+          "severity": "INFO",
+          "description": "widgets.example.com — No existe una asociación explícita entre este CRD y un producto detectado."
+        },
+        {
+          "rule_id": "INSTANCES-NOT-REQUESTED",
+          "status": "UNKNOWN",
+          "severity": "INFO",
+          "description": "widgets.example.com — Instancias no inspeccionadas; usar --include-instances para lectura limitada."
+        }
+      ],
+      "context_results": [
+        {
+          "context": "demo-truncated",
+          "validator_exit": 2,
+          "pluto": {
+            "executed": false,
+            "command": [],
+            "context": "offline:crds.json",
+            "target_version": "1.35.9",
+            "exit_code": null,
+            "stdout": "",
+            "stderr_omitted": true,
+            "limitations": [
+              "Pluto tiene su propio catálogo de APIs; un resultado limpio no prueba cobertura de versiones futuras.",
+              "La detección depende de los objetos y metadatos disponibles para Pluto."
+            ],
+            "status": "UNKNOWN",
+            "message": "Pluto no se ejecuta en modo offline."
+          }
+        }
+      ]
+    }
+  ],
+  "contexts": 3,
+  "overall_status": "ERROR",
+  "technical_errors_count": 2,
+  "technical_errors": [
+    {
+      "cluster": "demo-platform",
+      "contexts": [
+        "demo-platform",
+        "demo-platform-admin"
+      ],
+      "causes": [
+        {
+          "context": "demo-platform-admin",
+          "source": "deployments.apps",
+          "reason": "forbidden",
+          "items_scanned": 0,
+          "action": "Revisar RBAC de lectura para esta fuente con el contexto indicado."
+        },
+        {
+          "source": "context_comparison",
+          "reason": "CONTEXT_DATA_MISMATCH",
+          "context": "demo-platform",
+          "action": "Revisar las diferencias de CRDs, productos, versiones y consultas que se muestran debajo."
+        }
+      ],
+      "context_diff": {
+        "crds": {
+          "counts": {
+            "demo-platform": 1,
+            "demo-platform-admin": 0
+          },
+          "only_in": {
+            "demo-platform": [
+              "widgets.example.com"
+            ],
+            "demo-platform-admin": []
+          },
+          "changed": []
+        },
+        "products": {
+          "counts": {
+            "demo-platform": 7,
+            "demo-platform-admin": 4
+          },
+          "only_in": {
+            "demo-platform": [
+              "Argo CD",
+              "Gatekeeper",
+              "Tigera Operator"
+            ],
+            "demo-platform-admin": []
+          },
+          "changed": [
+            "Calico",
+            "Istio",
+            "Secrets Store CSI Driver",
+            "Snapshot Controller"
+          ]
+        },
+        "inventory_errors": {
+          "by_context": {
+            "demo-platform": [],
+            "demo-platform-admin": [
+              {
+                "source": "deployments.apps",
+                "error": "forbidden",
+                "required": true,
+                "items_scanned": 0
+              }
+            ]
+          },
+          "changed_sources": [
+            "crds",
+            "deployments.apps"
+          ]
+        },
+        "versions": {
+          "argocd": {
+            "demo-platform": [
+              "3.2.0"
+            ],
+            "demo-platform-admin": [
+              "NOT_DETECTED"
+            ]
+          },
+          "gatekeeper": {
+            "demo-platform": [
+              "3.18.0"
+            ],
+            "demo-platform-admin": [
+              "NOT_DETECTED"
+            ]
+          },
+          "tigera": {
+            "demo-platform": [
+              "1.38.0"
+            ],
+            "demo-platform-admin": [
+              "NOT_DETECTED"
+            ]
+          }
+        },
+        "kubernetes_versions": {
+          "demo-platform": {
+            "current": "1.34.8",
+            "target": "1.35.9"
+          },
+          "demo-platform-admin": {
+            "current": "1.34.8",
+            "target": "1.35.9"
+          }
+        },
+        "areas": [
+          "CRDs",
+          "Productos detectados / evidencia",
+          "Consultas fallidas / cobertura del inventario",
+          "Versiones",
+          "Hallazgos globales",
+          "Readiness",
+          "Resultado del validador"
+        ]
+      },
+      "detail_anchor": "cluster-1"
+    },
+    {
+      "cluster": "demo-truncated",
+      "contexts": [
+        "demo-truncated"
+      ],
+      "causes": [
+        {
+          "context": "demo-truncated",
+          "source": "pods",
+          "reason": "inventory_limit",
+          "items_scanned": 120,
+          "action": "Revisar --platform-limit y completar el inventario; no descartar los objetos que quedaron fuera."
+        }
+      ],
+      "context_diff": null,
+      "detail_anchor": "cluster-2"
+    }
+  ]
+}

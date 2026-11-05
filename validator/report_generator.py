@@ -9,6 +9,7 @@ from urllib.parse import quote
 from .models import STATES, SEVERITIES
 from .platform_report import html as platform_html, markdown as platform_markdown
 from . import __version__
+from .workload_evidence import html_evidence
 
 
 def build_report(cluster, current, target, path, crds, global_findings, queries=0, target_context=None):
@@ -85,7 +86,7 @@ def html(report):
         for f in findings:
             content.append(f"<details open><summary><b>{esc(f['rule_id'])}</b> <span class='{f['status']}'>{f['status']} / {f['severity']}</span></summary>"
                            f"<p>{esc(f['description'])}</p><p>{esc(f['category'])} · {esc(f['relation'])} · {esc(f['validation_type'])}</p>"
-                           f"<pre>{esc(json.dumps(f['evidence'], ensure_ascii=False, indent=2))}</pre>"
+                           f"<pre>{esc(json.dumps(html_evidence(f['evidence']), ensure_ascii=False, indent=2))}</pre>"
                            f"<p><b>Recomendación:</b> {esc(f['recommendation'])}</p>"
                            f"<p><a href='{esc(f['source'])}' rel='noreferrer'>Fuente técnica</a></p>"
                            + "".join(f"<p class='limit'>Límite: {esc(x)}</p>" for x in f["limitations"]) + "</details>")

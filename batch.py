@@ -24,7 +24,7 @@ def main(argv=None):
     parser.add_argument("--context-timeout", type=positive, default=1800, help="Timeout total por contexto, segundos")
     args, forwarded = parser.parse_known_args(argv)
     # Explicit allowlist of main.py options: callers cannot redirect or reuse reports.
-    allowed = {"--include-instances": 0, "--verbose": 0, "--verify-sources": 0,
+    allowed = {"--include-instances": 0, "--verbose": 0, "--verify-sources": 0, "--full-platform-evidence": 0,
                "--platform-catalog": 1, "--support-catalog": 1, "--platform-limit": 1, "--detectors-path": 1, "--readiness-config": 1,
                "--rules-path": 1, "--coverage-path": 1, "--operator-catalog": 1,
                "--timeout": 1, "--pluto-timeout": 1, "--max-queries": 1, "--page-size": 1,

@@ -123,7 +123,8 @@ def test_extended_real_support_matrices():
 
 def test_public_policy_not_invented_into_historical_support():
     result = PlatformCatalog().evaluate("Secrets Store CSI Driver", "1.0.0", "1.35.9", "https://example.com", TODAY)[0]
-    assert result.rule_id == "NO_SUPPORT_DATA" and result.status == "UNKNOWN"
+    assert result.rule_id == "NO_OFFICIAL_KUBERNETES_MATRIX" and result.status == "UNKNOWN"
+    assert result.evidence["legacy_rule_id"] == "NO_SUPPORT_DATA"
     assert result.evidence["catalog_limitations"]
 
 

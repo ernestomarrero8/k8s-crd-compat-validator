@@ -2,12 +2,13 @@
 from datetime import date
 from .models import finding, aggregate
 from .platform_discovery import collect, safe_detect
-from .detection_status import inventory_sources, presence
+from .detection_status import inventory_sources, presence, product_inventory_errors
+from .workload_evidence import istio_summary
 from .azure_validator import collect_aks, analyze as analyze_aks
 from .version_resolver import resolve
 
 
-def analyze(collector, crds, current, target, catalog, snapshot=None, limit=2000):
+def analyze(collector, crds, current, target, catalog, snapshot=None, limit=2000, full_evidence=False):
     if snapshot is not None:
         if not isinstance(snapshot, dict) or snapshot.get("schema_version") != 1:
             raise ValueError("Snapshot de plataformas requiere schema_version: 1.")
@@ -24,7 +25,7 @@ def analyze(collector, crds, current, target, catalog, snapshot=None, limit=2000
             elif not isinstance(data[key], list) or any(not isinstance(x, dict) for x in data[key]):
                 data.setdefault("discovery_errors", []).append({"source": key, "reason": "invalid_response"})
                 data[key] = []
-            elif len(data[key]) >= limit:
+            elif len(data[key]) > limit or (key == "helm" and len(data[key]) == limit):
                 data[key] = data[key][:limit]
                 data.setdefault("discovery_errors", []).append({"source": key, "reason": "inventory_limit"})
     elif collector:
@@ -39,7 +40,7 @@ def analyze(collector, crds, current, target, catalog, snapshot=None, limit=2000
             data["aks"] = None
             data["aks_error"] = "La versión AKS de Azure no coincide con el servidor consultado; metadata no utilizada para atribuir add-ons."
     azure, azure_finding = analyze_aks(data, current, target)
-    detected, detector_errors = safe_detect(data, catalog.detectors)
+    detected, detector_errors = safe_detect(data, catalog.detectors, full_evidence=full_evidence)
     rows = resolve(detected)
     sources_inventory = inventory_sources(data)
     required_errors = [s for s in sources_inventory if s["required"] and not s["completed"]]
@@ -55,10 +56,16 @@ def analyze(collector, crds, current, target, catalog, snapshot=None, limit=2000
             row["evidence"].append({"from": "az aks show", "addon": addon["name"], "activity": "active"})
     findings = []
     for row in rows:
+        product_errors = product_inventory_errors(sources_inventory, row["category"])
         row.update(presence(row))
         row["presence_status"] = row["detection_status"]
-        row["inventory_complete"] = not bool(required_errors)
+        row["inventory_complete"] = not bool(product_errors)
+        row["inventory_errors"] = product_errors
         row["limitations"] = list(limitations)
+        row["evidence_scope"] = "full_examined_inventory" if full_evidence else "bounded_samples"
+        if row["id"] == "istio":
+            definition = next(d for d in catalog.detectors if d["id"] == "istio")
+            row["evidence_summary"] = istio_summary(data, definition)
         if row["id"] == "azure-keyvault":
             row["legacy_product"] = "Azure Key Vault CSI Driver"
         row_findings = []
@@ -84,10 +91,13 @@ def analyze(collector, crds, current, target, catalog, snapshot=None, limit=2000
             row["detected_versions"] = ["MANAGED"]
             row["versions"] = ["MANAGED"]
             row["confidence"] = "managed_metadata"
-            row_findings = [finding("MANAGED_VERSION_UNEXPOSED", "operator_compatibility", "UNKNOWN",
+            row["managed_by"] = "AKS"
+            row["reason"] = "MANAGED_VERSION_NOT_EXPOSED"
+            row_findings = [finding("MANAGED_VERSION_NOT_EXPOSED", "operator_compatibility", "UNKNOWN",
                 "Snapshot Controller habilitado en metadata AKS; la versión efectiva y su soporte para el objetivo no están expuestos.",
                 source=row["source"], relation="limitation", evidence={"product": row["product"], "target": str(target),
-                    "installed_version": "MANAGED", "detected_version": "MANAGED", "managed_by": "AKS"})]
+                    "installed_version": "MANAGED", "detected_version": "MANAGED", "managed_by": "AKS", "reason": row["reason"],
+                    "legacy_rule_id": "MANAGED_VERSION_UNEXPOSED"})]
             observed = ["MANAGED"]
         for f in row_findings:
             f.evidence["detection_sources"] = row["evidence"]
@@ -95,16 +105,19 @@ def analyze(collector, crds, current, target, catalog, snapshot=None, limit=2000
             f.evidence["resolved_versions"] = row.get("resolved_versions", [])
             f.evidence["version_confidence"] = row["confidence"]
             f.evidence["raw_detected_versions"] = observed
+            if "evidence_summary" in row:
+                f.evidence["detection_summary"] = row["evidence_summary"]
         states = {f.status for f in row_findings}
         row["status"] = aggregate(row_findings)
         # WARN lifecycle and UNKNOWN coverage must both remain visible.
         row["compatibility"] = "No" if "FAIL" in states else "No verificada" if "UNKNOWN" in states else "Sí, según evidencia documentada"
         if managed_snapshot:
-            row["compatibility"] = "MANAGED_BY_AKS"
+            row["compatibility"] = "UNKNOWN"
+            row["compatibility_legacy"] = "MANAGED_BY_AKS"
         row["findings"] = [f.to_dict() for f in row_findings]
         if any(e["product_id"] == row["id"] for e in detector_errors):
             row["detection_status"] = "DETECTION_ERROR"
-        elif required_errors:
+        elif product_errors:
             row["detection_status"] = "INVENTORY_INCOMPLETE"
         findings.extend(row_findings)
     errors = data.get("discovery_errors", [])
@@ -124,13 +137,15 @@ def analyze(collector, crds, current, target, catalog, snapshot=None, limit=2000
     for d in catalog.detectors:
         row = next((r for r in rows if r["id"] == d["id"]), None)
         internal_error = any(e["product_id"] == d["id"] for e in detector_errors)
-        state = "DETECTION_ERROR" if internal_error else "INVENTORY_INCOMPLETE" if required_errors else row["detection_status"] if row else "NOT_DETECTED"
+        product_errors = product_inventory_errors(sources_inventory, d.get("category", "operator"))
+        failure_description = "; ".join(f'{s["source"]}: {s["error"]} (examinados: {s["items_scanned"]})' for s in product_errors)
+        state = "DETECTION_ERROR" if internal_error else "INVENTORY_INCOMPLETE" if product_errors else row["detection_status"] if row else "NOT_DETECTED"
         diagnostics.append({"product": d["product"], "id": d["id"], "status": state, "detection_status": state,
             "detected": bool(row), "legacy_status": "DETECTED" if row else state,
             "active_controller_confirmed": row["active_controller_confirmed"] if row else False,
             "catalog_present": d["product"] in catalog.product_files, "limitations": limitations,
-            "reason": "Error interno del detector; detalle sensible omitido." if internal_error else "Consultar evidencia de presencia y operación." if row else "Inventario obligatorio incompleto." if required_errors else "Sin coincidencias en el inventario completado; no prueba ausencia absoluta.",
-            "inventory_errors": required_errors, "inventory_complete": not bool(required_errors)})
+            "reason": "Error interno del detector; detalle sensible omitido." if internal_error else "Inventario obligatorio incompleto: " + failure_description if product_errors else "Consultar evidencia de presencia y operación." if row else "Sin coincidencias en el inventario completado; no prueba ausencia absoluta.",
+            "inventory_errors": product_errors, "inventory_complete": not bool(product_errors)})
     return {"title": "OPERATOR COMPATIBILITY ANALYSIS", "products": rows, "discovery": inventory.to_dict(), "aks": azure,
             "detector_diagnostics": diagnostics, "inventory_sources": sources_inventory,
             "support_coverage": {"products": len(rows), "unknown_products": unknown, "unknown_percentage": round(100 * unknown / len(rows), 1) if rows else None,

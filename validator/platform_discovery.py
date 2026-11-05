@@ -5,6 +5,7 @@ import subprocess
 from .collector import CollectionError, read_json
 from .platform_catalog import release, ROOT
 from .detection_status import REQUIRED, OPTIONAL, inventory_sources, workload_activity
+from .workload_evidence import containers as container_evidence, observed_status
 
 WORKLOAD_NAMES = {"gatekeeper": {"gatekeeper-controller-manager", "gatekeeper-audit"},
     "tigera": {"tigera-operator"}, "snapshot": {"snapshot-controller", "csi-snapshot-controller"}}
@@ -35,7 +36,7 @@ def collect(collector, crds, limit=2000, definitions=None):
             if not isinstance(items, list) or any(not isinstance(i, dict) for i in items):
                 raise CollectionError("invalid_response")
             data[resource] = items[:limit]
-            if len(items) >= limit or response.get("metadata", {}).get("continue"):
+            if len(items) > limit or response.get("metadata", {}).get("continue"):
                 errors.append({"source": resource, "reason": "inventory_limit"})
         except CollectionError as exc:
             errors.append({"source": resource, "reason": exc.code})
@@ -62,7 +63,7 @@ def collect(collector, crds, limit=2000, definitions=None):
             if not isinstance(items, list) or any(not isinstance(i, dict) for i in items):
                 raise CollectionError("invalid_response")
             data[resource] = items[:limit]
-            if len(items) >= limit or response.get("metadata", {}).get("continue"):
+            if len(items) > limit or response.get("metadata", {}).get("continue"):
                 errors.append({"source": resource, "reason": "inventory_limit"})
         except CollectionError as exc:
             errors.append({"source": resource, "reason": exc.code})
@@ -77,22 +78,22 @@ def collect(collector, crds, limit=2000, definitions=None):
     return data
 
 
-def safe_detect(data, definitions):
+def safe_detect(data, definitions, full_evidence=False):
     rows, errors = [], []
     for definition in definitions:
         try:
-            rows.extend(detect(data, [definition]))
+            rows.extend(detect(data, [definition], full_evidence=full_evidence))
         except (ValueError, TypeError, KeyError, AttributeError, RecursionError):
             errors.append({"product_id": definition["id"], "reason": "detector_parser_error"})
             if definition["id"] == "istio" and "istio" in data:
                 try:
-                    rows.extend(detect({k: v for k, v in data.items() if k != "istio"}, [definition]))
+                    rows.extend(detect({k: v for k, v in data.items() if k != "istio"}, [definition], full_evidence=full_evidence))
                 except (ValueError, TypeError, KeyError, AttributeError, RecursionError):
                     pass
     return rows, errors
 
 
-def detect(data, definitions):
+def detect(data, definitions, full_evidence=False):
     detected = {}
     def add(definition, namespace, version, evidence):
         key = (definition["id"], namespace)
@@ -118,41 +119,51 @@ def detect(data, definitions):
             if candidate not in row["version_candidates"]:
                 row["version_candidates"].append(candidate)
         # Bound report size independently from inventory size.
-        if len(row["evidence"]) < 30 and evidence not in row["evidence"]:
+        if (full_evidence or len(row["evidence"]) < 30) and evidence not in row["evidence"]:
             row["evidence"].append(evidence)
     for resource in ("deployments.apps", "daemonsets.apps", "statefulsets.apps", "pods"):
         for obj in data.get(resource, []):
             meta = obj.get("metadata", {})
-            spec = obj.get("spec", {}) if resource == "pods" else obj.get("spec", {}).get("template", {}).get("spec", {})
+            observed = container_evidence(resource, obj)
+            labels = meta.get("labels", {}) | obj.get("spec", {}).get("template", {}).get("metadata", {}).get("labels", {})
             matched = set()
-            for container in spec.get("containers", []) + spec.get("initContainers", []):
-                image = container.get("image", "")
-                repository = image.split("@")[0]
-                tail = repository.rsplit("/", 1)[-1]
-                tag = tail.split(":", 1)[1] if ":" in tail else None
-                repository = repository.rsplit(":", 1)[0] if tag else repository
+            for observation in observed:
+                repository, tag = observation["repository"], observation["declared_tag"]
                 for definition in definitions:
                     if repository in definition["images"]:
                         matched.add(definition["id"])
-                        labels = meta.get("labels", {}) | obj.get("spec", {}).get("template", {}).get("metadata", {}).get("labels", {})
                         label_version = labels.get("app.kubernetes.io/version")
                         version = tag if release(tag, definition["product"]) else label_version or tag
                         evidence = {"from": resource, "namespace": meta.get("namespace", ""), "name": meta.get("name", ""),
                                     "repository": repository, "declared_tag": tag, "revision": meta.get("labels", {}).get("istio.io/rev"),
                                     "identity_basis": "configured_repository" if repository in definition.get("configured_images", []) else "catalog_repository",
                                     "confidence": "product_metadata" if version != tag else "image_tag",
-                                    "activity": workload_activity(resource, obj), "observed_status": {k: obj.get("status", {}).get(k) for k in ("phase", "availableReplicas", "readyReplicas", "numberAvailable") if k in obj.get("status", {})},
-                                    "version_label": label_version,
+                                    "activity": workload_activity(resource, obj), "observed_status": observed_status(obj),
+                                    "version_label": label_version, "chart": labels.get("helm.sh/chart"), "imageID": observation["imageID"],
+                                    "observed_containers": [observation],
+                                    "pod_container_statuses": [{k: item[k] for k in ("container", "ready", "restartCount", "state")} for item in observed] if resource == "pods" else [],
                                     "version_basis": "version_label" if version != tag else "pod_image_tag" if resource == "pods" else "workload_template_image_tag"}
                         add(definition, meta.get("namespace", ""), version, evidence)
             for definition in definitions:
                 if definition["id"] not in matched and meta.get("name") in WORKLOAD_NAMES.get(definition["id"], set()):
-                    labels = meta.get("labels", {}) | obj.get("spec", {}).get("template", {}).get("metadata", {}).get("labels", {})
                     annotations = meta.get("annotations", {})
-                    version = labels.get("app.kubernetes.io/version") or annotations.get("app.kubernetes.io/version")
-                    add(definition, meta.get("namespace", ""), version, {"from": resource, "name": meta.get("name"),
-                        "identity_basis": "known_workload_name", "activity": workload_activity(resource, obj),
-                        "version_label": version, "version_basis": "version_label", "confidence": "product_metadata", "note": "Identidad declarada del workload; no se verifica el binario por digest."})
+                    label_version = labels.get("app.kubernetes.io/version") or annotations.get("app.kubernetes.io/version")
+                    # A named workload plus the exact controller image basename establishes a declared identity.
+                    # Never take a helper/init image's unrelated SemVer or a Helm chart version as the product version.
+                    basenames = {image.rsplit("/", 1)[-1] for image in definition["images"]}
+                    selected = [o for o in observed if o["repository"].rsplit("/", 1)[-1] in basenames
+                        and (definition["id"] != "tigera" or o["container"] in ("tigera-operator", "operator"))]
+                    for observation in selected or [None]:
+                        tag = observation["declared_tag"] if observation else None
+                        version = tag if release(tag, definition["product"]) else label_version or tag
+                        add(definition, meta.get("namespace", ""), version, {"from": resource, "name": meta.get("name"),
+                            "identity_basis": "known_workload_and_controller_image" if observation else "known_workload_name",
+                            "activity": workload_activity(resource, obj), "observed_status": observed_status(obj),
+                            "repository": observation["repository"] if observation else None, "declared_tag": tag,
+                            "imageID": observation["imageID"] if observation else None, "chart": labels.get("helm.sh/chart"),
+                            "version_label": label_version, "version_basis": "workload_template_image_tag" if version == tag and tag else "version_label",
+                            "confidence": "image_tag" if version == tag and tag else "product_metadata", "observed_containers": observed,
+                            "note": "Identidad declarada del workload y su contenedor; no se verifica el binario por digest. Los tags de helpers y chart no determinan versión del producto."})
     for helm in data.get("helm", []):
         for definition in definitions:
             # Exact chart identity followed by a chart version; never use chart version as app version.

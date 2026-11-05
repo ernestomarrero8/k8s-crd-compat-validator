@@ -11,6 +11,7 @@ from .models import STATES, SEVERITIES
 from .report_generator import html
 from .rule_engine import safe_source
 from .version import Version
+from .context_diff import compare_contexts, diff_html, technical_causes
 
 
 def load_report(path, context):
@@ -111,10 +112,12 @@ def consolidate(entries, output):
     rows, details, statuses = [], [], []
     totals = Counter()
     clusters = []
+    technical_errors = []
     grouped = _groups(entries)
     for index, group in enumerate(grouped, 1):
         entry, report = group["members"][0]
         context, code = entry["context"], entry["exit_code"]
+        context_diff = compare_contexts(group["members"], _fingerprint) if group["data_mismatch"] else None
         code = 2 if group["data_mismatch"] or any(e["exit_code"] not in (0, 1) for e, _ in group["members"]) else max(e["exit_code"] for e, _ in group["members"])
         fragment = html(report).partition("<main>")[2].rpartition("</main>")[0] if report else ""
         state = report["overall_status"] if report else "ERROR"
@@ -146,9 +149,17 @@ def consolidate(entries, output):
             "pluto": {"status": pluto, "exit_code": pluto_exit, "exit_code_origin": "pluto_report" if pluto_exit is not None else "unavailable"},
             "validator": {"status": state, "exit_code": code, "exit_code_origin": "consolidation" if group["data_mismatch"] else "validator_process"},
             "compatibility_score": score, "evidence_coverage": evidence_coverage, "decision": readiness,
+            "context_diff": context_diff,
             "products_fail": failed, "products_unknown": unknown, "blocking_reasons": reasons,
             "context_results": [{"context": e["context"], "validator_exit": e["exit_code"], "pluto": r.get("pluto", {}) if r else None} for e, r in group["members"]]})
         esc = lambda v: escape(str(v), quote=True)
+        if state == "ERROR":
+            causes = [cause for member, value in group["members"] for cause in technical_causes(member, value)]
+            if context_diff:
+                causes.append({"source": "context_comparison", "reason": "CONTEXT_DATA_MISMATCH", "context": context,
+                    "action": "Revisar las diferencias de CRDs, productos, versiones y consultas que se muestran debajo."})
+            technical_errors.append({"cluster": context, "contexts": group["contexts"], "causes": causes,
+                "context_diff": context_diff, "detail_anchor": f"cluster-{index}"})
         rows.append(f'<tr><td><a href="#cluster-{index}">{esc(context)}</a></td><td>{esc(current)} → {esc(target)}</td>'
                     f'<td>{esc(count)}</td><td class="{state}">{state}</td><td>{esc(pluto)}</td><td>{esc(pluto_exit if pluto_exit is not None else "—")}</td>'
                     f'<td>{esc(state)}</td><td>{esc(code)}</td><td>{esc(score if score is not None else "—")}/100</td><td>{esc(evidence_coverage)}%</td><td>{esc(readiness)}</td>'
@@ -158,9 +169,10 @@ def consolidate(entries, output):
         if report and state == "ERROR":
             body = "<p class='ERROR'>El proceso terminó con error o timeout; el detalle disponible puede ser parcial.</p>" + body
         if group["data_mismatch"]:
-            body = "<p class='ERROR'><b>CONTEXT_DATA_MISMATCH</b>: los contextos de este clúster entregaron datos diferentes; se conservan todos los resultados sin fusionarlos.</p>" + "".join(
+            body = "<p class='ERROR'><b>CONTEXT_DATA_MISMATCH</b>: los contextos de este clúster entregaron datos diferentes; se conservan todos los resultados sin fusionarlos.</p>" + diff_html(context_diff) + "".join(
                 '<details open><summary>' + esc(e["context"]) + '</summary>' + (html(r).partition("<main>")[2].rpartition("</main>")[0] if r else "Sin reporte válido") + '</details>' for e, r in group["members"])
-        body = f'<p>Identidad: {esc(group["cluster_identity"])} · Contexto principal: {esc(context)}</p><pre>' + esc(json.dumps(clusters[-1]["context_results"], ensure_ascii=False, indent=2)) + '</pre>' + body
+        context_codes = [{"context": v["context"], "validator_exit": v["validator_exit"], "pluto": {k: (v["pluto"] or {}).get(k) for k in ("status", "exit_code")}} for v in clusters[-1]["context_results"]]
+        body = f'<p>Identidad: {esc(group["cluster_identity"])} · Contexto principal: {esc(context)}</p><pre>' + esc(json.dumps(context_codes, ensure_ascii=False, indent=2)) + '</pre>' + body
         details.append(f'<section id="cluster-{index}"><h2>{esc(context)}</h2><p><a href="#summary">Volver al resumen</a></p>{body}</section>')
     overall = max(statuses, key=STATES.index, default="UNKNOWN")
     # Reuse the individual report's styles; all report detail is regenerated from JSON.
@@ -168,13 +180,26 @@ def consolidate(entries, output):
                      "crds": [], "global_findings": [], "summary": {"states": {}, "risks_by_severity": {}, "total_crds": 0}, "limitations": []})
     head = template.partition("<main>")[0].replace("CRD Compatibility Report", "Consolidado de compatibilidad Kubernetes")
     verified_identities = sum(not g["cluster_identity"].startswith("context:") for g in grouped)
+    error_summary = f'<section aria-label="Causas del estado global"><h2>Errores técnicos: {len(technical_errors)}</h2>'
+    if technical_errors:
+        error_summary += '<p>Causas accionables del estado global ERROR:</p><ol>'
+        for error in technical_errors:
+            error_summary += f'<li><b><a href="#{esc(error["detail_anchor"])}">{esc(error["cluster"])}</a></b><ul>'
+            error_summary += "".join(f'<li>{esc(c["context"])} · {esc(c["source"])}: {esc(c["reason"])}'
+                + (f' · examinados: {esc(c["items_scanned"])}' if c.get("items_scanned") is not None else "")
+                + f'<br>{esc(c["action"])}</li>' for c in error["causes"])
+            error_summary += '</ul>' + (diff_html(error["context_diff"]) if error["context_diff"] else '') + '</li>'
+        error_summary += '</ol>'
+    error_summary += '</section>'
     content = (f'<h1 id="summary">Compatibilidad Kubernetes — consolidado</h1><p>Fecha UTC: {datetime.now(timezone.utc).isoformat()}</p>'
                f'<p>Clústeres físicos identificados: {verified_identities} · Contextos sin identidad compartida verificable: {len(grouped) - verified_identities} · Contextos: {len(entries)} · Estado global: <b>{overall}</b> · CRDs analizados por contexto principal: {sum(totals.values())}</p>'
+               + error_summary +
                '<p>Un resultado PASS acredita las comprobaciones realizadas. WARN y UNKNOWN requieren revisión; FAIL contiene bloqueos y ERROR indica una evaluación incompleta.</p>'
                '<div style="overflow-x:auto"><table><thead><tr><th>Clúster / Contexto</th><th>Upgrade</th><th>CRDs</th><th>Estado</th><th>Pluto</th><th>Pluto exit</th><th>Validador</th><th>Validator exit</th><th>Compatibility score</th><th>Evidence coverage</th><th>Decision</th><th>Bloqueo principal</th><th>Productos FAIL</th><th>Productos UNKNOWN</th><th>Contextos asociados</th></tr></thead><tbody>'
                + "".join(rows) + "</tbody></table></div>" + "".join(details))
     output = Path(output)
     output.parent.mkdir(parents=True, exist_ok=True)
     output.write_text(head + "<main>" + content + "</main></html>", encoding="utf-8", newline="\n")
-    output.with_suffix(".json").write_text(json.dumps({"clusters": clusters, "contexts": len(entries), "overall_status": overall}, ensure_ascii=False, indent=2) + "\n", encoding="utf-8", newline="\n")
+    output.with_suffix(".json").write_text(json.dumps({"clusters": clusters, "contexts": len(entries), "overall_status": overall,
+        "technical_errors_count": len(technical_errors), "technical_errors": technical_errors}, ensure_ascii=False, indent=2) + "\n", encoding="utf-8", newline="\n")
     return overall

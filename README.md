@@ -2,7 +2,7 @@
 
 CLI de solo lectura para evaluar CRDs y sus dependencias antes de un upgrade Kubernetes. Python 3.12+, Windows y Linux; biblioteca estándar en ejecución. No instala servicios, no modifica el clúster. En LIVE también ejecuta Pluto como detector externo de APIs deprecadas.
 
-La versión de desarrollo actual es **0.5.1**, en la rama **dev**. Los merges a main quedan a cargo del usuario. Consultar [la entrega incremental](docs/dev-fix-delivery.md) para los cambios de detección, cobertura, decisión y exit codes; esas semánticas reemplazan las descripciones históricas de v0.4/v0.5 incluidas más abajo.
+La versión de desarrollo actual es **0.5.2**, en la rama **dev**. Los merges a main quedan a cargo del usuario. Consultar [la entrega incremental](docs/dev-fix-delivery.md) para detección, cobertura, decisión y exit codes, y [el seguimiento del reporte](docs/report-followup.md) para causas de ERROR, versiones de workloads conocidos, diff de contextos y evidencia agregada de Istio. Las secciones de versiones anteriores se conservan como historial.
 
 Desde v0.3 también descubre plataformas/operadores mediante Helm, workloads, pods y CRDs; evalúa matrices oficiales curadas y muestra un resumen ejecutivo con Upgrade Readiness Score. El mismo análisis se incorpora al HTML consolidado de varios contextos.
 
@@ -613,3 +613,30 @@ python -m pytest -q --tb=short
 ```
 
 El [consolidado sintético de dev](reports/examples/dev-analysis/consolidated.html) muestra cuatro contextos agrupados en dos identidades, una de ellas con discrepancia explícita. No representa observaciones de producción ni ejecuciones reales de Pluto.
+
+## v0.5.2: seguimiento del consolidado
+
+- El resumen global expone las causas técnicas antes de la tabla: contexto, fuente, error, objetos examinados y acción sugerida. El JSON conserva `technical_errors` y `technical_errors_count` por grupo de clúster.
+- Gatekeeper y Tigera inspeccionan contenedores/initContainers de workloads conocidos, incluyendo mirrors con identidad declarada del controlador. Registran imagen, repositorio, tag, imageID disponible, chart y versión declarada; no convierten la versión de un helper ni del chart en versión del producto. Un digest sin tag no se inventa como SemVer.
+- `CONTEXT_DATA_MISMATCH` incluye un diff de conteos/nombres de CRDs, productos visibles por contexto, versiones y errores de fuentes. No cambia la identidad ni el algoritmo de agrupación.
+- Los fallos de nodos permanecen en la evaluación global/AKS, pero no convierten automáticamente un operador ausente con inventario de workloads/CRDs completo en INVENTORY_INCOMPLETE. Helm continúa siendo opcional. Las listas Kubernetes completas con exactamente N objetos no se consideran truncadas sólo por igualar `--platform-limit N`; sí se conservan los errores si se omiten objetos o queda una página pendiente. Helm al alcanzar `--max` mantiene una limitación opcional.
+- Secrets Store CSI usa UNKNOWN / NO_OFFICIAL_KUBERNETES_MATRIX cuando sólo hay política general y no hay una fila verificable para la versión y el objetivo. `no_numeric_rows` se conserva en JSON como diagnóstico interno, con explicación legible en HTML.
+- Snapshot administrado sin versión verificable publica `managed_by: AKS`, versión MANAGED, compatibilidad UNKNOWN y razón MANAGED_VERSION_NOT_EXPOSED. Los campos legacy conservan los valores previos.
+- El HTML de Istio usa resumen de control plane, gateways y versiones/actividad de Pods con sidecar, sin repetir los listados por Pod. No cambia las versiones evaluadas ni sus resultados. Los estados permitidos de contenedores incluyen ready, restartCount y state, sin mensajes de terminación, logs, variables ni secretos.
+
+Para conservar todas las observaciones permitidas del inventario examinado en JSON, manteniendo el HTML resumido:
+
+```sh
+python main.py --context production --target-version 1.35.9 --full-platform-evidence
+bash crd-compat-validator.sh --target-version 1.35.9 --full-platform-evidence
+```
+
+La opción es aditiva y no elimina el límite de inventario. Sin ella, el JSON conserva las muestras acotadas previas; los contadores agregados se calculan sobre todos los objetos examinados. Los reportes históricos que omitieron imágenes requieren una nueva captura: no se reconstruyen versiones ausentes ni se cambian a PASS desde un HTML antiguo.
+
+Ejemplo offline que muestra dos grupos con errores técnicos, un diff real y los nuevos mensajes:
+
+```sh
+python fixtures/generate_followup_example.py
+```
+
+El resultado está en [reports/examples/report-followup/consolidated.html](reports/examples/report-followup/consolidated.html). Para generar el JSON completo de ese ejemplo, añadir `--full-platform-evidence` al generador. Todos sus contextos, recursos y errores son sintéticos.

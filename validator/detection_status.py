@@ -8,19 +8,25 @@ OPTIONAL = ("Helm", "istioctl version", "apiservices.apiregistration.k8s.io",
 def inventory_sources(data):
     errors = {e["source"]: e["reason"] for e in data.get("discovery_errors", [])}
     names = list(dict.fromkeys([*REQUIRED, "Helm", *errors,
+        *(["crds"] if "crds" in data else []),
         *(k for k in OPTIONAL if k in data)]))
     result = []
     for name in names:
         key = "helm" if name == "Helm" else name
         values = data.get(key)
         error = errors.get(name) or errors.get(key)
-        if name in REQUIRED or name == "Helm":
+        if name in REQUIRED or name in ("Helm", "crds"):
             if not isinstance(values, list) or any(not isinstance(v, dict) for v in values):
                 error = error or ("not_in_snapshot" if key not in data else "invalid_response")
         result.append({"source": name, "completed": not bool(error), "authorized": False if error in ("forbidden", "unauthorized") else None if error else True,
             "error": error, "items_scanned": len(values) if isinstance(values, list) else 0,
-            "required": name in REQUIRED or name == "offline"})
+            "required": name in REQUIRED or name in ("offline", "crds")})
     return result
+
+
+def product_inventory_errors(sources, category):
+    # Nodes remain required for global/AKS assessment, but cannot hide the absence of a workload-based operator.
+    return [s for s in sources if s["required"] and not s["completed"] and (s["source"] != "nodes" or category == "aks")]
 
 
 def workload_activity(resource, obj):

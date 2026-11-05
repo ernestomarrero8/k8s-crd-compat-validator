@@ -1,6 +1,6 @@
 [project]
 name = "k8s-crd-compat-validator"
-version = "0.5.1"
+version = "0.5.2"
 description = "Read-only, evidence-based Kubernetes CRD upgrade assessment"
 requires-python = ">=3.12"
 dependencies = []

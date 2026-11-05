@@ -162,6 +162,11 @@ class PlatformCatalog:
                 return [result("VERSION_FORMAT_UNVERIFIED", "UNKNOWN", "Versión explícita detectada; su sufijo/formato no tiene una regla de normalización acreditada para este producto.")]
             return [result("VERSION_UNKNOWN", "UNKNOWN", "No se determinó una versión de producto inequívoca; un chart, digest o tag mutable no demuestra versión efectiva.")]
         if len(records) != 1:
+            if product == "Secrets Store CSI Driver" and not rows and product in self.product_files:
+                item = result("NO_OFFICIAL_KUBERNETES_MATRIX", "UNKNOWN",
+                    f"La versión {version} fue detectada, pero no se encontró en las fuentes oficiales revisadas una matriz numérica verificable que la vincule con Kubernetes {target}.")
+                item.evidence["legacy_rule_id"] = "NO_SUPPORT_DATA"
+                return [item]
             return [result("NO_SUPPORT_DATA", "UNKNOWN", "No existe una única fila de matriz oficial revisada para esta versión.")]
         record = records[0]
         if vendor and version not in record.get("vendor_versions", []):

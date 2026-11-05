@@ -1,0 +1,1173 @@
+<!doctype html><html lang="es"><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<meta http-equiv="Content-Security-Policy" content="default-src 'none'; style-src 'unsafe-inline'; base-uri 'none'">
+<title>CRD Compatibility Report</title><style>
+body{font:16px/1.55 system-ui,sans-serif;max-width:1100px;margin:40px auto;padding:0 22px;color:#182c42;background:#f7f9fc}
+h1,h2{line-height:1.25}table{border-collapse:collapse;width:100%;background:white}td,th{border:1px solid #b8c9d8;padding:10px;text-align:left}
+details{background:white;border:1px solid #bccbdb;border-radius:6px;margin:12px 0;padding:14px}summary{cursor:pointer}pre{white-space:pre-wrap;overflow-wrap:anywhere;background:#eef3f8;padding:12px}
+.FAIL,.ERROR{color:#a81818}.WARN{color:#805000}.UNKNOWN{color:#525b67}.PASS{color:#176232}.limit{color:#4e6073}a{color:#154f91}section{margin:32px 0}p{overflow-wrap:anywhere}
+@media print{body{background:white;margin:0;max-width:none}details{break-inside:avoid}}</style><main><h1>Kubernetes CRD Compatibility Validator</h1><p>demo-platform-admin · 1.34.8 → 1.35.9</p><p>2026-11-05T18:30:34.275407+00:00 · Estado general: <b>FAIL</b></p><p>0 CRDs · PASS: 0 · UNKNOWN: 0 · WARN: 0 · FAIL: 0 · ERROR: 0</p><p>Riesgos por severidad: CRITICAL: 0 · HIGH: 2 · MEDIUM: 2 · LOW: 0 · INFO: 0</p><section><h2>Upgrade Readiness Score</h2><p style="font-size:1.6em"><b>Compatibility score: 50.0/100</b></p><p>Evidence coverage / Cobertura de evidencia: <b>20.0%</b> · Compatibilidad de unidades evaluadas: 50.0/100</p><p><b>Decision: BLOCKED</b></p><table><thead><tr><th>Categoría</th><th>Peso</th><th>Estado</th><th>Puntos</th><th>Cobertura</th><th>Unidades por resultado</th></tr></thead><tbody><tr><td>operators</td><td>40%</td><td>FAIL</td><td>13.33</td><td>66.7%</td><td>{&quot;PASS&quot;: 1, &quot;WARN&quot;: 0, &quot;FAIL&quot;: 1, &quot;UNKNOWN&quot;: 1, &quot;ERROR&quot;: 0}</td></tr><tr><td>crds</td><td>25%</td><td>UNKNOWN</td><td>0.0</td><td>0.0%</td><td>{&quot;PASS&quot;: 0, &quot;WARN&quot;: 0, &quot;FAIL&quot;: 0, &quot;UNKNOWN&quot;: 1, &quot;ERROR&quot;: 0}</td></tr><tr><td>pluto</td><td>15%</td><td>UNKNOWN</td><td>0.0</td><td>0.0%</td><td>{&quot;PASS&quot;: 0, &quot;WARN&quot;: 0, &quot;FAIL&quot;: 0, &quot;UNKNOWN&quot;: 1, &quot;ERROR&quot;: 0}</td></tr><tr><td>aks_addons</td><td>10%</td><td>UNKNOWN</td><td>0.0</td><td>0.0%</td><td>{&quot;PASS&quot;: 0, &quot;WARN&quot;: 0, &quot;FAIL&quot;: 0, &quot;UNKNOWN&quot;: 2, &quot;ERROR&quot;: 0}</td></tr><tr><td>storage</td><td>10%</td><td>UNKNOWN</td><td>0.0</td><td>0.0%</td><td>{&quot;PASS&quot;: 0, &quot;WARN&quot;: 0, &quot;FAIL&quot;: 0, &quot;UNKNOWN&quot;: 3, &quot;ERROR&quot;: 0}</td></tr></tbody></table><p>One unit per product/technical CRD/storage CRD and one Pluto unit. Weighted compatibility over evaluated PASS=100%, WARN=50%, FAIL=0% units only; UNKNOWN/ERROR excluded from compatibility, retained in coverage. Evidence coverage = evaluated/applicable units. PRODUCT_SUPPORT references have zero additional weight.</p><p>El score es una ayuda de revisión; READY exige ausencia de bloqueos, avisos y evidencia pendiente en todo el informe.</p></section><section><h2>Cluster Platform Compatibility</h2><h3>OPERATOR COMPATIBILITY ANALYSIS</h3><p>Objetivo Kubernetes/AKS: 1.35.9. Una versión de imagen o Helm no demuestra el binario ejecutado ni soporte de la distribución administrada.</p><div style="overflow-x:auto"><table><thead><tr><th>Producto / namespace</th><th>Versiones observadas</th><th>Detectado desde</th><th>Compatibilidad objetivo</th><th>Resultado</th><th>Evidencia</th><th>Detección</th></tr></thead><tbody><tr><td>Istio<br>applications</td><td>1.24.1, 1.25.0<br><small>image_tag</small></td><td>pods</td><td>No</td><td>FAIL</td><td><a href="https://istio.io/latest/docs/releases/supported-releases/" rel="noreferrer">Fuente oficial</a></td><td>INVENTORY_INCOMPLETE<br>Controlador activo confirmado: True</td></tr><tr><td>Calico<br>cluster</td><td>v3.31.2<br><small>product_metadata</small></td><td>Calico ClusterInformation</td><td>Sí, según evidencia documentada</td><td>PASS</td><td><a href="https://raw.githubusercontent.com/tigera/docs/master/calico_versioned_docs/version-3.31/_includes/partials/_system-requirements.mdx" rel="noreferrer">Fuente oficial</a></td><td>INVENTORY_INCOMPLETE<br>Controlador activo confirmado: True</td></tr><tr><td>Secrets Store CSI Driver<br>system</td><td>v1.1.2<br><small>image_tag</small></td><td>daemonsets.apps</td><td>No verificada</td><td>UNKNOWN</td><td><a href="https://secrets-store-csi-driver.sigs.k8s.io/getting-started/installation" rel="noreferrer">Fuente oficial</a></td><td>INVENTORY_INCOMPLETE<br>Controlador activo confirmado: True</td></tr><tr><td>Snapshot Controller<br>AKS managed</td><td>MANAGED<br><small>managed_metadata</small></td><td>az aks show</td><td>UNKNOWN<br>MANAGED_VERSION_NOT_EXPOSED</td><td>UNKNOWN</td><td><a href="https://github.com/kubernetes-csi/external-snapshotter" rel="noreferrer">Fuente oficial</a></td><td>INVENTORY_INCOMPLETE<br>Controlador activo confirmado: True</td></tr></tbody></table></div><details><summary>Istio — resolución y evidencia de detección</summary><pre>{
+  &quot;detection_status&quot;: &quot;INVENTORY_INCOMPLETE&quot;,
+  &quot;active_controller_confirmed&quot;: true,
+  &quot;detected_versions&quot;: [
+    &quot;1.24.1&quot;,
+    &quot;1.25.0&quot;
+  ],
+  &quot;confidence&quot;: &quot;image_tag&quot;,
+  &quot;normalized_versions&quot;: [
+    &quot;1.24.1&quot;,
+    &quot;1.25.0&quot;
+  ],
+  &quot;resolved_versions&quot;: [
+    &quot;1.24.1&quot;,
+    &quot;1.25.0&quot;
+  ],
+  &quot;all_observed_versions&quot;: [
+    &quot;1.24.1&quot;,
+    &quot;1.25.0&quot;
+  ],
+  &quot;resolution_sources&quot;: [
+    &quot;pods&quot;
+  ],
+  &quot;mixed_versions&quot;: true,
+  &quot;catalog_lookup&quot;: [
+    {
+      &quot;catalog_present&quot;: true,
+      &quot;files&quot;: [
+        &quot;istio.json&quot;
+      ],
+      &quot;paths&quot;: [
+        &quot;catalogs/support/istio.json&quot;
+      ],
+      &quot;available_selectors&quot;: [
+        &quot;1.30.x&quot;,
+        &quot;1.29.x&quot;,
+        &quot;1.28.x&quot;,
+        &quot;1.27.x&quot;,
+        &quot;1.26.x&quot;,
+        &quot;1.25.x&quot;,
+        &quot;1.24.x&quot;,
+        &quot;1.23.x&quot;,
+        &quot;1.22.x&quot;,
+        &quot;1.21.x&quot;
+      ],
+      &quot;matched_selectors&quot;: [
+        &quot;1.24.x&quot;
+      ],
+      &quot;selected_selector&quot;: &quot;1.24.x&quot;,
+      &quot;normalized_version&quot;: &quot;1.24.1&quot;,
+      &quot;reason&quot;: &quot;matched&quot;
+    },
+    {
+      &quot;catalog_present&quot;: true,
+      &quot;files&quot;: [
+        &quot;istio.json&quot;
+      ],
+      &quot;paths&quot;: [
+        &quot;catalogs/support/istio.json&quot;
+      ],
+      &quot;available_selectors&quot;: [
+        &quot;1.30.x&quot;,
+        &quot;1.29.x&quot;,
+        &quot;1.28.x&quot;,
+        &quot;1.27.x&quot;,
+        &quot;1.26.x&quot;,
+        &quot;1.25.x&quot;,
+        &quot;1.24.x&quot;,
+        &quot;1.23.x&quot;,
+        &quot;1.22.x&quot;,
+        &quot;1.21.x&quot;
+      ],
+      &quot;matched_selectors&quot;: [
+        &quot;1.24.x&quot;
+      ],
+      &quot;selected_selector&quot;: &quot;1.24.x&quot;,
+      &quot;normalized_version&quot;: &quot;1.24.1&quot;,
+      &quot;reason&quot;: &quot;matched&quot;
+    },
+    {
+      &quot;catalog_present&quot;: true,
+      &quot;files&quot;: [
+        &quot;istio.json&quot;
+      ],
+      &quot;paths&quot;: [
+        &quot;catalogs/support/istio.json&quot;
+      ],
+      &quot;available_selectors&quot;: [
+        &quot;1.30.x&quot;,
+        &quot;1.29.x&quot;,
+        &quot;1.28.x&quot;,
+        &quot;1.27.x&quot;,
+        &quot;1.26.x&quot;,
+        &quot;1.25.x&quot;,
+        &quot;1.24.x&quot;,
+        &quot;1.23.x&quot;,
+        &quot;1.22.x&quot;,
+        &quot;1.21.x&quot;
+      ],
+      &quot;matched_selectors&quot;: [
+        &quot;1.25.x&quot;
+      ],
+      &quot;selected_selector&quot;: &quot;1.25.x&quot;,
+      &quot;normalized_version&quot;: &quot;1.25.0&quot;,
+      &quot;reason&quot;: &quot;matched&quot;
+    },
+    {
+      &quot;catalog_present&quot;: true,
+      &quot;files&quot;: [
+        &quot;istio.json&quot;
+      ],
+      &quot;paths&quot;: [
+        &quot;catalogs/support/istio.json&quot;
+      ],
+      &quot;available_selectors&quot;: [
+        &quot;1.30.x&quot;,
+        &quot;1.29.x&quot;,
+        &quot;1.28.x&quot;,
+        &quot;1.27.x&quot;,
+        &quot;1.26.x&quot;,
+        &quot;1.25.x&quot;,
+        &quot;1.24.x&quot;,
+        &quot;1.23.x&quot;,
+        &quot;1.22.x&quot;,
+        &quot;1.21.x&quot;
+      ],
+      &quot;matched_selectors&quot;: [
+        &quot;1.25.x&quot;
+      ],
+      &quot;selected_selector&quot;: &quot;1.25.x&quot;,
+      &quot;normalized_version&quot;: &quot;1.25.0&quot;,
+      &quot;reason&quot;: &quot;matched&quot;
+    }
+  ],
+  &quot;reason&quot;: null,
+  &quot;managed_by&quot;: null,
+  &quot;evidence&quot;: {
+    &quot;scope&quot;: &quot;Inventario examinado; sujeto a límites y errores de las fuentes.&quot;,
+    &quot;Control plane&quot;: [],
+    &quot;Control plane Pods por versión&quot;: {},
+    &quot;Gateway Pods por versión&quot;: {},
+    &quot;Data plane&quot;: {
+      &quot;pods_observed&quot;: 160,
+      &quot;active_pods&quot;: 148,
+      &quot;inactive_pods&quot;: 12,
+      &quot;other_active_versions&quot;: 0,
+      &quot;by_version&quot;: [
+        {
+          &quot;version&quot;: &quot;1.24.1&quot;,
+          &quot;pods&quot;: 152,
+          &quot;active&quot;: 140,
+          &quot;inactive&quot;: 12
+        },
+        {
+          &quot;version&quot;: &quot;1.25.0&quot;,
+          &quot;pods&quot;: 8,
+          &quot;active&quot;: 8,
+          &quot;inactive&quot;: 0
+        }
+      ]
+    },
+    &quot;Helm releases&quot;: [],
+    &quot;inventory_errors&quot;: [
+      {
+        &quot;source&quot;: &quot;deployments.apps&quot;,
+        &quot;reason&quot;: &quot;forbidden&quot;
+      }
+    ],
+    &quot;detalle&quot;: &quot;El JSON conserva la evidencia disponible; --full-platform-evidence conserva todos los objetos permitidos del inventario examinado.&quot;
+  }
+}</pre></details><details><summary>Calico — resolución y evidencia de detección</summary><pre>{
+  &quot;detection_status&quot;: &quot;INVENTORY_INCOMPLETE&quot;,
+  &quot;active_controller_confirmed&quot;: true,
+  &quot;detected_versions&quot;: [
+    &quot;v3.31.2&quot;
+  ],
+  &quot;confidence&quot;: &quot;product_metadata&quot;,
+  &quot;normalized_versions&quot;: [
+    &quot;3.31.2&quot;
+  ],
+  &quot;resolved_versions&quot;: [
+    &quot;3.31.2&quot;
+  ],
+  &quot;all_observed_versions&quot;: [
+    &quot;3.31.2&quot;
+  ],
+  &quot;resolution_sources&quot;: [
+    &quot;Calico ClusterInformation&quot;
+  ],
+  &quot;mixed_versions&quot;: false,
+  &quot;catalog_lookup&quot;: [
+    {
+      &quot;catalog_present&quot;: true,
+      &quot;files&quot;: [
+        &quot;calico.json&quot;
+      ],
+      &quot;paths&quot;: [
+        &quot;catalogs/support/calico.json&quot;
+      ],
+      &quot;available_selectors&quot;: [
+        &quot;3.31.x&quot;,
+        &quot;3.32.x&quot;
+      ],
+      &quot;matched_selectors&quot;: [
+        &quot;3.31.x&quot;
+      ],
+      &quot;selected_selector&quot;: &quot;3.31.x&quot;,
+      &quot;normalized_version&quot;: &quot;3.31.2&quot;,
+      &quot;reason&quot;: &quot;matched&quot;
+    }
+  ],
+  &quot;reason&quot;: null,
+  &quot;managed_by&quot;: null,
+  &quot;evidence&quot;: [
+    {
+      &quot;from&quot;: &quot;Calico ClusterInformation&quot;,
+      &quot;activity&quot;: &quot;active&quot;
+    }
+  ]
+}</pre></details><details><summary>Secrets Store CSI Driver — resolución y evidencia de detección</summary><pre>{
+  &quot;detection_status&quot;: &quot;INVENTORY_INCOMPLETE&quot;,
+  &quot;active_controller_confirmed&quot;: true,
+  &quot;detected_versions&quot;: [
+    &quot;v1.1.2&quot;
+  ],
+  &quot;confidence&quot;: &quot;image_tag&quot;,
+  &quot;normalized_versions&quot;: [
+    &quot;1.1.2&quot;
+  ],
+  &quot;resolved_versions&quot;: [
+    &quot;1.1.2&quot;
+  ],
+  &quot;all_observed_versions&quot;: [
+    &quot;1.1.2&quot;
+  ],
+  &quot;resolution_sources&quot;: [
+    &quot;daemonsets.apps&quot;
+  ],
+  &quot;mixed_versions&quot;: false,
+  &quot;catalog_lookup&quot;: [
+    {
+      &quot;catalog_present&quot;: true,
+      &quot;files&quot;: [
+        &quot;secrets-store-csi.json&quot;
+      ],
+      &quot;paths&quot;: [
+        &quot;catalogs/support/secrets-store-csi.json&quot;
+      ],
+      &quot;available_selectors&quot;: [],
+      &quot;matched_selectors&quot;: [],
+      &quot;selected_selector&quot;: null,
+      &quot;normalized_version&quot;: &quot;1.1.2&quot;,
+      &quot;reason&quot;: &quot;Sin matriz numérica oficial verificable para la versión instalada y el objetivo; consultar el hallazgo y su fuente.&quot;
+    }
+  ],
+  &quot;reason&quot;: null,
+  &quot;managed_by&quot;: null,
+  &quot;evidence&quot;: [
+    {
+      &quot;from&quot;: &quot;daemonsets.apps&quot;,
+      &quot;namespace&quot;: &quot;system&quot;,
+      &quot;name&quot;: &quot;secrets-store-csi&quot;,
+      &quot;repository&quot;: &quot;registry.k8s.io/csi-secrets-store/driver&quot;,
+      &quot;declared_tag&quot;: &quot;v1.1.2&quot;,
+      &quot;revision&quot;: null,
+      &quot;identity_basis&quot;: &quot;catalog_repository&quot;,
+      &quot;confidence&quot;: &quot;image_tag&quot;,
+      &quot;activity&quot;: &quot;active&quot;,
+      &quot;observed_status&quot;: {
+        &quot;availableReplicas&quot;: 1,
+        &quot;conditions&quot;: []
+      },
+      &quot;version_label&quot;: null,
+      &quot;chart&quot;: null,
+      &quot;imageID&quot;: null,
+      &quot;observed_containers&quot;: [
+        {
+          &quot;container&quot;: &quot;manager&quot;,
+          &quot;container_type&quot;: &quot;containers&quot;,
+          &quot;image&quot;: &quot;registry.k8s.io/csi-secrets-store/driver:v1.1.2&quot;,
+          &quot;repository&quot;: &quot;registry.k8s.io/csi-secrets-store/driver&quot;,
+          &quot;declared_tag&quot;: &quot;v1.1.2&quot;,
+          &quot;imageID&quot;: null,
+          &quot;ready&quot;: null,
+          &quot;restartCount&quot;: null,
+          &quot;state&quot;: {}
+        }
+      ],
+      &quot;pod_container_statuses&quot;: [],
+      &quot;version_basis&quot;: &quot;workload_template_image_tag&quot;
+    }
+  ]
+}</pre></details><details><summary>Snapshot Controller — resolución y evidencia de detección</summary><pre>{
+  &quot;detection_status&quot;: &quot;INVENTORY_INCOMPLETE&quot;,
+  &quot;active_controller_confirmed&quot;: true,
+  &quot;detected_versions&quot;: [
+    &quot;MANAGED&quot;
+  ],
+  &quot;confidence&quot;: &quot;managed_metadata&quot;,
+  &quot;normalized_versions&quot;: [],
+  &quot;resolved_versions&quot;: [],
+  &quot;all_observed_versions&quot;: [
+    &quot;MANAGED&quot;
+  ],
+  &quot;resolution_sources&quot;: [
+    &quot;az aks show&quot;
+  ],
+  &quot;mixed_versions&quot;: false,
+  &quot;catalog_lookup&quot;: [
+    null
+  ],
+  &quot;reason&quot;: &quot;MANAGED_VERSION_NOT_EXPOSED&quot;,
+  &quot;managed_by&quot;: &quot;AKS&quot;,
+  &quot;evidence&quot;: [
+    {
+      &quot;from&quot;: &quot;az aks show&quot;,
+      &quot;addon&quot;: &quot;snapshotController&quot;,
+      &quot;activity&quot;: &quot;active&quot;,
+      &quot;note&quot;: &quot;Habilitado no determina versión efectiva.&quot;
+    }
+  ]
+}</pre></details><details><summary>Diagnóstico de todos los detectores, incluidos productos no encontrados</summary><table><thead><tr><th>Producto</th><th>Detección</th><th>Catálogo cargado</th><th>Motivo</th></tr></thead><tbody><tr><td>Argo CD</td><td>INVENTORY_INCOMPLETE</td><td>True</td><td>Inventario obligatorio incompleto: deployments.apps: forbidden (examinados: 0)<br></td></tr><tr><td>Argo Workflows</td><td>INVENTORY_INCOMPLETE</td><td>False</td><td>Inventario obligatorio incompleto: deployments.apps: forbidden (examinados: 0)<br></td></tr><tr><td>Istio</td><td>INVENTORY_INCOMPLETE</td><td>True</td><td>Inventario obligatorio incompleto: deployments.apps: forbidden (examinados: 0)<br></td></tr><tr><td>Gatekeeper</td><td>INVENTORY_INCOMPLETE</td><td>True</td><td>Inventario obligatorio incompleto: deployments.apps: forbidden (examinados: 0)<br></td></tr><tr><td>Calico</td><td>INVENTORY_INCOMPLETE</td><td>True</td><td>Inventario obligatorio incompleto: deployments.apps: forbidden (examinados: 0)<br></td></tr><tr><td>Tigera Operator</td><td>INVENTORY_INCOMPLETE</td><td>True</td><td>Inventario obligatorio incompleto: deployments.apps: forbidden (examinados: 0)<br></td></tr><tr><td>Dapr</td><td>INVENTORY_INCOMPLETE</td><td>True</td><td>Inventario obligatorio incompleto: deployments.apps: forbidden (examinados: 0)<br></td></tr><tr><td>Secrets Store CSI Driver</td><td>INVENTORY_INCOMPLETE</td><td>True</td><td>Inventario obligatorio incompleto: deployments.apps: forbidden (examinados: 0)<br></td></tr><tr><td>Azure Policy Add-on</td><td>INVENTORY_INCOMPLETE</td><td>False</td><td>Inventario obligatorio incompleto: deployments.apps: forbidden (examinados: 0)<br></td></tr><tr><td>Defender for Cloud</td><td>INVENTORY_INCOMPLETE</td><td>False</td><td>Inventario obligatorio incompleto: deployments.apps: forbidden (examinados: 0)<br></td></tr><tr><td>Cluster Autoscaler</td><td>INVENTORY_INCOMPLETE</td><td>False</td><td>Inventario obligatorio incompleto: deployments.apps: forbidden (examinados: 0)<br></td></tr><tr><td>Karpenter</td><td>INVENTORY_INCOMPLETE</td><td>False</td><td>Inventario obligatorio incompleto: deployments.apps: forbidden (examinados: 0)<br></td></tr><tr><td>Cert Manager</td><td>INVENTORY_INCOMPLETE</td><td>True</td><td>Inventario obligatorio incompleto: deployments.apps: forbidden (examinados: 0)<br></td></tr><tr><td>NGINX Ingress Controller (community)</td><td>INVENTORY_INCOMPLETE</td><td>False</td><td>Inventario obligatorio incompleto: deployments.apps: forbidden (examinados: 0)<br></td></tr><tr><td>NGINX Ingress Controller (F5)</td><td>INVENTORY_INCOMPLETE</td><td>False</td><td>Inventario obligatorio incompleto: deployments.apps: forbidden (examinados: 0)<br></td></tr><tr><td>AGIC</td><td>INVENTORY_INCOMPLETE</td><td>False</td><td>Inventario obligatorio incompleto: deployments.apps: forbidden (examinados: 0)<br></td></tr><tr><td>External DNS</td><td>INVENTORY_INCOMPLETE</td><td>False</td><td>Inventario obligatorio incompleto: deployments.apps: forbidden (examinados: 0)<br></td></tr><tr><td>Velero</td><td>INVENTORY_INCOMPLETE</td><td>True</td><td>Inventario obligatorio incompleto: deployments.apps: forbidden (examinados: 0)<br></td></tr><tr><td>Snapshot Controller</td><td>INVENTORY_INCOMPLETE</td><td>False</td><td>Inventario obligatorio incompleto: deployments.apps: forbidden (examinados: 0)<br></td></tr><tr><td>CSI Snapshotter sidecar</td><td>INVENTORY_INCOMPLETE</td><td>False</td><td>Inventario obligatorio incompleto: deployments.apps: forbidden (examinados: 0)<br></td></tr><tr><td>Prometheus Operator</td><td>INVENTORY_INCOMPLETE</td><td>False</td><td>Inventario obligatorio incompleto: deployments.apps: forbidden (examinados: 0)<br></td></tr><tr><td>OpenTelemetry Operator</td><td>INVENTORY_INCOMPLETE</td><td>False</td><td>Inventario obligatorio incompleto: deployments.apps: forbidden (examinados: 0)<br></td></tr><tr><td>FluxCD</td><td>INVENTORY_INCOMPLETE</td><td>False</td><td>Inventario obligatorio incompleto: deployments.apps: forbidden (examinados: 0)<br></td></tr><tr><td>Kyverno</td><td>INVENTORY_INCOMPLETE</td><td>False</td><td>Inventario obligatorio incompleto: deployments.apps: forbidden (examinados: 0)<br></td></tr><tr><td>OMS Agent / AMA</td><td>INVENTORY_INCOMPLETE</td><td>False</td><td>Inventario obligatorio incompleto: deployments.apps: forbidden (examinados: 0)<br></td></tr><tr><td>Azure Key Vault Provider for Secrets Store CSI Driver</td><td>INVENTORY_INCOMPLETE</td><td>False</td><td>Inventario obligatorio incompleto: deployments.apps: forbidden (examinados: 0)<br></td></tr><tr><td>Azure Disk CSI Driver</td><td>INVENTORY_INCOMPLETE</td><td>True</td><td>Inventario obligatorio incompleto: deployments.apps: forbidden (examinados: 0)<br></td></tr><tr><td>Azure File CSI Driver</td><td>INVENTORY_INCOMPLETE</td><td>True</td><td>Inventario obligatorio incompleto: deployments.apps: forbidden (examinados: 0)<br></td></tr><tr><td>External Secrets Operator</td><td>INVENTORY_INCOMPLETE</td><td>False</td><td>Inventario obligatorio incompleto: deployments.apps: forbidden (examinados: 0)<br></td></tr><tr><td>Cilium</td><td>INVENTORY_INCOMPLETE</td><td>False</td><td>Inventario obligatorio incompleto: deployments.apps: forbidden (examinados: 0)<br></td></tr><tr><td>Azure CNI</td><td>INVENTORY_INCOMPLETE</td><td>False</td><td>Inventario obligatorio incompleto: deployments.apps: forbidden (examinados: 0)<br></td></tr></tbody></table></details><h3>Fuentes del inventario</h3><pre>[
+  {
+    &quot;source&quot;: &quot;deployments.apps&quot;,
+    &quot;completed&quot;: false,
+    &quot;authorized&quot;: false,
+    &quot;error&quot;: &quot;forbidden&quot;,
+    &quot;items_scanned&quot;: 0,
+    &quot;required&quot;: true
+  },
+  {
+    &quot;source&quot;: &quot;daemonsets.apps&quot;,
+    &quot;completed&quot;: true,
+    &quot;authorized&quot;: true,
+    &quot;error&quot;: null,
+    &quot;items_scanned&quot;: 1,
+    &quot;required&quot;: true
+  },
+  {
+    &quot;source&quot;: &quot;statefulsets.apps&quot;,
+    &quot;completed&quot;: true,
+    &quot;authorized&quot;: true,
+    &quot;error&quot;: null,
+    &quot;items_scanned&quot;: 0,
+    &quot;required&quot;: true
+  },
+  {
+    &quot;source&quot;: &quot;pods&quot;,
+    &quot;completed&quot;: true,
+    &quot;authorized&quot;: true,
+    &quot;error&quot;: null,
+    &quot;items_scanned&quot;: 160,
+    &quot;required&quot;: true
+  },
+  {
+    &quot;source&quot;: &quot;nodes&quot;,
+    &quot;completed&quot;: true,
+    &quot;authorized&quot;: true,
+    &quot;error&quot;: null,
+    &quot;items_scanned&quot;: 0,
+    &quot;required&quot;: true
+  },
+  {
+    &quot;source&quot;: &quot;Helm&quot;,
+    &quot;completed&quot;: true,
+    &quot;authorized&quot;: true,
+    &quot;error&quot;: null,
+    &quot;items_scanned&quot;: 0,
+    &quot;required&quot;: false
+  },
+  {
+    &quot;source&quot;: &quot;crds&quot;,
+    &quot;completed&quot;: true,
+    &quot;authorized&quot;: true,
+    &quot;error&quot;: null,
+    &quot;items_scanned&quot;: 0,
+    &quot;required&quot;: true
+  }
+]</pre><h3>AKS Platform Compatibility</h3><pre>{
+  &quot;detected&quot;: true,
+  &quot;target_version&quot;: &quot;1.35.9&quot;,
+  &quot;current_version&quot;: &quot;1.34.8&quot;,
+  &quot;node_image_versions&quot;: [],
+  &quot;node_kubelet_versions&quot;: [],
+  &quot;addons&quot;: [
+    {
+      &quot;name&quot;: &quot;snapshotController&quot;,
+      &quot;detector_id&quot;: &quot;snapshot&quot;
+    }
+  ],
+  &quot;limitations&quot;: [
+    &quot;Metadata AKS observada; la versión efectiva y soporte de cada add-on se evalúan por separado.&quot;,
+    &quot;Una versión Kubernetes soportada upstream no acredita disponibilidad de upgrade, región, canal LTS ni soporte del add-on administrado en AKS.&quot;,
+    &quot;Node images se inventarían; no se infiere compatibilidad futura por su nombre.&quot;
+  ],
+  &quot;resource_id&quot;: &quot;/subscriptions/synthetic/resourceGroups/demo/providers/Microsoft.ContainerService/managedClusters/followup&quot;,
+  &quot;subscription_id&quot;: null,
+  &quot;resource_group&quot;: null,
+  &quot;cluster_name&quot;: null,
+  &quot;network_profile&quot;: {
+    &quot;networkPlugin&quot;: null,
+    &quot;networkPluginMode&quot;: null,
+    &quot;networkDataplane&quot;: null,
+    &quot;networkPolicy&quot;: null
+  }
+}</pre><h3>Cobertura de soporte por producto</h3><pre>{
+  &quot;products&quot;: 4,
+  &quot;unknown_products&quot;: 2,
+  &quot;unknown_percentage&quot;: 50.0,
+  &quot;note&quot;: &quot;Métrica de productos, no promesa de menos de 10%; no se excluyen limitaciones técnicas reales.&quot;
+}</pre><h3>Catálogos de plataformas</h3><pre>{
+  &quot;files&quot;: [
+    {
+      &quot;file&quot;: &quot;argocd.json&quot;,
+      &quot;catalog_version&quot;: &quot;2026.11.04.1&quot;,
+      &quot;path&quot;: &quot;catalogs/support/argocd.json&quot;,
+      &quot;sha256&quot;: &quot;7e6aa251a44689ca27c7e2edafeedbabb66649a4886512132679b2e21cad0cb3&quot;
+    },
+    {
+      &quot;file&quot;: &quot;azure-disk.json&quot;,
+      &quot;catalog_version&quot;: &quot;2026.11.04.1&quot;,
+      &quot;path&quot;: &quot;catalogs/support/azure-disk.json&quot;,
+      &quot;sha256&quot;: &quot;98bbb8be675731b14387a7b4d6519a1c8947e3e90ee3849ab056b47c2a71746b&quot;
+    },
+    {
+      &quot;file&quot;: &quot;azure-file.json&quot;,
+      &quot;catalog_version&quot;: &quot;2026.11.04.1&quot;,
+      &quot;path&quot;: &quot;catalogs/support/azure-file.json&quot;,
+      &quot;sha256&quot;: &quot;849250d86351ca7378ca35de9c1cebdb884624b844f48d02a169c81c331eb0af&quot;
+    },
+    {
+      &quot;file&quot;: &quot;calico.json&quot;,
+      &quot;catalog_version&quot;: &quot;2026.11.04.2&quot;,
+      &quot;path&quot;: &quot;catalogs/support/calico.json&quot;,
+      &quot;sha256&quot;: &quot;5a5baedaf7a225c80f9b438bb027a9df211e8a968f158b903639d5ed05098735&quot;
+    },
+    {
+      &quot;file&quot;: &quot;cert-manager.json&quot;,
+      &quot;catalog_version&quot;: &quot;2026.11.04.2&quot;,
+      &quot;path&quot;: &quot;catalogs/support/cert-manager.json&quot;,
+      &quot;sha256&quot;: &quot;2a962b9b25a5845a92f5c0931715bc62a149d80236f52da97ce420e9b0c39b33&quot;
+    },
+    {
+      &quot;file&quot;: &quot;dapr.json&quot;,
+      &quot;catalog_version&quot;: &quot;2026.11.04.1&quot;,
+      &quot;path&quot;: &quot;catalogs/support/dapr.json&quot;,
+      &quot;sha256&quot;: &quot;b78c40182115ad48e293b2fcbb0a624fd29f7b161eeef81347079939cfada73e&quot;
+    },
+    {
+      &quot;file&quot;: &quot;gatekeeper.json&quot;,
+      &quot;catalog_version&quot;: &quot;2026.11.04.1&quot;,
+      &quot;path&quot;: &quot;catalogs/support/gatekeeper.json&quot;,
+      &quot;sha256&quot;: &quot;9372efa0202bbf81b36ef56251419a2497241bb8df5eb964859dd81485cf6029&quot;
+    },
+    {
+      &quot;file&quot;: &quot;istio.json&quot;,
+      &quot;catalog_version&quot;: &quot;2026.11.04.3&quot;,
+      &quot;path&quot;: &quot;catalogs/support/istio.json&quot;,
+      &quot;sha256&quot;: &quot;9672086115807861fd7c911f06c8d33bbc3a4dff28993d419df76ff799df4a6d&quot;
+    },
+    {
+      &quot;file&quot;: &quot;secrets-store-csi.json&quot;,
+      &quot;catalog_version&quot;: &quot;2026.11.04.2&quot;,
+      &quot;path&quot;: &quot;catalogs/support/secrets-store-csi.json&quot;,
+      &quot;sha256&quot;: &quot;2f82f9af9bc500fb2ca3892c8102010c87cecc6828fd18b1e190d299b91f8f09&quot;
+    },
+    {
+      &quot;file&quot;: &quot;tigera-operator.json&quot;,
+      &quot;catalog_version&quot;: &quot;2026.11.04.2&quot;,
+      &quot;path&quot;: &quot;catalogs/support/tigera-operator.json&quot;,
+      &quot;sha256&quot;: &quot;bc3ea82928cec948d5c3565a4b5b9fb83c27a4a8ec402453f2a7097ad7d42063&quot;
+    },
+    {
+      &quot;file&quot;: &quot;velero.json&quot;,
+      &quot;catalog_version&quot;: &quot;2026.11.04.2&quot;,
+      &quot;path&quot;: &quot;catalogs/support/velero.json&quot;,
+      &quot;sha256&quot;: &quot;fb6c3f8f579c95a86a6e0eac8b01b7302e174ab988826a125703871a26711662&quot;
+    }
+  ],
+  &quot;detectors_sha256&quot;: &quot;11c01690b24633b9594031104a62b89a96c38da009b2e509c184ebb161fc17bb&quot;,
+  &quot;ownership_sha256&quot;: &quot;73fdd7bdcb98ede36f0a65e186d43554ca9aaaf953917f00203a2ebae0c23bde&quot;
+}</pre></section><h2>Alcance y limitaciones</h2><ul><li>PASS solo acredita las comprobaciones realizadas, no garantiza el upgrade.</li><li>La detección de APIs nativas se delega en Pluto; consultar su sección y estado.</li><li>No se prueban escrituras, reconciliación, CEL completo ni versiones persistidas por objeto.</li><li>La cobertura documental y los hashes del catálogo se registran en este informe.</li><li>No se exportan cuerpos de Custom Resources, annotations completas, kubeconfig, certificados ni stderr de kubectl.</li></ul><table><thead><tr><th>CRD afectado</th><th>Estado técnico / cobertura</th><th>Severidad</th><th>Producto / versiones</th><th>Soporte producto</th><th>Riesgo upgrade</th></tr></thead><tbody></tbody></table><section><h2>Validador</h2><pre>{
+  &quot;status&quot;: &quot;ERROR&quot;,
+  &quot;exit_code&quot;: 2,
+  &quot;decision&quot;: &quot;BLOCKED&quot;,
+  &quot;exit_policy&quot;: &quot;FAIL,ERROR&quot;
+}</pre></section><section><h2>Catálogos utilizados</h2><pre>{
+  &quot;coverage_catalog_version&quot;: &quot;2026.11.04.1&quot;,
+  &quot;coverage_sha256&quot;: &quot;01c7959a428e1d9bd32229cc54106f3c99561db1d83601b8558cb8108c6b16fb&quot;,
+  &quot;rule_catalogs&quot;: {
+    &quot;files&quot;: [
+      {
+        &quot;file&quot;: &quot;kubernetes.json&quot;,
+        &quot;sha256&quot;: &quot;84fb46082fe596ffab851a394a6a45db6ff757f8247a3fb7a4a4135df3dd0dbc&quot;,
+        &quot;catalog_version&quot;: &quot;2026.11.05.1&quot;
+      }
+    ],
+    &quot;rules_sha256&quot;: &quot;64f5de123ca9fb3a2bf2fe631926b3ded16231175dabcc19b0c6e8f45dcb6e07&quot;
+  }
+}</pre></section><section><h2>Pluto</h2><p>UNKNOWN: Pluto no se ejecuta en modo offline.</p><p>Pluto exit: No ejecutado / no disponible</p><pre></pre><pre></pre></section><section><h2>Hallazgos globales</h2><details open><summary><b>RULE-COVERAGE</b> <span class='UNKNOWN'>UNKNOWN / INFO</span></summary><p>Cobertura documental del trayecto solicitado; el alcance se limita a las categorías registradas.</p><p>rules · documented · static</p><pre>{
+  &quot;catalog_version&quot;: &quot;2026.11.04.1&quot;,
+  &quot;sha256&quot;: &quot;01c7959a428e1d9bd32229cc54106f3c99561db1d83601b8558cb8108c6b16fb&quot;,
+  &quot;reviews&quot;: [
+    {
+      &quot;current_min&quot;: &quot;1.34.0&quot;,
+      &quot;current_max&quot;: &quot;1.34.999&quot;,
+      &quot;target_min&quot;: &quot;1.35.0&quot;,
+      &quot;target_max&quot;: &quot;1.35.999&quot;,
+      &quot;status&quot;: &quot;partial&quot;,
+      &quot;categories&quot;: [
+        &quot;schema&quot;,
+        &quot;structure&quot;,
+        &quot;conversion_webhook&quot;,
+        &quot;storage&quot;
+      ],
+      &quot;reviewed_on&quot;: &quot;2026-10-29&quot;,
+      &quot;reviewer&quot;: &quot;Initial project implementation&quot;,
+      &quot;source&quot;: &quot;https://github.com/kubernetes/kubernetes/blob/v1.35.0/CHANGELOG/CHANGELOG-1.35.md&quot;,
+      &quot;limitations&quot;: [
+        &quot;Selección de cambios minor; parches exactos, backports, feature gates y proveedores no revisados exhaustivamente.&quot;
+      ]
+    }
+  ],
+  &quot;steps&quot;: [
+    {
+      &quot;current&quot;: &quot;1.34.8&quot;,
+      &quot;target&quot;: &quot;1.35.9&quot;,
+      &quot;status&quot;: &quot;partial&quot;
+    }
+  ]
+}</pre><p><b>Recomendación:</b> Revisar categorías, parches y distribuciones pendientes antes del upgrade.</p><p><a href='https://v1-35.docs.kubernetes.io/docs/tasks/extend-kubernetes/custom-resources/custom-resource-definitions/' rel='noreferrer'>Fuente técnica</a></p><p class='limit'>Límite: Una revisión sin cambios relevantes no equivale a ausencia de revisión ni certifica compatibilidad completa.</p></details><details open><summary><b>CRD-INVENTORY-EMPTY</b> <span class='UNKNOWN'>UNKNOWN / INFO</span></summary><p>No se encontraron CRDs en la entrada.</p><p>inventory · limitation · static</p><pre>{}</pre><p><b>Recomendación:</b> Revisar la evidencia antes del upgrade.</p><p><a href='https://v1-35.docs.kubernetes.io/docs/tasks/extend-kubernetes/custom-resources/custom-resource-definitions/' rel='noreferrer'>Fuente técnica</a></p></details><details open><summary><b>VERSION_EOL</b> <span class='WARN'>WARN / MEDIUM</span></summary><p>Versión fuera de mantenimiento según la evidencia oficial registrada.</p><p>operator_compatibility · documented · static</p><pre>{
+  &quot;product&quot;: &quot;Istio&quot;,
+  &quot;installed_version&quot;: &quot;1.24.1&quot;,
+  &quot;target&quot;: &quot;1.35.9&quot;,
+  &quot;matrix&quot;: {
+    &quot;version&quot;: &quot;1.24.x&quot;,
+    &quot;min_kubernetes&quot;: &quot;1.28.0&quot;,
+    &quot;max_kubernetes&quot;: &quot;1.31.x&quot;,
+    &quot;matrix_type&quot;: &quot;supported&quot;,
+    &quot;exclusive&quot;: true,
+    &quot;end_of_support&quot;: &quot;2025-06-24&quot;,
+    &quot;source&quot;: &quot;https://istio.io/latest/docs/releases/supported-releases/&quot;,
+    &quot;reviewed_on&quot;: &quot;2026-11-04&quot;,
+    &quot;valid_until&quot;: &quot;2027-02-02&quot;,
+    &quot;evidence&quot;: &quot;Fila oficial 1.24: soporte Kubernetes 1.28–1.31; EOL 24 junio 2025.&quot;,
+    &quot;support_state&quot;: &quot;supported&quot;
+  },
+  &quot;detected_version&quot;: &quot;1.24.1&quot;,
+  &quot;version_confidence&quot;: &quot;image_tag&quot;,
+  &quot;catalog_lookup&quot;: {
+    &quot;catalog_present&quot;: true,
+    &quot;files&quot;: [
+      &quot;istio.json&quot;
+    ],
+    &quot;paths&quot;: [
+      &quot;catalogs/support/istio.json&quot;
+    ],
+    &quot;available_selectors&quot;: [
+      &quot;1.30.x&quot;,
+      &quot;1.29.x&quot;,
+      &quot;1.28.x&quot;,
+      &quot;1.27.x&quot;,
+      &quot;1.26.x&quot;,
+      &quot;1.25.x&quot;,
+      &quot;1.24.x&quot;,
+      &quot;1.23.x&quot;,
+      &quot;1.22.x&quot;,
+      &quot;1.21.x&quot;
+    ],
+    &quot;matched_selectors&quot;: [
+      &quot;1.24.x&quot;
+    ],
+    &quot;selected_selector&quot;: &quot;1.24.x&quot;,
+    &quot;normalized_version&quot;: &quot;1.24.1&quot;,
+    &quot;reason&quot;: &quot;matched&quot;
+  },
+  &quot;distribution_revision&quot;: null,
+  &quot;reviewed_on&quot;: &quot;2026-11-04&quot;,
+  &quot;catalog_limitations&quot;: [],
+  &quot;resolution_sources&quot;: [
+    &quot;pods&quot;
+  ],
+  &quot;resolved_versions&quot;: [
+    &quot;1.24.1&quot;,
+    &quot;1.25.0&quot;
+  ],
+  &quot;raw_detected_versions&quot;: [
+    &quot;1.24.1&quot;,
+    &quot;1.25.0&quot;
+  ],
+  &quot;detection_summary&quot;: {
+    &quot;scope&quot;: &quot;Inventario examinado; sujeto a límites y errores de las fuentes.&quot;,
+    &quot;control_plane&quot;: [],
+    &quot;control_plane_pods_by_version&quot;: {},
+    &quot;gateway_pods_by_version&quot;: {},
+    &quot;helm_releases&quot;: [],
+    &quot;data_plane&quot;: {
+      &quot;pods_observed&quot;: 160,
+      &quot;active_pods&quot;: 148,
+      &quot;inactive_pods&quot;: 12,
+      &quot;other_active_versions&quot;: 0,
+      &quot;by_version&quot;: [
+        {
+          &quot;version&quot;: &quot;1.24.1&quot;,
+          &quot;pods&quot;: 152,
+          &quot;active&quot;: 140,
+          &quot;inactive&quot;: 12
+        },
+        {
+          &quot;version&quot;: &quot;1.25.0&quot;,
+          &quot;pods&quot;: 8,
+          &quot;active&quot;: 8,
+          &quot;inactive&quot;: 0
+        }
+      ]
+    },
+    &quot;inventory_errors&quot;: [
+      {
+        &quot;source&quot;: &quot;deployments.apps&quot;,
+        &quot;reason&quot;: &quot;forbidden&quot;
+      }
+    ]
+  }
+}</pre><p><b>Recomendación:</b> Revisar la matriz oficial y actualizar el componente o completar evidencia antes del upgrade.</p><p><a href='https://istio.io/latest/docs/releases/supported-releases/' rel='noreferrer'>Fuente técnica</a></p></details><details open><summary><b>NOT_COMPATIBLE</b> <span class='FAIL'>FAIL / HIGH</span></summary><p>Objetivo fuera del rango de soporte explícito del proveedor; no se recomienda este upgrade con la versión instalada.</p><p>operator_compatibility · documented · static</p><pre>{
+  &quot;product&quot;: &quot;Istio&quot;,
+  &quot;installed_version&quot;: &quot;1.24.1&quot;,
+  &quot;target&quot;: &quot;1.35.9&quot;,
+  &quot;matrix&quot;: {
+    &quot;version&quot;: &quot;1.24.x&quot;,
+    &quot;min_kubernetes&quot;: &quot;1.28.0&quot;,
+    &quot;max_kubernetes&quot;: &quot;1.31.x&quot;,
+    &quot;matrix_type&quot;: &quot;supported&quot;,
+    &quot;exclusive&quot;: true,
+    &quot;end_of_support&quot;: &quot;2025-06-24&quot;,
+    &quot;source&quot;: &quot;https://istio.io/latest/docs/releases/supported-releases/&quot;,
+    &quot;reviewed_on&quot;: &quot;2026-11-04&quot;,
+    &quot;valid_until&quot;: &quot;2027-02-02&quot;,
+    &quot;evidence&quot;: &quot;Fila oficial 1.24: soporte Kubernetes 1.28–1.31; EOL 24 junio 2025.&quot;,
+    &quot;support_state&quot;: &quot;supported&quot;
+  },
+  &quot;detected_version&quot;: &quot;1.24.1&quot;,
+  &quot;version_confidence&quot;: &quot;image_tag&quot;,
+  &quot;catalog_lookup&quot;: {
+    &quot;catalog_present&quot;: true,
+    &quot;files&quot;: [
+      &quot;istio.json&quot;
+    ],
+    &quot;paths&quot;: [
+      &quot;catalogs/support/istio.json&quot;
+    ],
+    &quot;available_selectors&quot;: [
+      &quot;1.30.x&quot;,
+      &quot;1.29.x&quot;,
+      &quot;1.28.x&quot;,
+      &quot;1.27.x&quot;,
+      &quot;1.26.x&quot;,
+      &quot;1.25.x&quot;,
+      &quot;1.24.x&quot;,
+      &quot;1.23.x&quot;,
+      &quot;1.22.x&quot;,
+      &quot;1.21.x&quot;
+    ],
+    &quot;matched_selectors&quot;: [
+      &quot;1.24.x&quot;
+    ],
+    &quot;selected_selector&quot;: &quot;1.24.x&quot;,
+    &quot;normalized_version&quot;: &quot;1.24.1&quot;,
+    &quot;reason&quot;: &quot;matched&quot;
+  },
+  &quot;distribution_revision&quot;: null,
+  &quot;reviewed_on&quot;: &quot;2026-11-04&quot;,
+  &quot;catalog_limitations&quot;: [],
+  &quot;resolution_sources&quot;: [
+    &quot;pods&quot;
+  ],
+  &quot;resolved_versions&quot;: [
+    &quot;1.24.1&quot;,
+    &quot;1.25.0&quot;
+  ],
+  &quot;raw_detected_versions&quot;: [
+    &quot;1.24.1&quot;,
+    &quot;1.25.0&quot;
+  ],
+  &quot;detection_summary&quot;: {
+    &quot;scope&quot;: &quot;Inventario examinado; sujeto a límites y errores de las fuentes.&quot;,
+    &quot;control_plane&quot;: [],
+    &quot;control_plane_pods_by_version&quot;: {},
+    &quot;gateway_pods_by_version&quot;: {},
+    &quot;helm_releases&quot;: [],
+    &quot;data_plane&quot;: {
+      &quot;pods_observed&quot;: 160,
+      &quot;active_pods&quot;: 148,
+      &quot;inactive_pods&quot;: 12,
+      &quot;other_active_versions&quot;: 0,
+      &quot;by_version&quot;: [
+        {
+          &quot;version&quot;: &quot;1.24.1&quot;,
+          &quot;pods&quot;: 152,
+          &quot;active&quot;: 140,
+          &quot;inactive&quot;: 12
+        },
+        {
+          &quot;version&quot;: &quot;1.25.0&quot;,
+          &quot;pods&quot;: 8,
+          &quot;active&quot;: 8,
+          &quot;inactive&quot;: 0
+        }
+      ]
+    },
+    &quot;inventory_errors&quot;: [
+      {
+        &quot;source&quot;: &quot;deployments.apps&quot;,
+        &quot;reason&quot;: &quot;forbidden&quot;
+      }
+    ]
+  }
+}</pre><p><b>Recomendación:</b> Revisar la matriz oficial y actualizar el componente o completar evidencia antes del upgrade.</p><p><a href='https://istio.io/latest/docs/releases/supported-releases/' rel='noreferrer'>Fuente técnica</a></p></details><details open><summary><b>VERSION_EOL</b> <span class='WARN'>WARN / MEDIUM</span></summary><p>Versión fuera de mantenimiento según la evidencia oficial registrada.</p><p>operator_compatibility · documented · static</p><pre>{
+  &quot;product&quot;: &quot;Istio&quot;,
+  &quot;installed_version&quot;: &quot;1.25.0&quot;,
+  &quot;target&quot;: &quot;1.35.9&quot;,
+  &quot;matrix&quot;: {
+    &quot;version&quot;: &quot;1.25.x&quot;,
+    &quot;min_kubernetes&quot;: &quot;1.29.0&quot;,
+    &quot;max_kubernetes&quot;: &quot;1.32.x&quot;,
+    &quot;matrix_type&quot;: &quot;supported&quot;,
+    &quot;exclusive&quot;: true,
+    &quot;end_of_support&quot;: &quot;2025-09-30&quot;,
+    &quot;source&quot;: &quot;https://istio.io/latest/docs/releases/supported-releases/&quot;,
+    &quot;reviewed_on&quot;: &quot;2026-11-04&quot;,
+    &quot;valid_until&quot;: &quot;2027-02-02&quot;,
+    &quot;evidence&quot;: &quot;Fila oficial 1.25: soporte Kubernetes 1.29–1.32; EOL 30 septiembre 2025.&quot;,
+    &quot;support_state&quot;: &quot;supported&quot;
+  },
+  &quot;detected_version&quot;: &quot;1.25.0&quot;,
+  &quot;version_confidence&quot;: &quot;image_tag&quot;,
+  &quot;catalog_lookup&quot;: {
+    &quot;catalog_present&quot;: true,
+    &quot;files&quot;: [
+      &quot;istio.json&quot;
+    ],
+    &quot;paths&quot;: [
+      &quot;catalogs/support/istio.json&quot;
+    ],
+    &quot;available_selectors&quot;: [
+      &quot;1.30.x&quot;,
+      &quot;1.29.x&quot;,
+      &quot;1.28.x&quot;,
+      &quot;1.27.x&quot;,
+      &quot;1.26.x&quot;,
+      &quot;1.25.x&quot;,
+      &quot;1.24.x&quot;,
+      &quot;1.23.x&quot;,
+      &quot;1.22.x&quot;,
+      &quot;1.21.x&quot;
+    ],
+    &quot;matched_selectors&quot;: [
+      &quot;1.25.x&quot;
+    ],
+    &quot;selected_selector&quot;: &quot;1.25.x&quot;,
+    &quot;normalized_version&quot;: &quot;1.25.0&quot;,
+    &quot;reason&quot;: &quot;matched&quot;
+  },
+  &quot;distribution_revision&quot;: null,
+  &quot;reviewed_on&quot;: &quot;2026-11-04&quot;,
+  &quot;catalog_limitations&quot;: [],
+  &quot;resolution_sources&quot;: [
+    &quot;pods&quot;
+  ],
+  &quot;resolved_versions&quot;: [
+    &quot;1.24.1&quot;,
+    &quot;1.25.0&quot;
+  ],
+  &quot;raw_detected_versions&quot;: [
+    &quot;1.24.1&quot;,
+    &quot;1.25.0&quot;
+  ],
+  &quot;detection_summary&quot;: {
+    &quot;scope&quot;: &quot;Inventario examinado; sujeto a límites y errores de las fuentes.&quot;,
+    &quot;control_plane&quot;: [],
+    &quot;control_plane_pods_by_version&quot;: {},
+    &quot;gateway_pods_by_version&quot;: {},
+    &quot;helm_releases&quot;: [],
+    &quot;data_plane&quot;: {
+      &quot;pods_observed&quot;: 160,
+      &quot;active_pods&quot;: 148,
+      &quot;inactive_pods&quot;: 12,
+      &quot;other_active_versions&quot;: 0,
+      &quot;by_version&quot;: [
+        {
+          &quot;version&quot;: &quot;1.24.1&quot;,
+          &quot;pods&quot;: 152,
+          &quot;active&quot;: 140,
+          &quot;inactive&quot;: 12
+        },
+        {
+          &quot;version&quot;: &quot;1.25.0&quot;,
+          &quot;pods&quot;: 8,
+          &quot;active&quot;: 8,
+          &quot;inactive&quot;: 0
+        }
+      ]
+    },
+    &quot;inventory_errors&quot;: [
+      {
+        &quot;source&quot;: &quot;deployments.apps&quot;,
+        &quot;reason&quot;: &quot;forbidden&quot;
+      }
+    ]
+  }
+}</pre><p><b>Recomendación:</b> Revisar la matriz oficial y actualizar el componente o completar evidencia antes del upgrade.</p><p><a href='https://istio.io/latest/docs/releases/supported-releases/' rel='noreferrer'>Fuente técnica</a></p></details><details open><summary><b>NOT_COMPATIBLE</b> <span class='FAIL'>FAIL / HIGH</span></summary><p>Objetivo fuera del rango de soporte explícito del proveedor; no se recomienda este upgrade con la versión instalada.</p><p>operator_compatibility · documented · static</p><pre>{
+  &quot;product&quot;: &quot;Istio&quot;,
+  &quot;installed_version&quot;: &quot;1.25.0&quot;,
+  &quot;target&quot;: &quot;1.35.9&quot;,
+  &quot;matrix&quot;: {
+    &quot;version&quot;: &quot;1.25.x&quot;,
+    &quot;min_kubernetes&quot;: &quot;1.29.0&quot;,
+    &quot;max_kubernetes&quot;: &quot;1.32.x&quot;,
+    &quot;matrix_type&quot;: &quot;supported&quot;,
+    &quot;exclusive&quot;: true,
+    &quot;end_of_support&quot;: &quot;2025-09-30&quot;,
+    &quot;source&quot;: &quot;https://istio.io/latest/docs/releases/supported-releases/&quot;,
+    &quot;reviewed_on&quot;: &quot;2026-11-04&quot;,
+    &quot;valid_until&quot;: &quot;2027-02-02&quot;,
+    &quot;evidence&quot;: &quot;Fila oficial 1.25: soporte Kubernetes 1.29–1.32; EOL 30 septiembre 2025.&quot;,
+    &quot;support_state&quot;: &quot;supported&quot;
+  },
+  &quot;detected_version&quot;: &quot;1.25.0&quot;,
+  &quot;version_confidence&quot;: &quot;image_tag&quot;,
+  &quot;catalog_lookup&quot;: {
+    &quot;catalog_present&quot;: true,
+    &quot;files&quot;: [
+      &quot;istio.json&quot;
+    ],
+    &quot;paths&quot;: [
+      &quot;catalogs/support/istio.json&quot;
+    ],
+    &quot;available_selectors&quot;: [
+      &quot;1.30.x&quot;,
+      &quot;1.29.x&quot;,
+      &quot;1.28.x&quot;,
+      &quot;1.27.x&quot;,
+      &quot;1.26.x&quot;,
+      &quot;1.25.x&quot;,
+      &quot;1.24.x&quot;,
+      &quot;1.23.x&quot;,
+      &quot;1.22.x&quot;,
+      &quot;1.21.x&quot;
+    ],
+    &quot;matched_selectors&quot;: [
+      &quot;1.25.x&quot;
+    ],
+    &quot;selected_selector&quot;: &quot;1.25.x&quot;,
+    &quot;normalized_version&quot;: &quot;1.25.0&quot;,
+    &quot;reason&quot;: &quot;matched&quot;
+  },
+  &quot;distribution_revision&quot;: null,
+  &quot;reviewed_on&quot;: &quot;2026-11-04&quot;,
+  &quot;catalog_limitations&quot;: [],
+  &quot;resolution_sources&quot;: [
+    &quot;pods&quot;
+  ],
+  &quot;resolved_versions&quot;: [
+    &quot;1.24.1&quot;,
+    &quot;1.25.0&quot;
+  ],
+  &quot;raw_detected_versions&quot;: [
+    &quot;1.24.1&quot;,
+    &quot;1.25.0&quot;
+  ],
+  &quot;detection_summary&quot;: {
+    &quot;scope&quot;: &quot;Inventario examinado; sujeto a límites y errores de las fuentes.&quot;,
+    &quot;control_plane&quot;: [],
+    &quot;control_plane_pods_by_version&quot;: {},
+    &quot;gateway_pods_by_version&quot;: {},
+    &quot;helm_releases&quot;: [],
+    &quot;data_plane&quot;: {
+      &quot;pods_observed&quot;: 160,
+      &quot;active_pods&quot;: 148,
+      &quot;inactive_pods&quot;: 12,
+      &quot;other_active_versions&quot;: 0,
+      &quot;by_version&quot;: [
+        {
+          &quot;version&quot;: &quot;1.24.1&quot;,
+          &quot;pods&quot;: 152,
+          &quot;active&quot;: 140,
+          &quot;inactive&quot;: 12
+        },
+        {
+          &quot;version&quot;: &quot;1.25.0&quot;,
+          &quot;pods&quot;: 8,
+          &quot;active&quot;: 8,
+          &quot;inactive&quot;: 0
+        }
+      ]
+    },
+    &quot;inventory_errors&quot;: [
+      {
+        &quot;source&quot;: &quot;deployments.apps&quot;,
+        &quot;reason&quot;: &quot;forbidden&quot;
+      }
+    ]
+  }
+}</pre><p><b>Recomendación:</b> Revisar la matriz oficial y actualizar el componente o completar evidencia antes del upgrade.</p><p><a href='https://istio.io/latest/docs/releases/supported-releases/' rel='noreferrer'>Fuente técnica</a></p></details><details open><summary><b>COMPATIBLE</b> <span class='PASS'>PASS / INFO</span></summary><p>Objetivo dentro del rango documentado; consultar si la evidencia acredita soporte o pruebas upstream.</p><p>operator_compatibility · documented · static</p><pre>{
+  &quot;product&quot;: &quot;Calico&quot;,
+  &quot;installed_version&quot;: &quot;3.31.2&quot;,
+  &quot;target&quot;: &quot;1.35.9&quot;,
+  &quot;matrix&quot;: {
+    &quot;version&quot;: &quot;3.31.x&quot;,
+    &quot;supported_kubernetes&quot;: {
+      &quot;min&quot;: &quot;1.32&quot;,
+      &quot;max&quot;: &quot;1.35&quot;
+    },
+    &quot;matrix_type&quot;: &quot;tested&quot;,
+    &quot;exclusive&quot;: false,
+    &quot;support_state&quot;: &quot;supported&quot;,
+    &quot;source&quot;: &quot;https://raw.githubusercontent.com/tigera/docs/master/calico_versioned_docs/version-3.31/_includes/partials/_system-requirements.mdx&quot;,
+    &quot;reviewed_on&quot;: &quot;2026-11-04&quot;,
+    &quot;evidence&quot;: &quot;Requisitos de Calico 3.31: versiones activamente probadas 1.32, 1.33, 1.34 y 1.35. Otras pueden funcionar; no es un máximo de soporte estricto.&quot;,
+    &quot;min_kubernetes&quot;: &quot;1.32&quot;,
+    &quot;max_kubernetes&quot;: &quot;1.35&quot;,
+    &quot;valid_until&quot;: &quot;2027-02-02&quot;
+  },
+  &quot;detected_version&quot;: &quot;3.31.2&quot;,
+  &quot;version_confidence&quot;: &quot;product_metadata&quot;,
+  &quot;catalog_lookup&quot;: {
+    &quot;catalog_present&quot;: true,
+    &quot;files&quot;: [
+      &quot;calico.json&quot;
+    ],
+    &quot;paths&quot;: [
+      &quot;catalogs/support/calico.json&quot;
+    ],
+    &quot;available_selectors&quot;: [
+      &quot;3.31.x&quot;,
+      &quot;3.32.x&quot;
+    ],
+    &quot;matched_selectors&quot;: [
+      &quot;3.31.x&quot;
+    ],
+    &quot;selected_selector&quot;: &quot;3.31.x&quot;,
+    &quot;normalized_version&quot;: &quot;3.31.2&quot;,
+    &quot;reason&quot;: &quot;matched&quot;
+  },
+  &quot;distribution_revision&quot;: null,
+  &quot;reviewed_on&quot;: &quot;2026-11-04&quot;,
+  &quot;catalog_limitations&quot;: [
+    &quot;No se pudo verificar la documentación archivada 3.30: permanece sin rango. Tigera Operator tiene su propia versión, distinta de Calico.&quot;
+  ],
+  &quot;detection_sources&quot;: [
+    {
+      &quot;from&quot;: &quot;Calico ClusterInformation&quot;,
+      &quot;activity&quot;: &quot;active&quot;
+    }
+  ],
+  &quot;resolution_sources&quot;: [
+    &quot;Calico ClusterInformation&quot;
+  ],
+  &quot;resolved_versions&quot;: [
+    &quot;3.31.2&quot;
+  ],
+  &quot;raw_detected_versions&quot;: [
+    &quot;v3.31.2&quot;
+  ]
+}</pre><p><b>Recomendación:</b> Revisar la matriz oficial y actualizar el componente o completar evidencia antes del upgrade.</p><p><a href='https://raw.githubusercontent.com/tigera/docs/master/calico_versioned_docs/version-3.31/_includes/partials/_system-requirements.mdx' rel='noreferrer'>Fuente técnica</a></p></details><details open><summary><b>NO_OFFICIAL_KUBERNETES_MATRIX</b> <span class='UNKNOWN'>UNKNOWN / INFO</span></summary><p>La versión 1.1.2 fue detectada, pero no se encontró en las fuentes oficiales revisadas una matriz numérica verificable que la vincule con Kubernetes 1.35.9.</p><p>operator_compatibility · limitation · static</p><pre>{
+  &quot;product&quot;: &quot;Secrets Store CSI Driver&quot;,
+  &quot;installed_version&quot;: &quot;1.1.2&quot;,
+  &quot;target&quot;: &quot;1.35.9&quot;,
+  &quot;matrix&quot;: {},
+  &quot;detected_version&quot;: &quot;1.1.2&quot;,
+  &quot;version_confidence&quot;: &quot;image_tag&quot;,
+  &quot;catalog_lookup&quot;: {
+    &quot;catalog_present&quot;: true,
+    &quot;files&quot;: [
+      &quot;secrets-store-csi.json&quot;
+    ],
+    &quot;paths&quot;: [
+      &quot;catalogs/support/secrets-store-csi.json&quot;
+    ],
+    &quot;available_selectors&quot;: [],
+    &quot;matched_selectors&quot;: [],
+    &quot;selected_selector&quot;: null,
+    &quot;normalized_version&quot;: &quot;1.1.2&quot;,
+    &quot;reason&quot;: &quot;Sin matriz numérica oficial verificable para la versión instalada y el objetivo; consultar el hallazgo y su fuente.&quot;
+  },
+  &quot;distribution_revision&quot;: null,
+  &quot;reviewed_on&quot;: null,
+  &quot;catalog_limitations&quot;: [
+    &quot;La política soporta Kubernetes minor activamente soportados. No fija una matriz para cualquier binario histórico: no se extrapola la política actual a versiones instaladas antiguas.&quot;
+  ],
+  &quot;legacy_rule_id&quot;: &quot;NO_SUPPORT_DATA&quot;,
+  &quot;detection_sources&quot;: [
+    {
+      &quot;from&quot;: &quot;daemonsets.apps&quot;,
+      &quot;namespace&quot;: &quot;system&quot;,
+      &quot;name&quot;: &quot;secrets-store-csi&quot;,
+      &quot;repository&quot;: &quot;registry.k8s.io/csi-secrets-store/driver&quot;,
+      &quot;declared_tag&quot;: &quot;v1.1.2&quot;,
+      &quot;revision&quot;: null,
+      &quot;identity_basis&quot;: &quot;catalog_repository&quot;,
+      &quot;confidence&quot;: &quot;image_tag&quot;,
+      &quot;activity&quot;: &quot;active&quot;,
+      &quot;observed_status&quot;: {
+        &quot;availableReplicas&quot;: 1,
+        &quot;conditions&quot;: []
+      },
+      &quot;version_label&quot;: null,
+      &quot;chart&quot;: null,
+      &quot;imageID&quot;: null,
+      &quot;observed_containers&quot;: [
+        {
+          &quot;container&quot;: &quot;manager&quot;,
+          &quot;container_type&quot;: &quot;containers&quot;,
+          &quot;image&quot;: &quot;registry.k8s.io/csi-secrets-store/driver:v1.1.2&quot;,
+          &quot;repository&quot;: &quot;registry.k8s.io/csi-secrets-store/driver&quot;,
+          &quot;declared_tag&quot;: &quot;v1.1.2&quot;,
+          &quot;imageID&quot;: null,
+          &quot;ready&quot;: null,
+          &quot;restartCount&quot;: null,
+          &quot;state&quot;: {}
+        }
+      ],
+      &quot;pod_container_statuses&quot;: [],
+      &quot;version_basis&quot;: &quot;workload_template_image_tag&quot;
+    }
+  ],
+  &quot;resolution_sources&quot;: [
+    &quot;daemonsets.apps&quot;
+  ],
+  &quot;resolved_versions&quot;: [
+    &quot;1.1.2&quot;
+  ],
+  &quot;raw_detected_versions&quot;: [
+    &quot;v1.1.2&quot;
+  ]
+}</pre><p><b>Recomendación:</b> Revisar la matriz oficial y actualizar el componente o completar evidencia antes del upgrade.</p><p><a href='https://secrets-store-csi-driver.sigs.k8s.io/getting-started/installation' rel='noreferrer'>Fuente técnica</a></p></details><details open><summary><b>MANAGED_VERSION_NOT_EXPOSED</b> <span class='UNKNOWN'>UNKNOWN / INFO</span></summary><p>Snapshot Controller habilitado en metadata AKS; la versión efectiva y su soporte para el objetivo no están expuestos.</p><p>operator_compatibility · limitation · static</p><pre>{
+  &quot;product&quot;: &quot;Snapshot Controller&quot;,
+  &quot;target&quot;: &quot;1.35.9&quot;,
+  &quot;installed_version&quot;: &quot;MANAGED&quot;,
+  &quot;detected_version&quot;: &quot;MANAGED&quot;,
+  &quot;managed_by&quot;: &quot;AKS&quot;,
+  &quot;reason&quot;: &quot;MANAGED_VERSION_NOT_EXPOSED&quot;,
+  &quot;legacy_rule_id&quot;: &quot;MANAGED_VERSION_UNEXPOSED&quot;,
+  &quot;detection_sources&quot;: [
+    {
+      &quot;from&quot;: &quot;az aks show&quot;,
+      &quot;addon&quot;: &quot;snapshotController&quot;,
+      &quot;activity&quot;: &quot;active&quot;,
+      &quot;note&quot;: &quot;Habilitado no determina versión efectiva.&quot;
+    }
+  ],
+  &quot;resolution_sources&quot;: [
+    &quot;az aks show&quot;
+  ],
+  &quot;resolved_versions&quot;: [],
+  &quot;version_confidence&quot;: &quot;managed_metadata&quot;,
+  &quot;raw_detected_versions&quot;: [
+    &quot;MANAGED&quot;
+  ]
+}</pre><p><b>Recomendación:</b> Revisar la evidencia antes del upgrade.</p><p><a href='https://github.com/kubernetes-csi/external-snapshotter' rel='noreferrer'>Fuente técnica</a></p></details><details open><summary><b>PLATFORM-DISCOVERY</b> <span class='UNKNOWN'>UNKNOWN / INFO</span></summary><p>Cobertura del descubrimiento de plataformas.</p><p>operator_compatibility · limitation · snapshot</p><pre>{
+  &quot;errors&quot;: [
+    {
+      &quot;source&quot;: &quot;deployments.apps&quot;,
+      &quot;reason&quot;: &quot;forbidden&quot;
+    }
+  ],
+  &quot;required_errors&quot;: [
+    {
+      &quot;source&quot;: &quot;deployments.apps&quot;,
+      &quot;completed&quot;: false,
+      &quot;authorized&quot;: false,
+      &quot;error&quot;: &quot;forbidden&quot;,
+      &quot;items_scanned&quot;: 0,
+      &quot;required&quot;: true
+    }
+  ],
+  &quot;detector_errors&quot;: [],
+  &quot;inventory_sources&quot;: [
+    {
+      &quot;source&quot;: &quot;deployments.apps&quot;,
+      &quot;completed&quot;: false,
+      &quot;authorized&quot;: false,
+      &quot;error&quot;: &quot;forbidden&quot;,
+      &quot;items_scanned&quot;: 0,
+      &quot;required&quot;: true
+    },
+    {
+      &quot;source&quot;: &quot;daemonsets.apps&quot;,
+      &quot;completed&quot;: true,
+      &quot;authorized&quot;: true,
+      &quot;error&quot;: null,
+      &quot;items_scanned&quot;: 1,
+      &quot;required&quot;: true
+    },
+    {
+      &quot;source&quot;: &quot;statefulsets.apps&quot;,
+      &quot;completed&quot;: true,
+      &quot;authorized&quot;: true,
+      &quot;error&quot;: null,
+      &quot;items_scanned&quot;: 0,
+      &quot;required&quot;: true
+    },
+    {
+      &quot;source&quot;: &quot;pods&quot;,
+      &quot;completed&quot;: true,
+      &quot;authorized&quot;: true,
+      &quot;error&quot;: null,
+      &quot;items_scanned&quot;: 160,
+      &quot;required&quot;: true
+    },
+    {
+      &quot;source&quot;: &quot;nodes&quot;,
+      &quot;completed&quot;: true,
+      &quot;authorized&quot;: true,
+      &quot;error&quot;: null,
+      &quot;items_scanned&quot;: 0,
+      &quot;required&quot;: true
+    },
+    {
+      &quot;source&quot;: &quot;Helm&quot;,
+      &quot;completed&quot;: true,
+      &quot;authorized&quot;: true,
+      &quot;error&quot;: null,
+      &quot;items_scanned&quot;: 0,
+      &quot;required&quot;: false
+    },
+    {
+      &quot;source&quot;: &quot;crds&quot;,
+      &quot;completed&quot;: true,
+      &quot;authorized&quot;: true,
+      &quot;error&quot;: null,
+      &quot;items_scanned&quot;: 0,
+      &quot;required&quot;: true
+    }
+  ],
+  &quot;products_detected&quot;: 4
+}</pre><p><b>Recomendación:</b> Revisar la evidencia antes del upgrade.</p><p><a href='https://v1-35.docs.kubernetes.io/docs/tasks/extend-kubernetes/custom-resources/custom-resource-definitions/' rel='noreferrer'>Fuente técnica</a></p><p class='limit'>Límite: Detectores por repositorios y charts conocidos. Mirrors privados, productos no catalogados y planos administrados pueden no ser visibles.</p><p class='limit'>Límite: La versión de tag/Helm es evidencia declarada, no una verificación del binario por digest.</p><p class='limit'>Límite: Las listas de workloads se descargan completas dentro del timeout y se examinan hasta el límite configurado.</p></details><details open><summary><b>AKS-SUPPORT-UNVERIFIED</b> <span class='UNKNOWN'>UNKNOWN / INFO</span></summary><p>Soporte de AKS y sus add-ons para el objetivo requiere evidencia específica de Microsoft.</p><p>aks · limitation · static</p><pre>{
+  &quot;detected&quot;: true,
+  &quot;target_version&quot;: &quot;1.35.9&quot;,
+  &quot;current_version&quot;: &quot;1.34.8&quot;,
+  &quot;node_image_versions&quot;: [],
+  &quot;node_kubelet_versions&quot;: [],
+  &quot;addons&quot;: [
+    {
+      &quot;name&quot;: &quot;snapshotController&quot;,
+      &quot;detector_id&quot;: &quot;snapshot&quot;
+    }
+  ],
+  &quot;limitations&quot;: [
+    &quot;Metadata AKS observada; la versión efectiva y soporte de cada add-on se evalúan por separado.&quot;,
+    &quot;Una versión Kubernetes soportada upstream no acredita disponibilidad de upgrade, región, canal LTS ni soporte del add-on administrado en AKS.&quot;,
+    &quot;Node images se inventarían; no se infiere compatibilidad futura por su nombre.&quot;
+  ],
+  &quot;resource_id&quot;: &quot;/subscriptions/synthetic/resourceGroups/demo/providers/Microsoft.ContainerService/managedClusters/followup&quot;,
+  &quot;subscription_id&quot;: null,
+  &quot;resource_group&quot;: null,
+  &quot;cluster_name&quot;: null,
+  &quot;network_profile&quot;: {
+    &quot;networkPlugin&quot;: null,
+    &quot;networkPluginMode&quot;: null,
+    &quot;networkDataplane&quot;: null,
+    &quot;networkPolicy&quot;: null
+  }
+}</pre><p><b>Recomendación:</b> Revisar versiones/región/canal AKS, imágenes de nodos y versiones administradas de add-ons antes del upgrade.</p><p><a href='https://learn.microsoft.com/en-us/azure/aks/supported-kubernetes-versions' rel='noreferrer'>Fuente técnica</a></p></details><details open><summary><b>PLUTO-SCAN</b> <span class='UNKNOWN'>UNKNOWN / INFO</span></summary><p>Pluto no se ejecuta en modo offline.</p><p>native_api_deprecations · limitation · external_tool</p><pre>{
+  &quot;exit_code&quot;: null,
+  &quot;executed&quot;: false
+}</pre><p><b>Recomendación:</b> Revisar la sección Pluto y mantener actualizado el binario y su catálogo de APIs.</p><p><a href='https://pluto.docs.fairwinds.com/advanced/' rel='noreferrer'>Fuente técnica</a></p><p class='limit'>Límite: Pluto tiene su propio catálogo de APIs; un resultado limpio no prueba cobertura de versiones futuras.</p><p class='limit'>Límite: La detección depende de los objetos y metadatos disponibles para Pluto.</p></details></section></main></html>
