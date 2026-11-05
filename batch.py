@@ -27,7 +27,7 @@ def main(argv=None):
     allowed = {"--include-instances": 0, "--verbose": 0, "--verify-sources": 0, "--full-platform-evidence": 0,
                "--platform-catalog": 1, "--support-catalog": 1, "--platform-limit": 1, "--detectors-path": 1, "--readiness-config": 1,
                "--rules-path": 1, "--coverage-path": 1, "--operator-catalog": 1,
-               "--timeout": 1, "--pluto-timeout": 1, "--max-queries": 1, "--page-size": 1,
+               "--timeout": 1, "--cluster-timeout": 1, "--pluto-timeout": 1, "--max-queries": 1, "--page-size": 1,
                "--max-pages": 1, "--max-instances": 1, "--fail-on": 1}
     try:
         target = str(Version.parse(args.target))
@@ -57,6 +57,8 @@ def main(argv=None):
             print(f"[{index}/{len(contexts)}] {context}", flush=True)
             command = [sys.executable, str(Path(__file__).resolve().with_name("main.py")), "--context", context,
                        "--target", target, "--output", str(directory.resolve()), "--format", "all"] + forwarded
+            if "--cluster-timeout" not in forwarded:
+                command += ["--cluster-timeout", str(args.context_timeout)]
             try:
                 env = dict(os.environ, PYTHONIOENCODING="utf-8", PYTHONUTF8="1")
                 result = subprocess.run(command, stdout=subprocess.PIPE, stderr=subprocess.STDOUT,

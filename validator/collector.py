@@ -2,6 +2,7 @@
 import json
 from pathlib import Path
 import subprocess
+from time import monotonic
 from urllib.parse import urlencode, quote
 
 from .version import Version
@@ -15,6 +16,9 @@ class CollectionError(Exception):
         super().__init__({"forbidden": "RBAC insuficiente para la lectura solicitada.",
                           "not_found": "Recurso o API no disponible.",
                           "timeout": "La consulta excedió el timeout.",
+                          "cluster_timeout": "Se agotó el presupuesto global de lectura del clúster.",
+                          "pagination_snapshot_changed": "La paginación no mantuvo un snapshot consistente.",
+                          "pagination_loop": "La API repitió un token de paginación; inventario incompleto.",
                           "kubectl_missing": "kubectl no está disponible.",
                           "invalid_json": "Respuesta JSON inválida.",
                           "command_failed": "Falló la lectura; detalle omitido para proteger credenciales.",
@@ -51,27 +55,37 @@ def crd_items(data):
 
 
 class Collector:
-    def __init__(self, context=None, timeout=30, max_queries=200, runner=None):
+    def __init__(self, context=None, timeout=30, max_queries=200, runner=None, total_timeout=None):
         self.context = context
         self.timeout = timeout
         self.max_queries = max_queries
         self.queries = 0
         self.runner = runner or subprocess.run
         self.cache = {}
+        self.deadline = monotonic() + total_timeout if total_timeout is not None else None
+
+    def remaining_timeout(self, maximum=None):
+        maximum = self.timeout if maximum is None else maximum
+        remaining = self.deadline - monotonic() if self.deadline is not None else maximum
+        if remaining <= 0:
+            raise CollectionError("cluster_timeout")
+        return min(maximum, remaining)
 
     def _run(self, args, json_output=True):
         if not args or args[0] not in ("get", "version", "config") or (args[0] == "config" and args not in (["config", "current-context"], SERVER_CONFIG)):
             raise ValueError("El colector solo admite lecturas get/version y config current-context.")
         if self.queries >= self.max_queries:
             raise CollectionError("query_limit")
+        request_timeout = self.remaining_timeout()
+        process_timeout = self.remaining_timeout(self.timeout + 2)
         self.queries += 1
-        command = ["kubectl", f"--request-timeout={self.timeout}s"]
+        command = ["kubectl", f"--request-timeout={request_timeout:g}s"]
         if self.context:
             command += ["--context", self.context]
         command += args
         try:
             result = self.runner(command, capture_output=True, text=True, encoding="utf-8",
-                                 errors="replace", timeout=self.timeout + 2, check=False, shell=False)
+                                 errors="replace", timeout=process_timeout, check=False, shell=False)
         except FileNotFoundError as exc:
             raise CollectionError("kubectl_missing") from exc
         except subprocess.TimeoutExpired as exc:
@@ -94,6 +108,45 @@ class Collector:
         if not isinstance(value, dict):
             raise CollectionError("invalid_response")
         return value
+
+    def list_paginated(self, resource, limit=20000, page_size=500):
+        """Read a consistent PodList snapshot, preserving partial results and never exporting tokens."""
+        if resource != "pods" or limit <= 0 or not 0 < page_size <= 500:
+            raise ValueError("Paginación sólo admite pods con límites positivos y páginas <=500.")
+        items, pages, token, seen, revision, error = [], 0, "", set(), None, None
+        while len(items) < limit:
+            params = {"limit": min(page_size, limit - len(items))}
+            if token:
+                params["continue"] = token
+            try:
+                data = self._run(["get", "--raw", "/api/v1/pods?" + urlencode(params)])
+                batch, metadata = data.get("items"), data.get("metadata", {})
+                if not isinstance(batch, list) or any(not isinstance(v, dict) for v in batch) or not isinstance(metadata, dict):
+                    raise CollectionError("invalid_response")
+                next_token = metadata.get("continue", "")
+                if not isinstance(next_token, str) or len(batch) > params["limit"]:
+                    raise CollectionError("invalid_response")
+                current_revision = metadata.get("resourceVersion")
+                if revision and current_revision and revision != current_revision:
+                    raise CollectionError("pagination_snapshot_changed")
+                revision = revision or current_revision
+                if next_token and next_token in seen:
+                    raise CollectionError("pagination_loop")
+                items.extend(batch)
+                pages += 1
+                token = next_token
+                if not token:
+                    break
+                seen.add(token)
+            except CollectionError as exc:
+                error = exc.code
+                break
+        if token and not error:
+            error = "inventory_limit"
+        complete = not token and not error
+        return {"items": items, "inventory": {"inventory_complete": complete, "pages": pages,
+            "items_scanned": len(items), "continuation_pending": bool(token), "error": error,
+            "safety_limit": limit, "page_size": page_size}}
 
     def current_context(self):
         if not self.context:

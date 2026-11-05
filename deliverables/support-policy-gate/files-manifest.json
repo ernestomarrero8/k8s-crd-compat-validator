@@ -1,0 +1,238 @@
+{
+  "base_commit": "3fa3d89ae29799f26b8526762ff01d2d9a30c0fd",
+  "branch": "dev",
+  "version": "0.6.0",
+  "tests_passed": 289,
+  "files": [
+    {
+      "path": "README.md",
+      "sha256": "49fc0d68391ee6fb47f7f088dda4270682303b484abcb15513c12d944f533580",
+      "bytes": 69205
+    },
+    {
+      "path": "batch.py",
+      "sha256": "e151c0a97b73db388f058d1eee05179e53640f06adfac9cdc084ebf12b660231",
+      "bytes": 5699
+    },
+    {
+      "path": "catalogs/operators/detectors.json",
+      "sha256": "bf9c59a7ff2446159e92fb506dad0dbfa04a89f9242fbdce36f3da97ddfa31cf",
+      "bytes": 9674
+    },
+    {
+      "path": "docs/support-policy-gate.md",
+      "sha256": "1f1d41fec75e1a3b7c2befb3fffebae51b83caad1a1abb9bdbd7c45fb5039bd1",
+      "bytes": 10521
+    },
+    {
+      "path": "fixtures/generate_support_gate_example.py",
+      "sha256": "a69a753a6dec14041941eeb114d5d2643a18449027acf4fd021e13cbf062cc82",
+      "bytes": 5777
+    },
+    {
+      "path": "pyproject.toml",
+      "sha256": "5b3963f046993ed04c9acd9ff42ae4dfa905366cf980ebe4dcc0a078020abfc9",
+      "bytes": 261
+    },
+    {
+      "path": "reports/examples/support-gate/consolidated.html",
+      "sha256": "2596fed5bb5f6052b400b8fb7351bcc5a6f175ea42b1d1bf2f7609d250ae5397",
+      "bytes": 729632
+    },
+    {
+      "path": "reports/examples/support-gate/consolidated.json",
+      "sha256": "64c3ec39d89a6548144b20322826c78a68b8044f29fbb71d1651d71171c3bf9c",
+      "bytes": 39798
+    },
+    {
+      "path": "reports/examples/support-gate/demo-different-admin/report.html",
+      "sha256": "6e6fdbfbab4fe5e9f96652181d4f57d43c606e622b0ed7c43442f350f7103885",
+      "bytes": 143434
+    },
+    {
+      "path": "reports/examples/support-gate/demo-different-admin/report.json",
+      "sha256": "f928933ff23e730c5940b4f82e11046aae7ac03a83572e5a90e4206ae75be574",
+      "bytes": 628801
+    },
+    {
+      "path": "reports/examples/support-gate/demo-different-admin/report.md",
+      "sha256": "ea8efde28c52ad80f74370a169891d9df32fb65c38793b51462b21f3c8023f7e",
+      "bytes": 132205
+    },
+    {
+      "path": "reports/examples/support-gate/demo-different/report.html",
+      "sha256": "b5aa5e7ac4e2b041a979ad017ef3f3f8a6427d34c45e105a2c223fc2c864736d",
+      "bytes": 144623
+    },
+    {
+      "path": "reports/examples/support-gate/demo-different/report.json",
+      "sha256": "ad575a7a454d7030ff91dcb898fa6dbaf7bee8adcd2015cec270c1592d04bcf5",
+      "bytes": 630382
+    },
+    {
+      "path": "reports/examples/support-gate/demo-different/report.md",
+      "sha256": "855e617e1ff86c736c0ccda6c32eeeeb0e5eba0a72bc3ce156764edd3addf348",
+      "bytes": 132765
+    },
+    {
+      "path": "reports/examples/support-gate/demo-match-admin/report.html",
+      "sha256": "64198951f494ba975a0cebbf9f507d89235623983f04ba084869313df1e6579d",
+      "bytes": 144617
+    },
+    {
+      "path": "reports/examples/support-gate/demo-match-admin/report.json",
+      "sha256": "92a2b0f77a2c486b9366e80d17c70e06799e9a987f36deef9ca7fe61c6ee4212",
+      "bytes": 629332
+    },
+    {
+      "path": "reports/examples/support-gate/demo-match-admin/report.md",
+      "sha256": "a5c9b20790c9c5deca7962502a118818d6bc9431ac78f28064b8af7054027ea8",
+      "bytes": 132316
+    },
+    {
+      "path": "reports/examples/support-gate/demo-match/report.html",
+      "sha256": "b3a7d34faa48d00a92c71625e4c05391e43153ecd19150fc9951171615a1c1b8",
+      "bytes": 144611
+    },
+    {
+      "path": "reports/examples/support-gate/demo-match/report.json",
+      "sha256": "145db04caedde4b8afd7f2ce3d635fe5ccb8aac5c7f9a28920c2a5ef30c479ef",
+      "bytes": 630362
+    },
+    {
+      "path": "reports/examples/support-gate/demo-match/report.md",
+      "sha256": "2b8fe7350d953ca4b854be3af0f11109f34d49bf3839d181aeaa5a8d92bb33d3",
+      "bytes": 132753
+    },
+    {
+      "path": "reports/examples/support-gate/demo-partial-admin/report.html",
+      "sha256": "eeb625be558a59a6ccd9bce2f86a71981845bc908f4e2a680eb1b5eedf0a352c",
+      "bytes": 141989
+    },
+    {
+      "path": "reports/examples/support-gate/demo-partial-admin/report.json",
+      "sha256": "e354787a3a5a32fdd156d64e6b247b60c62d0f8b20ddaf01e1b3d6fa6ac0206a",
+      "bytes": 212250
+    },
+    {
+      "path": "reports/examples/support-gate/demo-partial-admin/report.md",
+      "sha256": "3ca96cb076b5f0b7774c985a702372527cab6a4218cd761b83e3b8b5e90e2328",
+      "bytes": 44227
+    },
+    {
+      "path": "reports/examples/support-gate/demo-partial/report.html",
+      "sha256": "a75057f2e12233e8ef6db0057a0443727f11f75d8937c9b9b6e59885fd767b00",
+      "bytes": 146404
+    },
+    {
+      "path": "reports/examples/support-gate/demo-partial/report.json",
+      "sha256": "47c34bafff1beba71e11b648f42e08acfb4187a1a2d4611e9ce9c99687e10217",
+      "bytes": 640617
+    },
+    {
+      "path": "reports/examples/support-gate/demo-partial/report.md",
+      "sha256": "591458978f79de581f7801f7ca769eefefb335ad02ff0726b8ee54b6bab8b466",
+      "bytes": 133219
+    },
+    {
+      "path": "tests/test_platforms.py",
+      "sha256": "15b78e28b3146e7680de301be222fb2da8500fa6485b713c82a8d8aec84a40d9",
+      "bytes": 11894
+    },
+    {
+      "path": "tests/test_support_gate.py",
+      "sha256": "1ff73a6670b8d423705f706368be94eb710a027015807e06d9b7a9d7b4842ebe",
+      "bytes": 19799
+    },
+    {
+      "path": "validator/__init__.py",
+      "sha256": "124d45d41a4538dada7e8d7fbfc2fef137324992062b0d9dc9b3cb1bc7924544",
+      "bytes": 75
+    },
+    {
+      "path": "validator/azure_validator.py",
+      "sha256": "42b1181095cfee06ae9a67db83cbadd0a73e33de1c85dda8ac773300ff824c2f",
+      "bytes": 5523
+    },
+    {
+      "path": "validator/cli.py",
+      "sha256": "0691bf0064681ebdcfa36c29b8e0790df125b58c5aadda9c701cc760bb16e1ea",
+      "bytes": 14286
+    },
+    {
+      "path": "validator/collector.py",
+      "sha256": "9baf3114875cceb922cf3b6bb027492ebc90ccbd3f564f1de152e35aa0a5a9b1",
+      "bytes": 11120
+    },
+    {
+      "path": "validator/consolidated_report.py",
+      "sha256": "5ec59c4bb9d702027258ab4ff861ea9936646761a72ada642657e96dcebec961",
+      "bytes": 18277
+    },
+    {
+      "path": "validator/context_diff.py",
+      "sha256": "a95262d8218747a4a3f4bbcf49853708fa8edf544531681957b9337cca4caee1",
+      "bytes": 9172
+    },
+    {
+      "path": "validator/detection_status.py",
+      "sha256": "a35354d3220b464fbc59cb33f103bb24c429d541ce2c9398e30934ea3c9623af",
+      "bytes": 4048
+    },
+    {
+      "path": "validator/distribution_version.py",
+      "sha256": "679fbd9aa04ebb6f6a09b286e126ff2a7b731177dcabd306921e1ec7ae69fee8",
+      "bytes": 776
+    },
+    {
+      "path": "validator/platform_analyzer.py",
+      "sha256": "185469e00d7203ac6dfec4ec1c74656e67a1742b22701e84279a9f2ac9a5e328",
+      "bytes": 14818
+    },
+    {
+      "path": "validator/platform_catalog.py",
+      "sha256": "9ca8a15ba39d279647ae057f822d7576a86dda63ab0530a197567c0bf4bb3728",
+      "bytes": 14243
+    },
+    {
+      "path": "validator/platform_discovery.py",
+      "sha256": "d2fd253d0cb771466989dea11b75c66cfda42a7bf86f1b9dd6bec11567583f98",
+      "bytes": 17582
+    },
+    {
+      "path": "validator/platform_report.py",
+      "sha256": "22a4a148d210b77ad4ba2ffce1f005846d011f811c83db434ddfecafffdeaaf2",
+      "bytes": 9692
+    },
+    {
+      "path": "validator/product_link.py",
+      "sha256": "f9f63aff681129049c0b56d16d5f1a21abbcb482dea42b0e255fb200cb928c6e",
+      "bytes": 3187
+    },
+    {
+      "path": "validator/report_generator.py",
+      "sha256": "59df060af3785c5ee0b62c17cadefe646e6978efaeff78860149bef87d3dd9da",
+      "bytes": 10541
+    },
+    {
+      "path": "validator/support_evaluation.py",
+      "sha256": "5f421ef18b61be95dabcc55bd09343a471818912e0c0db6c6ca4dfb341f62c17",
+      "bytes": 5996
+    },
+    {
+      "path": "validator/version_resolver.py",
+      "sha256": "904bb19c925a73ec1ea6f455122f48eff4425420a6424205f3ddb8ad6bd010fa",
+      "bytes": 3119
+    },
+    {
+      "path": "validator/workload_evidence.py",
+      "sha256": "7a8ec705a7172fe85119ce234ccb33ce6f2c77b00722bee489a1037018fb3eb8",
+      "bytes": 8451
+    },
+    {
+      "path": "deliverables/support-policy-gate/verification.txt",
+      "sha256": "efea2be52bd9a97b61478926b157c9755240eb6bf94c539faafbed59740af92f",
+      "bytes": 1309
+    }
+  ]
+}

@@ -3,6 +3,28 @@ from html import escape
 import json
 
 
+def comparison_coverage(members):
+    affected, by_context, truncated = set(), {}, False
+    for entry, report in members:
+        sources = report.get("platform", {}).get("inventory_sources", []) if report else []
+        required = [s for s in sources if s.get("required")]
+        by_context[entry["context"]] = {s["source"]: s.get("items_scanned") for s in required}
+        if not required:
+            affected.add("inventory_metadata_unavailable")
+        for source in required:
+            if not source.get("completed") or source.get("inventory_complete") is False:
+                affected.add(source["source"])
+                truncated |= source.get("error") == "inventory_limit" or source.get("continuation_pending", False)
+    if not affected:
+        return None
+    result = {"reason": "inventory_truncated" if truncated else "inventory_incomplete", "affected_sources": sorted(affected), "examined_by_context": by_context}
+    if len(members) == 2 and len(affected) == 1:
+        source = next(iter(affected))
+        result["context_a_examined"] = by_context[members[0][0]["context"]].get(source)
+        result["context_b_examined"] = by_context[members[1][0]["context"]].get(source)
+    return result
+
+
 def compare_contexts(members, fingerprint):
     reports = {e["context"]: r for e, r in members if r}
     crds = {c: {r["name"]: r for r in report["crds"]} for c, report in reports.items()}
@@ -17,8 +39,8 @@ def compare_contexts(members, fingerprint):
     versions = {id_: {c: products[c][id_].get("versions") or ["UNKNOWN"] if id_ in products[c] else ["NOT_DETECTED"] for c in reports} for id_ in sorted(all_products)}
     versions = {id_: values for id_, values in versions.items() if len({tuple(v) for v in values.values()}) > 1}
     inventory = {c: report.get("platform", {}).get("inventory_sources", []) for c, report in reports.items()}
-    errors = {c: [{k: s.get(k) for k in ("source", "error", "required", "items_scanned")} for s in sources if not s.get("completed", True)] for c, sources in inventory.items()}
-    sources = set().union(*({s["source"] for s in values} for values in inventory.values()))
+    errors = {c: [{k: s.get(k) for k in ("source", "error", "required", "items_scanned")} for s in sources if s.get("required") and not s.get("completed", True)] for c, sources in inventory.items()}
+    sources = set().union(*({s["source"] for s in values if s.get("required")} for values in inventory.values()))
     changed_sources = sorted(source for source in sources if len({json.dumps(next((s for s in values if s["source"] == source), None), sort_keys=True) for values in inventory.values()}) > 1)
     result = {"crds": {"counts": {c: len(v) for c, v in crds.items()}, "only_in": {c: sorted(set(v) - common_crds) for c, v in crds.items()}, "changed": crd_changes},
         "products": {"counts": {c: len(v) for c, v in products.items()}, "only_in": {c: sorted(names[n] for n in set(v) - common_products) for c, v in products.items()}, "changed": product_changes},
@@ -35,8 +57,10 @@ def compare_contexts(members, fingerprint):
     for field, label in (("global_findings", "Hallazgos globales"), ("pluto", "Pluto"), ("readiness", "Readiness"), ("validator", "Resultado del validador")):
         if len({fingerprint({field: r.get(field)}) for r in reports.values()}) > 1:
             result["areas"].append(label)
+    if len({e["exit_code"] for e, _ in members}) > 1:
+        result["areas"].append("Exit codes de ejecución")
     if not result["areas"]:
-        result["areas"].append("Metadata/evidencia o códigos de ejecución; consultar resultados por contexto")
+        result["areas"].append("Sin diferencias semánticas concluyentes; revisar cobertura antes de afirmar igualdad")
     return result
 
 
@@ -70,6 +94,7 @@ def technical_causes(entry, report):
             "forbidden": "Revisar RBAC de lectura para esta fuente con el contexto indicado.",
             "unauthorized": "Revisar autenticación del contexto.", "timeout": "Revisar conectividad y --timeout.",
             "context_timeout": "Revisar --context-timeout y console.txt.", "report_unavailable": "Consultar console.txt y el JSON de este contexto.",
+            "cluster_timeout": "Se agotó --cluster-timeout; revisar el presupuesto global y las consultas pendientes.",
             "coverage_below_threshold": "Completar la evidencia pendiente indicada por el reporte; no asumir incompatibilidad."}.get(reason, "Revisar la fuente y su diagnóstico en el detalle del contexto; no publicar stderr ni credenciales.")
         return {"context": entry["context"], "source": source, "reason": reason, "items_scanned": scanned, "action": action}
     if not report:

@@ -19,7 +19,9 @@ def product_finding(product):
                   "reviewed_on": sorted({f["evidence"]["reviewed_on"] for f in product["findings"] if f["evidence"].get("reviewed_on")}),
                   "target": product["findings"][0]["evidence"].get("target"), "product_registry_ref": product["id"],
                   "score_weight": 0, "counted_in": {"aks": "aks_addons", "storage": "storage"}.get(product.get("category"), "operators"),
-                  "support_status": product["status"], "support_findings": [f["rule_id"] for f in product["findings"]]},
+                  "support_status": product["status"], "support_policy_status": product.get("support_status", product["status"]),
+                  "technical_status": product.get("technical_status", "NOT_TESTED"),
+                  "support_findings": [f["rule_id"] for f in product["findings"]]},
         recommendation="Consultar el detalle único de la matriz del producto; resolver por separado los defectos técnicos del CRD.",
         limitations=["El soporte del producto no prueba que la definición, conversión o datos persistidos del CRD sean correctos."])
 
@@ -33,7 +35,8 @@ def annotate(result, product):
     if product is None:
         return result
     result["product_compatibility"] = {"product": product["product"], "versions": product["versions"], "status": product["status"],
-                                      "sources": sorted({f["source"] for f in product["findings"]})}
+                                      "sources": sorted({f["source"] for f in product["findings"]}),
+                                      "support_status": product.get("support_status", product["status"]), "technical_status": product.get("technical_status", "NOT_TESTED")}
     # Risk concerns actual upgrade findings. Coverage limitations remain in findings/status.
     technical_risks = [f for f in result["findings"] if f["category"] != "operator" and f["status"] in ("WARN", "FAIL", "ERROR")]
     result["upgrade_risk"] = "INFO" if product["status"] == "PASS" and not technical_risks else result["severity"]

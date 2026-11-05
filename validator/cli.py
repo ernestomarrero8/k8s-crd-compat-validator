@@ -16,6 +16,7 @@ from .platform_analyzer import analyze as analyze_platform
 from .readiness import score, load_config
 from .cluster_identity import collect_identity
 from .product_link import owner_result, annotate
+from .platform_discovery import DEFAULT_PLATFORM_LIMIT
 
 
 def positive(value):
@@ -44,7 +45,8 @@ def parser():
     p.add_argument("--operator-catalog", type=Path, help="Matriz de soporte revisada con fuentes y versiones exactas")
     p.add_argument("--platform-catalog", "--support-catalog", type=Path, help="Directorio de matrices oficiales de plataformas (reemplaza las incluidas)")
     p.add_argument("--platform-input", type=Path, help="Snapshot JSON de inventario de plataformas; permite análisis offline")
-    p.add_argument("--platform-limit", type=positive, default=2000, help="Máximo de objetos examinados por fuente de plataformas")
+    p.add_argument("--platform-limit", type=positive, default=DEFAULT_PLATFORM_LIMIT, help="Máximo de seguridad por fuente (default 20000); Pods se leen en páginas de 500")
+    p.add_argument("--cluster-timeout", type=positive, default=1800, help="Presupuesto total de lectura LIVE por clúster, segundos")
     p.add_argument("--full-platform-evidence", action="store_true", help="Conservar en JSON toda la evidencia permitida del inventario examinado; el HTML usa resúmenes de Istio")
     p.add_argument("--detectors-path", type=Path, help="Aliases explícitos de repositorios/charts para productos conocidos")
     p.add_argument("--readiness-config", type=Path, help="Configuración readiness JSON o YAML de escalares documentados")
@@ -100,7 +102,7 @@ def main(argv=None):
             cluster = "offline:" + args.input.name
             crds = crd_items(read_json(args.input))
         else:
-            collector = Collector(args.context, args.timeout, args.max_queries)
+            collector = Collector(args.context, args.timeout, args.max_queries, total_timeout=args.cluster_timeout)
             cluster = collector.current_context()
             current = collector.version()
             if declared_current and declared_current != current:
@@ -118,7 +120,7 @@ def main(argv=None):
         if args.target_context:
             if args.target_context == cluster:
                 raise ValueError("--target-context debe ser distinto del contexto de origen.")
-            target_collector = Collector(args.target_context, args.timeout, args.max_queries)
+            target_collector = Collector(args.target_context, args.timeout, args.max_queries, total_timeout=collector.remaining_timeout(args.cluster_timeout))
             # A version mismatch aborts: observations of another version cannot validate the requested target.
             detected = target_collector.version()
             if detected != target:
@@ -149,7 +151,13 @@ def main(argv=None):
                 print(f"CRD {len(results)}/{len(crds)}: {result['status']} ({len(result['findings'])} hallazgos)", file=sys.stderr)
         identity = collect_identity(collector, platform, cluster)
         queries = (collector.queries if collector else 0) + (target_collector.queries if target_collector else 0)
-        pluto_result, pluto_finding = pluto.run(cluster, target, args.pluto_timeout, offline=bool(args.input))
+        try:
+            pluto_timeout = collector.remaining_timeout(args.pluto_timeout) if collector else args.pluto_timeout
+            pluto_result, pluto_finding = pluto.run(cluster, target, pluto_timeout, offline=bool(args.input))
+        except CollectionError:
+            pluto_result = {"status": "ERROR", "executed": False, "exit_code": None, "stdout": "", "command": [],
+                "message": "Pluto no se inició: se agotó el timeout global del clúster."}
+            pluto_finding = finding("CLUSTER-TIMEOUT", "execution", "ERROR", pluto_result["message"], evidence={"error_code": "cluster_timeout"})
         global_findings.append(pluto_finding)
         report = build_report(cluster, current, target, path, results, global_findings, queries, args.target_context)
         report["pluto"] = pluto_result
@@ -166,12 +174,15 @@ def main(argv=None):
         report["summary"]["crds_linked_to_product"] = sum("product_compatibility" in r for r in results)
         report["summary"]["crds_without_product"] = sum("product_compatibility" not in r for r in results)
         report["summary"]["platform_states"] = {s: sum(p["status"] == s for p in platform["products"]) for s in STATES}
+        report["summary"]["support_policy_blocks"] = sum(p.get("support_status") == "FAIL_SUPPORT_POLICY" for p in platform["products"])
+        report["summary"]["technical_crd_failures"] = sum(c.get("technical_failure_demonstrated", False) for c in report["crds"])
         report["knowledge"] = {"coverage_catalog_version": coverage.data["catalog_version"], "coverage_sha256": coverage.sha256, "rule_catalogs": engine.provenance()}
         written = write_reports(report, args.output, "markdown" if args.format == "md" else args.format)
         print(f"k8s-crd-compat-validator {__version__} | Kubernetes {current} -> {target} | CRDs: {len(results)} | Estado: {report['overall_status']}")
         print(" | ".join(f"{s}: {n}" for s, n in report["summary"]["states"].items()))
         print(f"Plataformas: {len(platform['products'])} | Readiness: {report['readiness']['score']}/100 | {report['readiness']['decision']}")
         print(f"Cobertura de evidencia: {report['readiness']['evidence_coverage']}% | Método de score: {report['readiness']['scoring_version']}")
+        print(f"Bloqueos de soporte: {report['summary']['support_policy_blocks']} | Defectos técnicos de CRDs: {report['summary']['technical_crd_failures']}")
         print("PASS acredita comprobaciones realizadas; no garantiza compatibilidad completa.")
         for file in written:
             print(f"Reporte: {file.resolve()}")

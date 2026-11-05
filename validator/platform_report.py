@@ -14,6 +14,7 @@ def product_evidence(product):
         "Gateway Pods por versión": summary.get("gateway_pods_by_version", {}),
         "Data plane": summary.get("data_plane", {}), "Helm releases": summary.get("helm_releases", []),
         "inventory_errors": summary.get("inventory_errors", []),
+        "optional_sources_unavailable": summary.get("optional_sources_unavailable", []),
         "detalle": "El JSON conserva la evidencia disponible; --full-platform-evidence conserva todos los objetos permitidos del inventario examinado."}
 
 
@@ -23,14 +24,29 @@ def html(report):
     esc = lambda x: escape(str(x), quote=True)
     platform, readiness = report["platform"], report["readiness"]
     rows = []
+    support_details = []
     for product in platform["products"]:
         origins = ", ".join(sorted({e["from"] for e in product["evidence"]}))
         versions = ", ".join(product.get("detected_versions") or product.get("resolved_versions") or product["versions"]) or "UNKNOWN"
         sources = sorted({f["source"] for f in product["findings"]})
         links = " ".join(f'<a href="{esc(source)}" rel="noreferrer">Fuente oficial</a>' for source in sources if safe_source(source))
+        current_eval = product.get("current_kubernetes_evaluation", {})
+        target_eval = product.get("target_kubernetes_evaluation", {})
+        result_label = product.get("support_status", product["status"])
+        if product.get("support_status"):
+            runtime = current_eval.get("observed_runtime", "NOT_CONFIRMED")
+            dimensions = [("Estado observado actual", f'{runtime} en Kubernetes {report["current_version"]}'),
+                ("Soporte actual", current_eval.get("support_status", "UNKNOWN")),
+                (f'Soporte objetivo {report["target_version"]}', target_eval.get("support_status", "UNKNOWN")),
+                ("Validación técnica del producto en el objetivo", product.get("technical_status", "NOT_TESTED")),
+                ("Incompatibilidad técnica demostrada", "Sí" if product.get("technical_incompatibility_demonstrated") else "No; NOT_TESTED"),
+                ("Decisión por política de soporte del producto", product.get("decision", "ATTENTION_REQUIRED"))]
+            support_details.append('<details><summary>' + esc(product["product"]) + ' — soporte, runtime y validación técnica</summary><table><thead><tr><th>Dimensión</th><th>Resultado</th></tr></thead><tbody>' + "".join(
+                f'<tr><td>{esc(label)}</td><td>{esc(value)}</td></tr>' for label, value in dimensions) + '</tbody></table><p>' + esc(product["support_explanation"]) + '</p></details>')
         rows.append(f'<tr><td>{esc(product["product"])}<br>{esc(product["namespace"])}</td><td>{esc(versions)}<br><small>{esc(product.get("confidence", "—"))}</small></td><td>{esc(origins)}</td>'
                     f'<td>{esc(product["compatibility"])}' + (f'<br>{esc(product["reason"])}' if product.get("reason") else '')
-                    + f'</td><td>{esc(product["status"])}</td><td>{links}</td><td>{esc(product.get("detection_status", "—"))}<br>Controlador activo confirmado: {esc(product.get("active_controller_confirmed", False))}</td></tr>')
+                    + f'</td><td>{esc(result_label)}</td><td>{links}</td><td>{esc(product.get("detection_status", "—"))}<br>Controlador activo confirmado: {esc(product.get("active_controller_confirmed", False))}</td>'
+                    + f'<td>{esc(current_eval.get("support_status", "No evaluado en este reporte"))}</td><td>{esc(product.get("technical_status", "NOT_TESTED"))}</td><td>{esc(product.get("managed_by", "Gestión no verificada"))}</td></tr>')
     categories = "".join(f'<tr><td>{esc(key)}</td><td>{esc(value["weight"])}%</td><td>{esc(value["status"])}</td><td>{esc(value["earned_points"])}</td>'
                          f'<td>{esc(value.get("evidence_coverage", "—"))}%</td><td>{esc(json.dumps(value.get("counts", {})))}</td></tr>'
                          for key, value in readiness["categories"].items())
@@ -38,6 +54,8 @@ def html(report):
                      + esc(json.dumps({"detection_status": p.get("detection_status"), "active_controller_confirmed": p.get("active_controller_confirmed"),
                                        "detected_versions": p.get("detected_versions", p["versions"]), "confidence": p.get("confidence"),
                                        "normalized_versions": p.get("normalized_versions", []), "resolved_versions": p.get("resolved_versions", []), "all_observed_versions": p["versions"],
+                                       "version_details": p.get("version_details", []), "support_status": p.get("support_status"),
+                                       "current_kubernetes_evaluation": p.get("current_kubernetes_evaluation"), "target_kubernetes_evaluation": p.get("target_kubernetes_evaluation"),
                                        "resolution_sources": p.get("resolution_sources", []), "mixed_versions": p.get("version_conflict", False),
                                        "catalog_lookup": [html_evidence(f["evidence"]).get("catalog_lookup") for f in p["findings"]],
                                        "reason": p.get("reason"), "managed_by": p.get("managed_by"),
@@ -52,9 +70,9 @@ def html(report):
         f'<p>{esc(readiness["method"])}</p><p>{esc(readiness["limitation"])}</p></section>'
         '<section><h2>Cluster Platform Compatibility</h2><h3>OPERATOR COMPATIBILITY ANALYSIS</h3>'
         f'<p>Objetivo Kubernetes/AKS: {esc(report["target_version"])}. Una versión de imagen o Helm no demuestra el binario ejecutado ni soporte de la distribución administrada.</p>'
-        '<div style="overflow-x:auto"><table><thead><tr><th>Producto / namespace</th><th>Versiones observadas</th><th>Detectado desde</th><th>Compatibilidad objetivo</th><th>Resultado</th><th>Evidencia</th><th>Detección</th></tr></thead><tbody>'
+        '<div style="overflow-x:auto"><table><thead><tr><th>Producto / namespace</th><th>Versiones observadas</th><th>Detectado desde</th><th>Soporte objetivo</th><th>Resultado de soporte</th><th>Evidencia</th><th>Detección</th><th>Soporte actual</th><th>Validación técnica</th><th>Gestión</th></tr></thead><tbody>'
         + "".join(rows) + '</tbody></table></div>' + ('<p>Sin productos detectados dentro del inventario disponible; consultar cobertura y errores de descubrimiento.</p>' if not rows else '')
-        + detail + diagnostics + '<h3>Fuentes del inventario</h3><pre>' + esc(json.dumps(platform.get("inventory_sources", []), ensure_ascii=False, indent=2))
+        + "".join(support_details) + detail + diagnostics + '<h3>Fuentes del inventario</h3><pre>' + esc(json.dumps(platform.get("inventory_sources", []), ensure_ascii=False, indent=2))
         + '</pre><h3>AKS Platform Compatibility</h3><pre>' + esc(json.dumps(platform["aks"], ensure_ascii=False, indent=2))
         + '</pre><h3>Cobertura de soporte por producto</h3><pre>' + esc(json.dumps(platform.get("support_coverage", {}), ensure_ascii=False, indent=2))
         + '</pre><h3>Catálogos de plataformas</h3><pre>' + esc(json.dumps(platform["catalog"], ensure_ascii=False, indent=2)) + '</pre></section>')

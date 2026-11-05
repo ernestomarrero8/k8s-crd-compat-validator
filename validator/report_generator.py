@@ -12,12 +12,18 @@ from . import __version__
 from .workload_evidence import html_evidence
 
 
+def technical_crd_status(crd):
+    return max((f["status"] for f in crd["findings"] if f["category"] != "operator" and f["rule_id"] != "PRODUCT_SUPPORT"), key=STATES.index, default="UNKNOWN")
+
+
 def build_report(cluster, current, target, path, crds, global_findings, queries=0, target_context=None):
+    crds = [c | {"technical_status": technical_crd_status(c),
+        "technical_failure_demonstrated": any(f["status"] == "FAIL" and f["category"] != "operator" and f["rule_id"] != "PRODUCT_SUPPORT" for f in c["findings"])} for c in crds]
     all_findings = [f for c in crds for f in c["findings"]] + [f.to_dict() for f in global_findings]
     counts = Counter(c["status"] for c in crds)
     risk_counts = Counter(f["severity"] for f in all_findings if f["status"] in ("WARN", "FAIL", "ERROR"))
     states = [f["status"] for f in all_findings]
-    return {"schema_version": "1.5", "tool": "k8s-crd-compat-validator", "tool_version": __version__,
+    return {"schema_version": "1.6", "tool": "k8s-crd-compat-validator", "tool_version": __version__,
             "analyzed_at": datetime.now(timezone.utc).isoformat(), "cluster": cluster,
             "current_version": str(current), "target_version": str(target), "upgrade_path": path,
             "target_context": target_context, "read_only": True, "kubectl_queries": queries,
@@ -70,9 +76,9 @@ def markdown(report):
 def html(report):
     def esc(v):
         return escape(str(v), quote=True)
-    rows = "".join(f"<tr><td>{esc(c['name'])}</td><td>{c['status']}</td><td>{c['severity']}</td>"
+    rows = "".join(f"<tr><td>{esc(c['name'])}</td><td>{technical_crd_status(c)}</td><td>{c['severity']}</td>"
                    f"<td>{esc(c.get('product_compatibility', {}).get('product', '—'))}<br>{esc(', '.join(c.get('product_compatibility', {}).get('versions', [])))}</td>"
-                   f"<td>{esc(c.get('product_compatibility', {}).get('status', '—'))}</td><td>{esc(c.get('upgrade_risk', c['severity']))}</td></tr>" for c in report["crds"])
+                   f"<td>{esc(c.get('product_compatibility', {}).get('support_status', c.get('product_compatibility', {}).get('status', '—')))}</td><td>{esc(c.get('upgrade_risk', c['severity']))}</td></tr>" for c in report["crds"])
     summary = " · ".join(f"{s}: {n}" for s, n in report["summary"]["states"].items())
     risks = " · ".join(f"{s}: {n}" for s, n in report["summary"]["risks_by_severity"].items())
     scan = report.get("pluto", {})
@@ -101,7 +107,7 @@ details{background:white;border:1px solid #bccbdb;border-radius:6px;margin:12px 
 @media print{body{background:white;margin:0;max-width:none}details{break-inside:avoid}}</style><main>""" + (
         f"<h1>Kubernetes CRD Compatibility Validator</h1><p>{esc(report['cluster'])} · {report['current_version']} → {report['target_version']}</p>"
         f"<p>{esc(report['analyzed_at'])} · Estado general: <b>{report['overall_status']}</b></p>"
-        f"<p>{report['summary']['total_crds']} CRDs · {esc(summary)}</p><p>Riesgos por severidad: {esc(risks)}</p>"
+        f"<p>{report['summary']['total_crds']} CRDs · Estados combinados legados (incluyen soporte): {esc(summary)}</p><p>Riesgos por severidad: {esc(risks)}</p>"
         + platform_html(report) +
         "<h2>Alcance y limitaciones</h2><ul>" + "".join(f"<li>{esc(x)}</li>" for x in report["limitations"]) + "</ul>"
         "<table><thead><tr><th>CRD afectado</th><th>Estado técnico / cobertura</th><th>Severidad</th><th>Producto / versiones</th><th>Soporte producto</th><th>Riesgo upgrade</th></tr></thead><tbody>" + rows + "</tbody></table>"

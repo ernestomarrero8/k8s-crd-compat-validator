@@ -126,13 +126,13 @@ class PlatformCatalog:
             if legacy in mapping and provider not in mapping:
                 mapping[provider] = mapping[legacy]
 
-    def evaluate(self, product, version, target, source, today=None):
+    def evaluate(self, product, version, target, source, today=None, *, raw_version=None):
         today = today or date.today()
         observed, target_release = release(version, product), release(str(target))
         rows = self.records.get(product, [])
         records = [r for r in rows if observed and in_range(observed, r["version"], r["version"])]
         matched_selectors = [r["version"] for r in records]
-        exact_vendor = [r for r in records if version in r.get("vendor_versions", [])]
+        exact_vendor = [r for r in records if (raw_version or version) in r.get("vendor_versions", [])]
         if exact_vendor:
             records = exact_vendor
         if records:
@@ -162,6 +162,11 @@ class PlatformCatalog:
                 return [result("VERSION_FORMAT_UNVERIFIED", "UNKNOWN", "Versión explícita detectada; su sufijo/formato no tiene una regla de normalización acreditada para este producto.")]
             return [result("VERSION_UNKNOWN", "UNKNOWN", "No se determinó una versión de producto inequívoca; un chart, digest o tag mutable no demuestra versión efectiva.")]
         if len(records) != 1:
+            if product == "Gatekeeper" and not rows and product in self.product_files:
+                item = result("NO_OFFICIAL_NUMERIC_MATRIX", "UNKNOWN",
+                    f"Gatekeeper {version} fue detectado; la política oficial de releases no proporciona una matriz numérica revisada que acredite Kubernetes {target} para este binario.")
+                item.evidence["legacy_rule_id"] = "NO_SUPPORT_DATA"
+                return [item]
             if product == "Secrets Store CSI Driver" and not rows and product in self.product_files:
                 item = result("NO_OFFICIAL_KUBERNETES_MATRIX", "UNKNOWN",
                     f"La versión {version} fue detectada, pero no se encontró en las fuentes oficiales revisadas una matriz numérica verificable que la vincule con Kubernetes {target}.")
@@ -182,7 +187,9 @@ class PlatformCatalog:
         elif in_range(target_release, record["min_kubernetes"], record["max_kubernetes"]):
             findings.append(result("COMPATIBLE", "PASS", "Objetivo dentro del rango documentado; consultar si la evidencia acredita soporte o pruebas upstream.", record))
         elif record["exclusive"]:
-            findings.append(result("NOT_COMPATIBLE", "FAIL", "Objetivo fuera del rango de soporte explícito del proveedor; no se recomienda este upgrade con la versión instalada.", record))
+            item = result("NOT_COMPATIBLE", "FAIL", "El objetivo está fuera de la matriz oficial: bloqueo por política de soporte (FAIL_SUPPORT_POLICY), no una falla técnica demostrada.", record)
+            item.evidence.update(failure_domain="SUPPORT_POLICY", support_status="FAIL_SUPPORT_POLICY", technical_status="NOT_TESTED")
+            findings.append(item)
         else:
             findings.append(result("NO_SUPPORT_DATA", "UNKNOWN", "Objetivo fuera de las versiones probadas; esto no demuestra incompatibilidad.", record))
         return findings

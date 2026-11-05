@@ -1,5 +1,6 @@
 """AKS identity from node provider metadata; never guess from a context name."""
 import re
+from time import monotonic
 from .platform_discovery import command_json
 from .models import finding
 
@@ -7,22 +8,25 @@ SOURCE = "https://learn.microsoft.com/en-us/azure/aks/supported-kubernetes-versi
 ADDONS = {"azurepolicy": "azure-policy", "omsagent": "ama", "azureKeyvaultSecretsProvider": "azure-keyvault", "ingressApplicationGateway": "agic"}
 
 
-def collect_aks(data, timeout=30):
+def collect_aks(data, timeout=30, deadline=None):
+    def command(args):
+        remaining = min(timeout, deadline - monotonic()) if deadline is not None else timeout
+        return command_json(args, remaining) if remaining > 0 else (None, "cluster_timeout")
     providers = [n.get("spec", {}).get("providerID", "") for n in data.get("nodes", [])]
     identities = {tuple(m.groups()) for p in providers if (m := re.match(r"(?i)^azure:///subscriptions/([^/]+)/resourceGroups/([^/]+)/", p))}
     if len(identities) != 1 or not providers or any(not re.match(r"(?i)^azure:///subscriptions/([^/]+)/resourceGroups/([^/]+)/", p) for p in providers):
         return None, "No hay una identidad Azure única verificable mediante los nodos."
     subscription, node_group = next(iter(identities))
-    clusters, error = command_json(["az", "aks", "list", "--subscription", subscription, "--query",
-        "[].{name:name,resourceGroup:resourceGroup,nodeResourceGroup:nodeResourceGroup}", "-o", "json"], timeout)
+    clusters, error = command(["az", "aks", "list", "--subscription", subscription, "--query",
+        "[].{name:name,resourceGroup:resourceGroup,nodeResourceGroup:nodeResourceGroup}", "-o", "json"])
     if error or not isinstance(clusters, list):
         return None, "Azure CLI no pudo obtener metadata de AKS; no se infiere identidad desde el contexto."
     matches = [c for c in clusters if str(c.get("nodeResourceGroup", "")).lower() == node_group.lower()]
     if len(matches) != 1:
         return None, "No se pudo asociar inequívocamente el node resource group a un AKS."
     cluster = matches[0]
-    value, error = command_json(["az", "aks", "show", "--subscription", subscription, "--resource-group", cluster["resourceGroup"],
-                                "--name", cluster["name"], "-o", "json"], timeout)
+    value, error = command(["az", "aks", "show", "--subscription", subscription, "--resource-group", cluster["resourceGroup"],
+                                "--name", cluster["name"], "-o", "json"])
     if error or not isinstance(value, dict) or str(value.get("nodeResourceGroup", "")).lower() != node_group.lower():
         return None, "No se pudo verificar la metadata AKS del clúster de origen."
     return value, None

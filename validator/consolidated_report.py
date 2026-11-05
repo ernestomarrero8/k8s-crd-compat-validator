@@ -11,7 +11,7 @@ from .models import STATES, SEVERITIES
 from .report_generator import html
 from .rule_engine import safe_source
 from .version import Version
-from .context_diff import compare_contexts, diff_html, technical_causes
+from .context_diff import compare_contexts, diff_html, technical_causes, comparison_coverage
 
 
 def load_report(path, context):
@@ -49,11 +49,16 @@ def _identity(report, context):
 
 
 def _fingerprint(report):
-    volatile = {"cluster", "context", "analyzed_at", "analyzed_on", "kubectl_queries", "cluster_identity_evidence"}
+    volatile = {"cluster", "context", "analyzed_at", "analyzed_on", "kubectl_queries", "cluster_identity_evidence",
+        "optional_sources_unavailable", "detection_sources", "version_candidates", "evidence_scope"}
     def canonical(value):
         if isinstance(value, dict):
-            return {k: canonical(v) for k, v in value.items() if k not in volatile}
+            ignored = volatile
+            if "id" in value and "product" in value and "findings" in value:
+                ignored = volatile | {"evidence", "resolution_sources", "resolution_confidences", "resolved_versions", "confidence", "detected_versions", "detected_version"}
+            return {k: canonical(v) for k, v in value.items() if k not in ignored and not (k == "limitations" and isinstance(v, list) and v == ["Helm inventory unavailable"])}
         if isinstance(value, list):
+            value = [v for v in value if not (isinstance(v, dict) and (v.get("required") is False and "source" in v and "completed" in v or v.get("source") in ("Helm", "helm", "istioctl version") and "reason" in v))]
             if "--kube-context" in value:
                 index = value.index("--kube-context")
                 value = value[:index] + value[index + 2:]
@@ -81,13 +86,19 @@ def _groups(entries):
     for group in groups.values():
         members = group["members"]
         group["contexts"] = [e["context"] for e, _ in members]
-        group["data_mismatch"] = len({_fingerprint(r) for _, r in members if r}) > 1 or len({e["exit_code"] for e, _ in members}) > 1
+        difference = len({_fingerprint(r) for _, r in members if r}) > 1 or len({e["exit_code"] for e, _ in members}) > 1
+        incomplete = comparison_coverage(members) if len(members) > 1 else None
+        group["comparison_status"] = "SINGLE_CONTEXT" if len(members) == 1 else "CONTEXT_COMPARISON_INCONCLUSIVE" if incomplete else "CONTEXT_DATA_MISMATCH" if difference else "MATCH"
+        group["comparison_evidence"] = incomplete
+        group["data_difference_observed"] = difference
+        group["data_mismatch"] = difference and not incomplete
     return list(groups.values())
 
 
 def blocking_reasons(report):
     reasons = []
     seen = set()
+    products = {p["product"]: p for p in report.get("platform", {}).get("products", [])}
     groups = [(None, report["global_findings"])] + [(c["name"], c["findings"]) for c in report["crds"]]
     for owner, findings in groups:
         for f in findings:
@@ -98,11 +109,15 @@ def blocking_reasons(report):
             version = evidence.get("installed_version", "")
             prefix = f"{product} {version}".strip() if product else owner
             description = (prefix + " — " if prefix else "") + f["description"]
+            if f["rule_id"] == "NOT_COMPATIBLE" and products.get(product, {}).get("support_explanation"):
+                description = products[product]["support_explanation"]
             key = (f["rule_id"], f["status"], description)
             if key in seen:
                 continue
             seen.add(key)
-            reasons.append({"rule_id": f["rule_id"], "status": f["status"], "severity": f["severity"], "description": description})
+            domain = evidence.get("failure_domain") or ("SUPPORT_POLICY" if f["category"] in ("operator", "operator_compatibility") and f["status"] == "FAIL" else "TECHNICAL")
+            reasons.append({"rule_id": f["rule_id"], "status": f["status"], "severity": f["severity"], "description": description,
+                "failure_domain": domain, "result_type": "FAIL_SUPPORT_POLICY" if domain == "SUPPORT_POLICY" and f["status"] == "FAIL" else "FAIL_TECHNICAL" if f["status"] == "FAIL" else f["status"]})
     severity = {"CRITICAL": 0, "HIGH": 1, "MEDIUM": 2, "LOW": 3, "UNKNOWN": 4, "INFO": 4}
     return sorted(reasons, key=lambda r: (0 if r["status"] == "FAIL" else 1, severity.get(r["severity"], 4)))
 
@@ -117,8 +132,8 @@ def consolidate(entries, output):
     for index, group in enumerate(grouped, 1):
         entry, report = group["members"][0]
         context, code = entry["context"], entry["exit_code"]
-        context_diff = compare_contexts(group["members"], _fingerprint) if group["data_mismatch"] else None
-        code = 2 if group["data_mismatch"] or any(e["exit_code"] not in (0, 1) for e, _ in group["members"]) else max(e["exit_code"] for e, _ in group["members"])
+        context_diff = compare_contexts(group["members"], _fingerprint) if group["comparison_status"] in ("CONTEXT_DATA_MISMATCH", "CONTEXT_COMPARISON_INCONCLUSIVE") else None
+        code = 2 if context_diff or any(e["exit_code"] not in (0, 1) for e, _ in group["members"]) else max(e["exit_code"] for e, _ in group["members"])
         fragment = html(report).partition("<main>")[2].rpartition("</main>")[0] if report else ""
         state = report["overall_status"] if report else "ERROR"
         if code not in (0, 1):
@@ -141,35 +156,44 @@ def consolidate(entries, output):
             position = next((i for i, r in enumerate(reasons) if r["status"] != "FAIL"), len(reasons))
             reasons.insert(position, {"rule_id": "CONTEXT_DATA_MISMATCH", "status": "ERROR", "severity": "HIGH",
                 "description": "CONTEXT_DATA_MISMATCH: datos distintos entre contextos de una misma identidad; revisar todos los detalles."})
+        elif group["comparison_status"] == "CONTEXT_COMPARISON_INCONCLUSIVE":
+            reasons.append({"rule_id": "CONTEXT_COMPARISON_INCONCLUSIVE", "status": "UNKNOWN", "severity": "INFO",
+                "description": "Inventario incompleto: los contextos no pueden compararse de forma concluyente; no se afirma discrepancia del clúster."})
         if state == "ERROR":
             readiness = "BLOCKED" if any(r["status"] == "FAIL" for r in reasons) else "INCOMPLETE"
         failed = [p["product"] for p in report.get("platform", {}).get("products", []) if any(f["status"] == "FAIL" for f in p["findings"])] if report else []
         unknown = [p["product"] for p in report.get("platform", {}).get("products", []) if any(f["status"] == "UNKNOWN" for f in p["findings"])] if report else []
+        managed_unknown = [p["product"] for p in report.get("platform", {}).get("products", []) if p.get("managed_by") == "AKS" and p["product"] in unknown] if report else []
+        managed_unexposed = [p["product"] for p in report.get("platform", {}).get("products", []) if p["product"] in managed_unknown and (not p["versions"] or p["versions"] == ["MANAGED"])] if report else []
+        third_party_unknown = [p for p in unknown if p not in managed_unknown]
         clusters.append({k: v for k, v in group.items() if k != "members"} | {"current_version": current, "target_version": target,
             "pluto": {"status": pluto, "exit_code": pluto_exit, "exit_code_origin": "pluto_report" if pluto_exit is not None else "unavailable"},
-            "validator": {"status": state, "exit_code": code, "exit_code_origin": "consolidation" if group["data_mismatch"] else "validator_process"},
+            "validator": {"status": state, "exit_code": code, "exit_code_origin": "consolidation" if context_diff else "validator_process"},
             "compatibility_score": score, "evidence_coverage": evidence_coverage, "decision": readiness,
             "context_diff": context_diff,
             "products_fail": failed, "products_unknown": unknown, "blocking_reasons": reasons,
+            "third_party_unknown": third_party_unknown, "aks_managed_unknown": managed_unknown, "aks_managed_unexposed": managed_unexposed,
             "context_results": [{"context": e["context"], "validator_exit": e["exit_code"], "pluto": r.get("pluto", {}) if r else None} for e, r in group["members"]]})
         esc = lambda v: escape(str(v), quote=True)
         if state == "ERROR":
             causes = [cause for member, value in group["members"] for cause in technical_causes(member, value)]
             if context_diff:
-                causes.append({"source": "context_comparison", "reason": "CONTEXT_DATA_MISMATCH", "context": context,
+                causes.append({"source": "context_comparison", "reason": group["comparison_status"], "context": context,
                     "action": "Revisar las diferencias de CRDs, productos, versiones y consultas que se muestran debajo."})
             technical_errors.append({"cluster": context, "contexts": group["contexts"], "causes": causes,
                 "context_diff": context_diff, "detail_anchor": f"cluster-{index}"})
         rows.append(f'<tr><td><a href="#cluster-{index}">{esc(context)}</a></td><td>{esc(current)} → {esc(target)}</td>'
                     f'<td>{esc(count)}</td><td class="{state}">{state}</td><td>{esc(pluto)}</td><td>{esc(pluto_exit if pluto_exit is not None else "—")}</td>'
                     f'<td>{esc(state)}</td><td>{esc(code)}</td><td>{esc(score if score is not None else "—")}/100</td><td>{esc(evidence_coverage)}%</td><td>{esc(readiness)}</td>'
-                    f'<td>{esc(reasons[0]["description"] if reasons else "Sin bloqueos documentados")}</td><td>{esc(", ".join(failed) or "—")}</td><td>{esc(", ".join(unknown) or "—")}</td>'
+                    f'<td>{esc(reasons[0]["description"] if reasons else "Sin bloqueos documentados")}</td><td>{esc(", ".join(failed) or "—")}</td><td>{esc(", ".join(third_party_unknown) or "—")}</td>'
+                    f'<td>{esc(", ".join(managed_unknown) or "—")}<br>Sin versión expuesta: {esc(", ".join(managed_unexposed) or "—")}</td>'
                     f'<td>Contextos asociados: {len(group["contexts"])}<br>{esc(", ".join(group["contexts"]))}</td></tr>')
         body = fragment if report else "<p>No se obtuvo un reporte JSON válido para este contexto. Consultar su archivo console.txt.</p>"
         if report and state == "ERROR":
             body = "<p class='ERROR'>El proceso terminó con error o timeout; el detalle disponible puede ser parcial.</p>" + body
-        if group["data_mismatch"]:
-            body = "<p class='ERROR'><b>CONTEXT_DATA_MISMATCH</b>: los contextos de este clúster entregaron datos diferentes; se conservan todos los resultados sin fusionarlos.</p>" + diff_html(context_diff) + "".join(
+        if context_diff:
+            explanation = "Se observaron datos diferentes en inventarios completos." if group["data_mismatch"] else "Inventario incompleto: una diferencia de muestras no demuestra discrepancia del clúster."
+            body = '<p><b>' + esc(group["comparison_status"]) + '</b>: ' + explanation + '</p>' + (('<pre>' + esc(json.dumps(group["comparison_evidence"], ensure_ascii=False, indent=2)) + '</pre>') if group["comparison_evidence"] else '') + diff_html(context_diff) + "".join(
                 '<details open><summary>' + esc(e["context"]) + '</summary>' + (html(r).partition("<main>")[2].rpartition("</main>")[0] if r else "Sin reporte válido") + '</details>' for e, r in group["members"])
         context_codes = [{"context": v["context"], "validator_exit": v["validator_exit"], "pluto": {k: (v["pluto"] or {}).get(k) for k in ("status", "exit_code")}} for v in clusters[-1]["context_results"]]
         body = f'<p>Identidad: {esc(group["cluster_identity"])} · Contexto principal: {esc(context)}</p><pre>' + esc(json.dumps(context_codes, ensure_ascii=False, indent=2)) + '</pre>' + body
@@ -195,7 +219,7 @@ def consolidate(entries, output):
                f'<p>Clústeres físicos identificados: {verified_identities} · Contextos sin identidad compartida verificable: {len(grouped) - verified_identities} · Contextos: {len(entries)} · Estado global: <b>{overall}</b> · CRDs analizados por contexto principal: {sum(totals.values())}</p>'
                + error_summary +
                '<p>Un resultado PASS acredita las comprobaciones realizadas. WARN y UNKNOWN requieren revisión; FAIL contiene bloqueos y ERROR indica una evaluación incompleta.</p>'
-               '<div style="overflow-x:auto"><table><thead><tr><th>Clúster / Contexto</th><th>Upgrade</th><th>CRDs</th><th>Estado</th><th>Pluto</th><th>Pluto exit</th><th>Validador</th><th>Validator exit</th><th>Compatibility score</th><th>Evidence coverage</th><th>Decision</th><th>Bloqueo principal</th><th>Productos FAIL</th><th>Productos UNKNOWN</th><th>Contextos asociados</th></tr></thead><tbody>'
+               '<div style="overflow-x:auto"><table><thead><tr><th>Clúster / Contexto</th><th>Upgrade</th><th>CRDs</th><th>Estado</th><th>Pluto</th><th>Pluto exit</th><th>Validador</th><th>Validator exit</th><th>Compatibility score</th><th>Evidence coverage</th><th>Decision</th><th>Bloqueo principal</th><th>Productos FAIL / política de soporte</th><th>Productos UNKNOWN — terceros / gestión no verificada</th><th>AKS administrados — evidencia pendiente</th><th>Contextos asociados</th></tr></thead><tbody>'
                + "".join(rows) + "</tbody></table></div>" + "".join(details))
     output = Path(output)
     output.parent.mkdir(parents=True, exist_ok=True)

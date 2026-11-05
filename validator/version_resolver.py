@@ -22,13 +22,18 @@ def source_rank(candidate, product_id):
 def resolve(rows):
     registry = {}
     for row in rows:
-        product = registry.setdefault(row["id"], row | {"namespaces": [], "evidence": [], "version_candidates": [], "versions": [], "detected_versions": []})
+        product = registry.setdefault(row["id"], row | {"namespaces": [], "evidence": [], "version_candidates": [], "versions": [], "detected_versions": [], "version_details": []})
         if row["namespace"] not in product["namespaces"]:
             product["namespaces"].append(row["namespace"])
         product["evidence"].extend(row["evidence"])
         product["version_candidates"].extend(row.get("version_candidates", []))
         product["detected_versions"] = sorted(set(product["detected_versions"]) | set(row.get("detected_versions", [])))
+        for detail in row.get("version_details", []):
+            if detail not in product["version_details"]:
+                product["version_details"].append(detail)
     for row in registry.values():
+        if len(row["version_details"]) == 1:
+            row.update(row["version_details"][0])
         candidates = [c for c in row["version_candidates"] if release(c["version"], row["product"])]
         rank = min((source_rank(c, row["id"]) for c in candidates), default=99)
         canonical = lambda c: c["version"] if release(c["version"]) is None else ".".join(map(str, release(c["version"])))

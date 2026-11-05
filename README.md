@@ -2,7 +2,7 @@
 
 CLI de solo lectura para evaluar CRDs y sus dependencias antes de un upgrade Kubernetes. Python 3.12+, Windows y Linux; biblioteca estándar en ejecución. No instala servicios, no modifica el clúster. En LIVE también ejecuta Pluto como detector externo de APIs deprecadas.
 
-La versión de desarrollo actual es **0.5.2**, en la rama **dev**. Los merges a main quedan a cargo del usuario. Consultar [la entrega incremental](docs/dev-fix-delivery.md) para detección, cobertura, decisión y exit codes, y [el seguimiento del reporte](docs/report-followup.md) para causas de ERROR, versiones de workloads conocidos, diff de contextos y evidencia agregada de Istio. Las secciones de versiones anteriores se conservan como historial.
+La versión de desarrollo actual es **0.6.0**, en la rama **dev**. Los merges a main quedan a cargo del usuario. Consultar [soporte, inventario completo y gate](docs/support-policy-gate.md), [la entrega incremental](docs/dev-fix-delivery.md) y [el seguimiento del reporte](docs/report-followup.md). Las secciones de versiones anteriores se conservan como historial.
 
 Desde v0.3 también descubre plataformas/operadores mediante Helm, workloads, pods y CRDs; evalúa matrices oficiales curadas y muestra un resumen ejecutivo con Upgrade Readiness Score. El mismo análisis se incorpora al HTML consolidado de varios contextos.
 
@@ -640,3 +640,35 @@ python fixtures/generate_followup_example.py
 ```
 
 El resultado está en [reports/examples/report-followup/consolidated.html](reports/examples/report-followup/consolidated.html). Para generar el JSON completo de ese ejemplo, añadir `--full-platform-evidence` al generador. Todos sus contextos, recursos y errores son sintéticos.
+
+## v0.6.0: política de soporte y evaluación técnica separadas
+
+`status` conserva PASS/WARN/FAIL/UNKNOWN/ERROR para consumidores y score existentes. Los productos añaden `support_status`, `technical_status`, `operational_status`, `current_kubernetes_evaluation` y `target_kubernetes_evaluation`. Istio fuera de matriz mantiene FAIL/BLOCKED por **FAIL_SUPPORT_POLICY**; no se presenta como una falla técnica del producto demostrada en el objetivo. Su validación técnica es NOT_TESTED. La tabla muestra soporte actual y objetivo, y la tabla de CRDs excluye PRODUCT_SUPPORT del estado técnico mostrado, conservando el estado combinado legado en JSON.
+
+Un producto activo con matriz desconocida muestra RUNNING_SUPPORT_UNKNOWN, nunca RUNNING_WITHIN_SUPPORT_MATRIX. `preexisting_support_debt` y `additional_upgrade_support_risk` son null si falta evidencia para distinguir deuda existente y riesgo adicional. Helm por sí solo no acredita runtime Running. Los defectos técnicos de CRDs permanecen independientes y pueden seguir bloqueando.
+
+Los builds numéricos de Gatekeeper/Tigera se normalizan sólo en los repositorios exactos Microsoft revisados: se conservan `raw_version`, `upstream_version`, `distribution_revision` y `repository`. Por ejemplo v3.23.1-8 → upstream 3.23.1 / revisión 8. Un prerelease rc.1 o el mismo tag en un mirror no registrado no recibe esta regla. La matriz usa upstream, pero un PASS upstream no certifica por sí solo el build: se exige un registro explícito `vendor_versions`. Gatekeeper sin matriz numérica conserva UNKNOWN / NO_OFFICIAL_NUMERIC_MATRIX; no se inventan rangos ni se deduce mantenimiento de releases.
+
+La identidad del clúster y la agrupación se conservan. La comparación distingue MATCH, CONTEXT_DATA_MISMATCH e **CONTEXT_COMPARISON_INCONCLUSIVE**. Fuentes obligatorias truncadas o fallidas impiden concluir un mismatch: se conservan las observaciones, fuentes afectadas y cantidades por contexto. Las muestras por Pod y fuentes opcionales no producen por sí solas una discrepancia semántica. Una diferencia sobre inventarios completos mantiene el diff y el código agregado 2.
+
+Pods se leen por API en páginas de **500** usando limit/continue hasta agotar el token. El máximo de seguridad predeterminado de `--platform-limit` pasa a **20000**, y no es el tamaño de página. El reporte registra páginas, cantidad examinada, continuación pendiente y `inventory_complete`. Ante fallo parcial, snapshot inconsistente, token repetido, máximo de consultas o timeout, conserva lo obtenido y marca inventario incompleto. Los tokens no se exportan al reporte.
+
+```sh
+python main.py --context production --target-version 1.35.9 --cluster-timeout 1800
+bash crd-compat-validator.sh --target-version 1.35.9 --context-timeout 1800
+```
+
+`--cluster-timeout` limita el presupuesto compartido de lecturas LIVE, incluyendo paginación, contexto objetivo, Helm, istioctl, Azure y Pluto. Batch conserva además el timeout total del proceso por contexto. El archivo de salida puede serializarse después del presupuesto de lectura; el runner batch impone el límite externo total. `--max-queries` sigue vigente. Un guard de seguridad alcanzado nunca produce inventario completo ni aprobación automática.
+
+istioctl ausente se muestra como OPTIONAL_SOURCE_UNAVAILABLE con impacto por fuentes alternativas, sin error de inventario obligatorio. Si todas las alternativas faltan, VERSION_UNKNOWN conserva la falta de cobertura. Los sidecars inactivos se agrupan por Completed, Terminating, Failed, Pending, Running_proxy_not_Ready y otras causas. Sólo generan el aviso operativo nuevo proxy Running no Ready, CrashLoopBackOff, ImagePullBackOff/ErrImagePull y Pending de al menos 300 segundos con timestamp verificable. Jobs completados no generan ese WARN.
+
+El resumen separa UNKNOWN de terceros/gestión no verificada y componentes AKS administrados con evidencia pendiente, indicando cuáles no exponen versión. Sólo se marca gestión AKS con metadata verificada; usar un repositorio mcr no basta. Se conserva `products_unknown` completo en JSON y no se cambia la fórmula, los pesos ni la cobertura para mejorar artificialmente el score. El esquema JSON pasa a 1.6 con campos aditivos.
+
+Ejemplo completamente sintético, con paginación simulada y los tres tipos de comparación:
+
+```sh
+python fixtures/generate_support_gate_example.py
+python -m pytest -q --tb=short
+```
+
+Ver [consolidated.html](reports/examples/support-gate/consolidated.html), [entrega detallada](docs/support-policy-gate.md) y [archivos completos](deliverables/support-policy-gate/complete-files.zip). Ningún fixture consulta un clúster real.

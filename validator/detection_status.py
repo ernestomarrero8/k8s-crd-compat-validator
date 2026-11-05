@@ -21,6 +21,17 @@ def inventory_sources(data):
         result.append({"source": name, "completed": not bool(error), "authorized": False if error in ("forbidden", "unauthorized") else None if error else True,
             "error": error, "items_scanned": len(values) if isinstance(values, list) else 0,
             "required": name in REQUIRED or name in ("offline", "crds")})
+        stats = data.get("inventory_pages", {}).get(name)
+        if stats:
+            result[-1].update({k: stats[k] for k in ("inventory_complete", "pages", "continuation_pending", "error", "safety_limit", "page_size") if k in stats})
+            result[-1]["completed"] = stats.get("inventory_complete") is True and not bool(error or stats.get("error"))
+            result[-1]["inventory_complete"] = result[-1]["completed"]
+            result[-1]["error"] = error or stats.get("error")
+            if not result[-1]["completed"] and not result[-1]["error"]:
+                result[-1]["error"] = "inventory_incomplete"
+        if error and not result[-1]["required"]:
+            result[-1].update(status="OPTIONAL_SOURCE_UNAVAILABLE", reason=error, error=None,
+                impact="depends_on_alternative_sources")
     return result
 
 

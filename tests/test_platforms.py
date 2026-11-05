@@ -79,7 +79,9 @@ def test_support_vs_tested_only_and_eol(catalog):
 
 def test_expired_matrix_and_missing_version_are_unknown(catalog):
     assert catalog.evaluate("Argo CD", "3.2.0", "1.34.9", "https://example.com", date(2028, 1, 1))[0].status == "UNKNOWN"
-    assert catalog.evaluate("Gatekeeper", "3.17.0", "1.35.9", "https://example.com", TODAY)[0].rule_id == "NO_SUPPORT_DATA"
+    gatekeeper = catalog.evaluate("Gatekeeper", "3.17.0", "1.35.9", "https://example.com", TODAY)[0]
+    assert gatekeeper.rule_id == "NO_OFFICIAL_NUMERIC_MATRIX" and gatekeeper.status == "UNKNOWN"
+    assert gatekeeper.evidence["legacy_rule_id"] == "NO_SUPPORT_DATA"
     assert catalog.evaluate("Istio", "latest", "1.35.9", "https://example.com", TODAY)[0].rule_id == "VERSION_UNKNOWN"
     assert bound("1.35.x", True) > (1, 35, 100000)
 

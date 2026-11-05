@@ -1,0 +1,1115 @@
+{
+  "clusters": [
+    {
+      "cluster_identity": "/subscriptions/synthetic/resourcegroups/demo/providers/microsoft.containerservice/managedclusters/match",
+      "primary_context": "demo-match",
+      "contexts": [
+        "demo-match",
+        "demo-match-admin"
+      ],
+      "comparison_status": "MATCH",
+      "comparison_evidence": null,
+      "data_difference_observed": false,
+      "data_mismatch": false,
+      "current_version": "1.34.8",
+      "target_version": "1.35.9",
+      "pluto": {
+        "status": "UNKNOWN",
+        "exit_code": null,
+        "exit_code_origin": "unavailable"
+      },
+      "validator": {
+        "status": "FAIL",
+        "exit_code": 1,
+        "exit_code_origin": "validator_process"
+      },
+      "compatibility_score": 83.5,
+      "evidence_coverage": 23.5,
+      "decision": "BLOCKED",
+      "context_diff": null,
+      "products_fail": [
+        "Istio"
+      ],
+      "products_unknown": [
+        "Argo CD",
+        "Gatekeeper",
+        "Tigera Operator",
+        "Secrets Store CSI Driver",
+        "Azure Key Vault Provider for Secrets Store CSI Driver",
+        "Azure Disk CSI Driver",
+        "Azure File CSI Driver",
+        "Azure Policy Add-on",
+        "Defender for Cloud",
+        "Snapshot Controller",
+        "Cluster Autoscaler"
+      ],
+      "blocking_reasons": [
+        {
+          "rule_id": "NOT_COMPATIBLE",
+          "status": "FAIL",
+          "severity": "HIGH",
+          "description": "Istio 1.24.1 está operativo observado en Kubernetes 1.34.8, pero la versión actual 1.34.8 y el objetivo 1.35.9 están fuera de la matriz oficial. La herramienta no ha demostrado una falla técnica del producto mediante esta matriz; el upgrade no puede aprobarse bajo una política de componentes soportados. Los defectos técnicos de CRDs se evalúan por separado.",
+          "failure_domain": "SUPPORT_POLICY",
+          "result_type": "FAIL_SUPPORT_POLICY"
+        },
+        {
+          "rule_id": "VERSION_EOL",
+          "status": "WARN",
+          "severity": "MEDIUM",
+          "description": "Istio 1.24.1 — Versión fuera de mantenimiento según la evidencia oficial registrada.",
+          "failure_domain": "TECHNICAL",
+          "result_type": "WARN"
+        },
+        {
+          "rule_id": "ISTIO-DATA-PLANE-READINESS",
+          "status": "WARN",
+          "severity": "MEDIUM",
+          "description": "Istio — Se observaron sidecars con condiciones operativas relevantes; los Jobs completados no generan este aviso.",
+          "failure_domain": "TECHNICAL",
+          "result_type": "WARN"
+        },
+        {
+          "rule_id": "RULE-COVERAGE",
+          "status": "UNKNOWN",
+          "severity": "INFO",
+          "description": "Cobertura documental del trayecto solicitado; el alcance se limita a las categorías registradas.",
+          "failure_domain": "TECHNICAL",
+          "result_type": "UNKNOWN"
+        },
+        {
+          "rule_id": "NO_SUPPORT_DATA",
+          "status": "UNKNOWN",
+          "severity": "INFO",
+          "description": "Argo CD 3.2.0 — Objetivo fuera de las versiones probadas; esto no demuestra incompatibilidad.",
+          "failure_domain": "TECHNICAL",
+          "result_type": "UNKNOWN"
+        },
+        {
+          "rule_id": "NO_OFFICIAL_NUMERIC_MATRIX",
+          "status": "UNKNOWN",
+          "severity": "INFO",
+          "description": "Gatekeeper v3.23.1-8 — Gatekeeper 3.23.1 fue detectado; la política oficial de releases no proporciona una matriz numérica revisada que acredite Kubernetes 1.35.9 para este binario.",
+          "failure_domain": "TECHNICAL",
+          "result_type": "UNKNOWN"
+        },
+        {
+          "rule_id": "NO_SUPPORT_DATA",
+          "status": "UNKNOWN",
+          "severity": "INFO",
+          "description": "Tigera Operator v1.40.15-4 — No existe una única fila de matriz oficial revisada para esta versión.",
+          "failure_domain": "TECHNICAL",
+          "result_type": "UNKNOWN"
+        },
+        {
+          "rule_id": "NO_OFFICIAL_KUBERNETES_MATRIX",
+          "status": "UNKNOWN",
+          "severity": "INFO",
+          "description": "Secrets Store CSI Driver 1.1.2 — La versión 1.1.2 fue detectada, pero no se encontró en las fuentes oficiales revisadas una matriz numérica verificable que la vincule con Kubernetes 1.35.9.",
+          "failure_domain": "TECHNICAL",
+          "result_type": "UNKNOWN"
+        },
+        {
+          "rule_id": "NO_SUPPORT_DATA",
+          "status": "UNKNOWN",
+          "severity": "INFO",
+          "description": "Azure Key Vault Provider for Secrets Store CSI Driver 1.1.0 — No existe una única fila de matriz oficial revisada para esta versión.",
+          "failure_domain": "TECHNICAL",
+          "result_type": "UNKNOWN"
+        },
+        {
+          "rule_id": "NO_SUPPORT_DATA",
+          "status": "UNKNOWN",
+          "severity": "INFO",
+          "description": "Azure Disk CSI Driver v1.34.7-7 — No existe una única fila de matriz oficial revisada para esta versión.",
+          "failure_domain": "TECHNICAL",
+          "result_type": "UNKNOWN"
+        },
+        {
+          "rule_id": "NO_SUPPORT_DATA",
+          "status": "UNKNOWN",
+          "severity": "INFO",
+          "description": "Azure File CSI Driver v1.35.11-6 — No existe una única fila de matriz oficial revisada para esta versión.",
+          "failure_domain": "TECHNICAL",
+          "result_type": "UNKNOWN"
+        },
+        {
+          "rule_id": "VERSION_UNKNOWN",
+          "status": "UNKNOWN",
+          "severity": "INFO",
+          "description": "Azure Policy Add-on UNKNOWN — No se determinó una versión de producto inequívoca; un chart, digest o tag mutable no demuestra versión efectiva.",
+          "failure_domain": "TECHNICAL",
+          "result_type": "UNKNOWN"
+        },
+        {
+          "rule_id": "VERSION_UNKNOWN",
+          "status": "UNKNOWN",
+          "severity": "INFO",
+          "description": "Defender for Cloud UNKNOWN — No se determinó una versión de producto inequívoca; un chart, digest o tag mutable no demuestra versión efectiva.",
+          "failure_domain": "TECHNICAL",
+          "result_type": "UNKNOWN"
+        },
+        {
+          "rule_id": "MANAGED_VERSION_NOT_EXPOSED",
+          "status": "UNKNOWN",
+          "severity": "INFO",
+          "description": "Snapshot Controller MANAGED — Snapshot Controller habilitado en metadata AKS; la versión efectiva y su soporte para el objetivo no están expuestos.",
+          "failure_domain": "TECHNICAL",
+          "result_type": "UNKNOWN"
+        },
+        {
+          "rule_id": "VERSION_UNKNOWN",
+          "status": "UNKNOWN",
+          "severity": "INFO",
+          "description": "Cluster Autoscaler UNKNOWN — No se determinó una versión de producto inequívoca; un chart, digest o tag mutable no demuestra versión efectiva.",
+          "failure_domain": "TECHNICAL",
+          "result_type": "UNKNOWN"
+        },
+        {
+          "rule_id": "AKS-SUPPORT-UNVERIFIED",
+          "status": "UNKNOWN",
+          "severity": "INFO",
+          "description": "Soporte de AKS y sus add-ons para el objetivo requiere evidencia específica de Microsoft.",
+          "failure_domain": "TECHNICAL",
+          "result_type": "UNKNOWN"
+        },
+        {
+          "rule_id": "PLUTO-SCAN",
+          "status": "UNKNOWN",
+          "severity": "INFO",
+          "description": "Pluto no se ejecuta en modo offline.",
+          "failure_domain": "TECHNICAL",
+          "result_type": "UNKNOWN"
+        },
+        {
+          "rule_id": "NO_PRODUCT_OWNER",
+          "status": "UNKNOWN",
+          "severity": "INFO",
+          "description": "widgets.example.com — No existe una asociación explícita entre este CRD y un producto detectado.",
+          "failure_domain": "TECHNICAL",
+          "result_type": "UNKNOWN"
+        },
+        {
+          "rule_id": "INSTANCES-NOT-REQUESTED",
+          "status": "UNKNOWN",
+          "severity": "INFO",
+          "description": "widgets.example.com — Instancias no inspeccionadas; usar --include-instances para lectura limitada.",
+          "failure_domain": "TECHNICAL",
+          "result_type": "UNKNOWN"
+        }
+      ],
+      "third_party_unknown": [
+        "Argo CD",
+        "Gatekeeper",
+        "Tigera Operator",
+        "Secrets Store CSI Driver"
+      ],
+      "aks_managed_unknown": [
+        "Azure Key Vault Provider for Secrets Store CSI Driver",
+        "Azure Disk CSI Driver",
+        "Azure File CSI Driver",
+        "Azure Policy Add-on",
+        "Defender for Cloud",
+        "Snapshot Controller",
+        "Cluster Autoscaler"
+      ],
+      "aks_managed_unexposed": [
+        "Azure Policy Add-on",
+        "Defender for Cloud",
+        "Snapshot Controller",
+        "Cluster Autoscaler"
+      ],
+      "context_results": [
+        {
+          "context": "demo-match",
+          "validator_exit": 1,
+          "pluto": {
+            "executed": false,
+            "command": [],
+            "context": "offline:valid-crds.json",
+            "target_version": "1.35.9",
+            "exit_code": null,
+            "stdout": "",
+            "stderr_omitted": true,
+            "limitations": [
+              "Pluto tiene su propio catálogo de APIs; un resultado limpio no prueba cobertura de versiones futuras.",
+              "La detección depende de los objetos y metadatos disponibles para Pluto."
+            ],
+            "status": "UNKNOWN",
+            "message": "Pluto no se ejecuta en modo offline."
+          }
+        },
+        {
+          "context": "demo-match-admin",
+          "validator_exit": 1,
+          "pluto": {
+            "executed": false,
+            "command": [],
+            "context": "offline:valid-crds.json",
+            "target_version": "1.35.9",
+            "exit_code": null,
+            "stdout": "",
+            "stderr_omitted": true,
+            "limitations": [
+              "Pluto tiene su propio catálogo de APIs; un resultado limpio no prueba cobertura de versiones futuras.",
+              "La detección depende de los objetos y metadatos disponibles para Pluto."
+            ],
+            "status": "UNKNOWN",
+            "message": "Pluto no se ejecuta en modo offline."
+          }
+        }
+      ]
+    },
+    {
+      "cluster_identity": "/subscriptions/synthetic/resourcegroups/demo/providers/microsoft.containerservice/managedclusters/partial",
+      "primary_context": "demo-partial",
+      "contexts": [
+        "demo-partial",
+        "demo-partial-admin"
+      ],
+      "comparison_status": "CONTEXT_COMPARISON_INCONCLUSIVE",
+      "comparison_evidence": {
+        "reason": "inventory_truncated",
+        "affected_sources": [
+          "pods"
+        ],
+        "examined_by_context": {
+          "demo-partial": {
+            "deployments.apps": 4,
+            "daemonsets.apps": 4,
+            "statefulsets.apps": 0,
+            "pods": 120,
+            "nodes": 0,
+            "crds": 1
+          },
+          "demo-partial-admin": {
+            "deployments.apps": 4,
+            "daemonsets.apps": 4,
+            "statefulsets.apps": 0,
+            "pods": 120,
+            "nodes": 0,
+            "crds": 1
+          }
+        },
+        "context_a_examined": 120,
+        "context_b_examined": 120
+      },
+      "data_difference_observed": true,
+      "data_mismatch": false,
+      "current_version": "1.34.8",
+      "target_version": "1.35.9",
+      "pluto": {
+        "status": "UNKNOWN",
+        "exit_code": null,
+        "exit_code_origin": "unavailable"
+      },
+      "validator": {
+        "status": "ERROR",
+        "exit_code": 2,
+        "exit_code_origin": "consolidation"
+      },
+      "compatibility_score": 85.0,
+      "evidence_coverage": 20.0,
+      "decision": "BLOCKED",
+      "context_diff": {
+        "crds": {
+          "counts": {
+            "demo-partial": 1,
+            "demo-partial-admin": 1
+          },
+          "only_in": {
+            "demo-partial": [],
+            "demo-partial-admin": []
+          },
+          "changed": []
+        },
+        "products": {
+          "counts": {
+            "demo-partial": 13,
+            "demo-partial-admin": 13
+          },
+          "only_in": {
+            "demo-partial": [],
+            "demo-partial-admin": []
+          },
+          "changed": [
+            "Istio"
+          ]
+        },
+        "inventory_errors": {
+          "by_context": {
+            "demo-partial": [
+              {
+                "source": "pods",
+                "error": "inventory_limit",
+                "required": true,
+                "items_scanned": 120
+              }
+            ],
+            "demo-partial-admin": [
+              {
+                "source": "pods",
+                "error": "inventory_limit",
+                "required": true,
+                "items_scanned": 120
+              }
+            ]
+          },
+          "changed_sources": []
+        },
+        "versions": {},
+        "kubernetes_versions": {
+          "demo-partial": {
+            "current": "1.34.8",
+            "target": "1.35.9"
+          },
+          "demo-partial-admin": {
+            "current": "1.34.8",
+            "target": "1.35.9"
+          }
+        },
+        "areas": [
+          "Productos detectados / evidencia",
+          "Hallazgos globales"
+        ]
+      },
+      "products_fail": [
+        "Istio"
+      ],
+      "products_unknown": [
+        "Argo CD",
+        "Gatekeeper",
+        "Tigera Operator",
+        "Secrets Store CSI Driver",
+        "Azure Key Vault Provider for Secrets Store CSI Driver",
+        "Azure Disk CSI Driver",
+        "Azure File CSI Driver",
+        "Azure Policy Add-on",
+        "Defender for Cloud",
+        "Snapshot Controller",
+        "Cluster Autoscaler"
+      ],
+      "blocking_reasons": [
+        {
+          "rule_id": "NOT_COMPATIBLE",
+          "status": "FAIL",
+          "severity": "HIGH",
+          "description": "Istio 1.24.1 está operativo observado en Kubernetes 1.34.8, pero la versión actual 1.34.8 y el objetivo 1.35.9 están fuera de la matriz oficial. La herramienta no ha demostrado una falla técnica del producto mediante esta matriz; el upgrade no puede aprobarse bajo una política de componentes soportados. Los defectos técnicos de CRDs se evalúan por separado.",
+          "failure_domain": "SUPPORT_POLICY",
+          "result_type": "FAIL_SUPPORT_POLICY"
+        },
+        {
+          "rule_id": "VERSION_EOL",
+          "status": "WARN",
+          "severity": "MEDIUM",
+          "description": "Istio 1.24.1 — Versión fuera de mantenimiento según la evidencia oficial registrada.",
+          "failure_domain": "TECHNICAL",
+          "result_type": "WARN"
+        },
+        {
+          "rule_id": "ISTIO-DATA-PLANE-READINESS",
+          "status": "WARN",
+          "severity": "MEDIUM",
+          "description": "Istio — Se observaron sidecars con condiciones operativas relevantes; los Jobs completados no generan este aviso.",
+          "failure_domain": "TECHNICAL",
+          "result_type": "WARN"
+        },
+        {
+          "rule_id": "RULE-COVERAGE",
+          "status": "UNKNOWN",
+          "severity": "INFO",
+          "description": "Cobertura documental del trayecto solicitado; el alcance se limita a las categorías registradas.",
+          "failure_domain": "TECHNICAL",
+          "result_type": "UNKNOWN"
+        },
+        {
+          "rule_id": "NO_SUPPORT_DATA",
+          "status": "UNKNOWN",
+          "severity": "INFO",
+          "description": "Argo CD 3.2.0 — Objetivo fuera de las versiones probadas; esto no demuestra incompatibilidad.",
+          "failure_domain": "TECHNICAL",
+          "result_type": "UNKNOWN"
+        },
+        {
+          "rule_id": "NO_OFFICIAL_NUMERIC_MATRIX",
+          "status": "UNKNOWN",
+          "severity": "INFO",
+          "description": "Gatekeeper v3.23.1-8 — Gatekeeper 3.23.1 fue detectado; la política oficial de releases no proporciona una matriz numérica revisada que acredite Kubernetes 1.35.9 para este binario.",
+          "failure_domain": "TECHNICAL",
+          "result_type": "UNKNOWN"
+        },
+        {
+          "rule_id": "NO_SUPPORT_DATA",
+          "status": "UNKNOWN",
+          "severity": "INFO",
+          "description": "Tigera Operator v1.40.15-4 — No existe una única fila de matriz oficial revisada para esta versión.",
+          "failure_domain": "TECHNICAL",
+          "result_type": "UNKNOWN"
+        },
+        {
+          "rule_id": "NO_OFFICIAL_KUBERNETES_MATRIX",
+          "status": "UNKNOWN",
+          "severity": "INFO",
+          "description": "Secrets Store CSI Driver 1.1.2 — La versión 1.1.2 fue detectada, pero no se encontró en las fuentes oficiales revisadas una matriz numérica verificable que la vincule con Kubernetes 1.35.9.",
+          "failure_domain": "TECHNICAL",
+          "result_type": "UNKNOWN"
+        },
+        {
+          "rule_id": "NO_SUPPORT_DATA",
+          "status": "UNKNOWN",
+          "severity": "INFO",
+          "description": "Azure Key Vault Provider for Secrets Store CSI Driver 1.1.0 — No existe una única fila de matriz oficial revisada para esta versión.",
+          "failure_domain": "TECHNICAL",
+          "result_type": "UNKNOWN"
+        },
+        {
+          "rule_id": "NO_SUPPORT_DATA",
+          "status": "UNKNOWN",
+          "severity": "INFO",
+          "description": "Azure Disk CSI Driver v1.34.7-7 — No existe una única fila de matriz oficial revisada para esta versión.",
+          "failure_domain": "TECHNICAL",
+          "result_type": "UNKNOWN"
+        },
+        {
+          "rule_id": "NO_SUPPORT_DATA",
+          "status": "UNKNOWN",
+          "severity": "INFO",
+          "description": "Azure File CSI Driver v1.35.11-6 — No existe una única fila de matriz oficial revisada para esta versión.",
+          "failure_domain": "TECHNICAL",
+          "result_type": "UNKNOWN"
+        },
+        {
+          "rule_id": "VERSION_UNKNOWN",
+          "status": "UNKNOWN",
+          "severity": "INFO",
+          "description": "Azure Policy Add-on UNKNOWN — No se determinó una versión de producto inequívoca; un chart, digest o tag mutable no demuestra versión efectiva.",
+          "failure_domain": "TECHNICAL",
+          "result_type": "UNKNOWN"
+        },
+        {
+          "rule_id": "VERSION_UNKNOWN",
+          "status": "UNKNOWN",
+          "severity": "INFO",
+          "description": "Defender for Cloud UNKNOWN — No se determinó una versión de producto inequívoca; un chart, digest o tag mutable no demuestra versión efectiva.",
+          "failure_domain": "TECHNICAL",
+          "result_type": "UNKNOWN"
+        },
+        {
+          "rule_id": "MANAGED_VERSION_NOT_EXPOSED",
+          "status": "UNKNOWN",
+          "severity": "INFO",
+          "description": "Snapshot Controller MANAGED — Snapshot Controller habilitado en metadata AKS; la versión efectiva y su soporte para el objetivo no están expuestos.",
+          "failure_domain": "TECHNICAL",
+          "result_type": "UNKNOWN"
+        },
+        {
+          "rule_id": "VERSION_UNKNOWN",
+          "status": "UNKNOWN",
+          "severity": "INFO",
+          "description": "Cluster Autoscaler UNKNOWN — No se determinó una versión de producto inequívoca; un chart, digest o tag mutable no demuestra versión efectiva.",
+          "failure_domain": "TECHNICAL",
+          "result_type": "UNKNOWN"
+        },
+        {
+          "rule_id": "PLATFORM-DISCOVERY",
+          "status": "UNKNOWN",
+          "severity": "INFO",
+          "description": "Cobertura del descubrimiento de plataformas.",
+          "failure_domain": "TECHNICAL",
+          "result_type": "UNKNOWN"
+        },
+        {
+          "rule_id": "AKS-SUPPORT-UNVERIFIED",
+          "status": "UNKNOWN",
+          "severity": "INFO",
+          "description": "Soporte de AKS y sus add-ons para el objetivo requiere evidencia específica de Microsoft.",
+          "failure_domain": "TECHNICAL",
+          "result_type": "UNKNOWN"
+        },
+        {
+          "rule_id": "PLUTO-SCAN",
+          "status": "UNKNOWN",
+          "severity": "INFO",
+          "description": "Pluto no se ejecuta en modo offline.",
+          "failure_domain": "TECHNICAL",
+          "result_type": "UNKNOWN"
+        },
+        {
+          "rule_id": "NO_PRODUCT_OWNER",
+          "status": "UNKNOWN",
+          "severity": "INFO",
+          "description": "widgets.example.com — No existe una asociación explícita entre este CRD y un producto detectado.",
+          "failure_domain": "TECHNICAL",
+          "result_type": "UNKNOWN"
+        },
+        {
+          "rule_id": "INSTANCES-NOT-REQUESTED",
+          "status": "UNKNOWN",
+          "severity": "INFO",
+          "description": "widgets.example.com — Instancias no inspeccionadas; usar --include-instances para lectura limitada.",
+          "failure_domain": "TECHNICAL",
+          "result_type": "UNKNOWN"
+        },
+        {
+          "rule_id": "CONTEXT_COMPARISON_INCONCLUSIVE",
+          "status": "UNKNOWN",
+          "severity": "INFO",
+          "description": "Inventario incompleto: los contextos no pueden compararse de forma concluyente; no se afirma discrepancia del clúster."
+        }
+      ],
+      "third_party_unknown": [
+        "Argo CD",
+        "Gatekeeper",
+        "Tigera Operator",
+        "Secrets Store CSI Driver"
+      ],
+      "aks_managed_unknown": [
+        "Azure Key Vault Provider for Secrets Store CSI Driver",
+        "Azure Disk CSI Driver",
+        "Azure File CSI Driver",
+        "Azure Policy Add-on",
+        "Defender for Cloud",
+        "Snapshot Controller",
+        "Cluster Autoscaler"
+      ],
+      "aks_managed_unexposed": [
+        "Azure Policy Add-on",
+        "Defender for Cloud",
+        "Snapshot Controller",
+        "Cluster Autoscaler"
+      ],
+      "context_results": [
+        {
+          "context": "demo-partial",
+          "validator_exit": 2,
+          "pluto": {
+            "executed": false,
+            "command": [],
+            "context": "offline:valid-crds.json",
+            "target_version": "1.35.9",
+            "exit_code": null,
+            "stdout": "",
+            "stderr_omitted": true,
+            "limitations": [
+              "Pluto tiene su propio catálogo de APIs; un resultado limpio no prueba cobertura de versiones futuras.",
+              "La detección depende de los objetos y metadatos disponibles para Pluto."
+            ],
+            "status": "UNKNOWN",
+            "message": "Pluto no se ejecuta en modo offline."
+          }
+        },
+        {
+          "context": "demo-partial-admin",
+          "validator_exit": 2,
+          "pluto": {
+            "executed": false,
+            "command": [],
+            "context": "offline:valid-crds.json",
+            "target_version": "1.35.9",
+            "exit_code": null,
+            "stdout": "",
+            "stderr_omitted": true,
+            "limitations": [
+              "Pluto tiene su propio catálogo de APIs; un resultado limpio no prueba cobertura de versiones futuras.",
+              "La detección depende de los objetos y metadatos disponibles para Pluto."
+            ],
+            "status": "UNKNOWN",
+            "message": "Pluto no se ejecuta en modo offline."
+          }
+        }
+      ]
+    },
+    {
+      "cluster_identity": "/subscriptions/synthetic/resourcegroups/demo/providers/microsoft.containerservice/managedclusters/different",
+      "primary_context": "demo-different",
+      "contexts": [
+        "demo-different",
+        "demo-different-admin"
+      ],
+      "comparison_status": "CONTEXT_DATA_MISMATCH",
+      "comparison_evidence": null,
+      "data_difference_observed": true,
+      "data_mismatch": true,
+      "current_version": "1.34.8",
+      "target_version": "1.35.9",
+      "pluto": {
+        "status": "UNKNOWN",
+        "exit_code": null,
+        "exit_code_origin": "unavailable"
+      },
+      "validator": {
+        "status": "ERROR",
+        "exit_code": 2,
+        "exit_code_origin": "consolidation"
+      },
+      "compatibility_score": 83.5,
+      "evidence_coverage": 23.5,
+      "decision": "BLOCKED",
+      "context_diff": {
+        "crds": {
+          "counts": {
+            "demo-different": 1,
+            "demo-different-admin": 1
+          },
+          "only_in": {
+            "demo-different": [],
+            "demo-different-admin": []
+          },
+          "changed": []
+        },
+        "products": {
+          "counts": {
+            "demo-different": 13,
+            "demo-different-admin": 13
+          },
+          "only_in": {
+            "demo-different": [],
+            "demo-different-admin": []
+          },
+          "changed": [
+            "Argo CD"
+          ]
+        },
+        "inventory_errors": {
+          "by_context": {
+            "demo-different": [],
+            "demo-different-admin": []
+          },
+          "changed_sources": []
+        },
+        "versions": {
+          "argocd": {
+            "demo-different": [
+              "3.2.0"
+            ],
+            "demo-different-admin": [
+              "3.3.0"
+            ]
+          }
+        },
+        "kubernetes_versions": {
+          "demo-different": {
+            "current": "1.34.8",
+            "target": "1.35.9"
+          },
+          "demo-different-admin": {
+            "current": "1.34.8",
+            "target": "1.35.9"
+          }
+        },
+        "areas": [
+          "Productos detectados / evidencia",
+          "Versiones",
+          "Hallazgos globales"
+        ]
+      },
+      "products_fail": [
+        "Istio"
+      ],
+      "products_unknown": [
+        "Argo CD",
+        "Gatekeeper",
+        "Tigera Operator",
+        "Secrets Store CSI Driver",
+        "Azure Key Vault Provider for Secrets Store CSI Driver",
+        "Azure Disk CSI Driver",
+        "Azure File CSI Driver",
+        "Azure Policy Add-on",
+        "Defender for Cloud",
+        "Snapshot Controller",
+        "Cluster Autoscaler"
+      ],
+      "blocking_reasons": [
+        {
+          "rule_id": "NOT_COMPATIBLE",
+          "status": "FAIL",
+          "severity": "HIGH",
+          "description": "Istio 1.24.1 está operativo observado en Kubernetes 1.34.8, pero la versión actual 1.34.8 y el objetivo 1.35.9 están fuera de la matriz oficial. La herramienta no ha demostrado una falla técnica del producto mediante esta matriz; el upgrade no puede aprobarse bajo una política de componentes soportados. Los defectos técnicos de CRDs se evalúan por separado.",
+          "failure_domain": "SUPPORT_POLICY",
+          "result_type": "FAIL_SUPPORT_POLICY"
+        },
+        {
+          "rule_id": "CONTEXT_DATA_MISMATCH",
+          "status": "ERROR",
+          "severity": "HIGH",
+          "description": "CONTEXT_DATA_MISMATCH: datos distintos entre contextos de una misma identidad; revisar todos los detalles."
+        },
+        {
+          "rule_id": "VERSION_EOL",
+          "status": "WARN",
+          "severity": "MEDIUM",
+          "description": "Istio 1.24.1 — Versión fuera de mantenimiento según la evidencia oficial registrada.",
+          "failure_domain": "TECHNICAL",
+          "result_type": "WARN"
+        },
+        {
+          "rule_id": "ISTIO-DATA-PLANE-READINESS",
+          "status": "WARN",
+          "severity": "MEDIUM",
+          "description": "Istio — Se observaron sidecars con condiciones operativas relevantes; los Jobs completados no generan este aviso.",
+          "failure_domain": "TECHNICAL",
+          "result_type": "WARN"
+        },
+        {
+          "rule_id": "RULE-COVERAGE",
+          "status": "UNKNOWN",
+          "severity": "INFO",
+          "description": "Cobertura documental del trayecto solicitado; el alcance se limita a las categorías registradas.",
+          "failure_domain": "TECHNICAL",
+          "result_type": "UNKNOWN"
+        },
+        {
+          "rule_id": "NO_SUPPORT_DATA",
+          "status": "UNKNOWN",
+          "severity": "INFO",
+          "description": "Argo CD 3.2.0 — Objetivo fuera de las versiones probadas; esto no demuestra incompatibilidad.",
+          "failure_domain": "TECHNICAL",
+          "result_type": "UNKNOWN"
+        },
+        {
+          "rule_id": "NO_OFFICIAL_NUMERIC_MATRIX",
+          "status": "UNKNOWN",
+          "severity": "INFO",
+          "description": "Gatekeeper v3.23.1-8 — Gatekeeper 3.23.1 fue detectado; la política oficial de releases no proporciona una matriz numérica revisada que acredite Kubernetes 1.35.9 para este binario.",
+          "failure_domain": "TECHNICAL",
+          "result_type": "UNKNOWN"
+        },
+        {
+          "rule_id": "NO_SUPPORT_DATA",
+          "status": "UNKNOWN",
+          "severity": "INFO",
+          "description": "Tigera Operator v1.40.15-4 — No existe una única fila de matriz oficial revisada para esta versión.",
+          "failure_domain": "TECHNICAL",
+          "result_type": "UNKNOWN"
+        },
+        {
+          "rule_id": "NO_OFFICIAL_KUBERNETES_MATRIX",
+          "status": "UNKNOWN",
+          "severity": "INFO",
+          "description": "Secrets Store CSI Driver 1.1.2 — La versión 1.1.2 fue detectada, pero no se encontró en las fuentes oficiales revisadas una matriz numérica verificable que la vincule con Kubernetes 1.35.9.",
+          "failure_domain": "TECHNICAL",
+          "result_type": "UNKNOWN"
+        },
+        {
+          "rule_id": "NO_SUPPORT_DATA",
+          "status": "UNKNOWN",
+          "severity": "INFO",
+          "description": "Azure Key Vault Provider for Secrets Store CSI Driver 1.1.0 — No existe una única fila de matriz oficial revisada para esta versión.",
+          "failure_domain": "TECHNICAL",
+          "result_type": "UNKNOWN"
+        },
+        {
+          "rule_id": "NO_SUPPORT_DATA",
+          "status": "UNKNOWN",
+          "severity": "INFO",
+          "description": "Azure Disk CSI Driver v1.34.7-7 — No existe una única fila de matriz oficial revisada para esta versión.",
+          "failure_domain": "TECHNICAL",
+          "result_type": "UNKNOWN"
+        },
+        {
+          "rule_id": "NO_SUPPORT_DATA",
+          "status": "UNKNOWN",
+          "severity": "INFO",
+          "description": "Azure File CSI Driver v1.35.11-6 — No existe una única fila de matriz oficial revisada para esta versión.",
+          "failure_domain": "TECHNICAL",
+          "result_type": "UNKNOWN"
+        },
+        {
+          "rule_id": "VERSION_UNKNOWN",
+          "status": "UNKNOWN",
+          "severity": "INFO",
+          "description": "Azure Policy Add-on UNKNOWN — No se determinó una versión de producto inequívoca; un chart, digest o tag mutable no demuestra versión efectiva.",
+          "failure_domain": "TECHNICAL",
+          "result_type": "UNKNOWN"
+        },
+        {
+          "rule_id": "VERSION_UNKNOWN",
+          "status": "UNKNOWN",
+          "severity": "INFO",
+          "description": "Defender for Cloud UNKNOWN — No se determinó una versión de producto inequívoca; un chart, digest o tag mutable no demuestra versión efectiva.",
+          "failure_domain": "TECHNICAL",
+          "result_type": "UNKNOWN"
+        },
+        {
+          "rule_id": "MANAGED_VERSION_NOT_EXPOSED",
+          "status": "UNKNOWN",
+          "severity": "INFO",
+          "description": "Snapshot Controller MANAGED — Snapshot Controller habilitado en metadata AKS; la versión efectiva y su soporte para el objetivo no están expuestos.",
+          "failure_domain": "TECHNICAL",
+          "result_type": "UNKNOWN"
+        },
+        {
+          "rule_id": "VERSION_UNKNOWN",
+          "status": "UNKNOWN",
+          "severity": "INFO",
+          "description": "Cluster Autoscaler UNKNOWN — No se determinó una versión de producto inequívoca; un chart, digest o tag mutable no demuestra versión efectiva.",
+          "failure_domain": "TECHNICAL",
+          "result_type": "UNKNOWN"
+        },
+        {
+          "rule_id": "AKS-SUPPORT-UNVERIFIED",
+          "status": "UNKNOWN",
+          "severity": "INFO",
+          "description": "Soporte de AKS y sus add-ons para el objetivo requiere evidencia específica de Microsoft.",
+          "failure_domain": "TECHNICAL",
+          "result_type": "UNKNOWN"
+        },
+        {
+          "rule_id": "PLUTO-SCAN",
+          "status": "UNKNOWN",
+          "severity": "INFO",
+          "description": "Pluto no se ejecuta en modo offline.",
+          "failure_domain": "TECHNICAL",
+          "result_type": "UNKNOWN"
+        },
+        {
+          "rule_id": "NO_PRODUCT_OWNER",
+          "status": "UNKNOWN",
+          "severity": "INFO",
+          "description": "widgets.example.com — No existe una asociación explícita entre este CRD y un producto detectado.",
+          "failure_domain": "TECHNICAL",
+          "result_type": "UNKNOWN"
+        },
+        {
+          "rule_id": "INSTANCES-NOT-REQUESTED",
+          "status": "UNKNOWN",
+          "severity": "INFO",
+          "description": "widgets.example.com — Instancias no inspeccionadas; usar --include-instances para lectura limitada.",
+          "failure_domain": "TECHNICAL",
+          "result_type": "UNKNOWN"
+        }
+      ],
+      "third_party_unknown": [
+        "Argo CD",
+        "Gatekeeper",
+        "Tigera Operator",
+        "Secrets Store CSI Driver"
+      ],
+      "aks_managed_unknown": [
+        "Azure Key Vault Provider for Secrets Store CSI Driver",
+        "Azure Disk CSI Driver",
+        "Azure File CSI Driver",
+        "Azure Policy Add-on",
+        "Defender for Cloud",
+        "Snapshot Controller",
+        "Cluster Autoscaler"
+      ],
+      "aks_managed_unexposed": [
+        "Azure Policy Add-on",
+        "Defender for Cloud",
+        "Snapshot Controller",
+        "Cluster Autoscaler"
+      ],
+      "context_results": [
+        {
+          "context": "demo-different",
+          "validator_exit": 1,
+          "pluto": {
+            "executed": false,
+            "command": [],
+            "context": "offline:valid-crds.json",
+            "target_version": "1.35.9",
+            "exit_code": null,
+            "stdout": "",
+            "stderr_omitted": true,
+            "limitations": [
+              "Pluto tiene su propio catálogo de APIs; un resultado limpio no prueba cobertura de versiones futuras.",
+              "La detección depende de los objetos y metadatos disponibles para Pluto."
+            ],
+            "status": "UNKNOWN",
+            "message": "Pluto no se ejecuta en modo offline."
+          }
+        },
+        {
+          "context": "demo-different-admin",
+          "validator_exit": 1,
+          "pluto": {
+            "executed": false,
+            "command": [],
+            "context": "offline:valid-crds.json",
+            "target_version": "1.35.9",
+            "exit_code": null,
+            "stdout": "",
+            "stderr_omitted": true,
+            "limitations": [
+              "Pluto tiene su propio catálogo de APIs; un resultado limpio no prueba cobertura de versiones futuras.",
+              "La detección depende de los objetos y metadatos disponibles para Pluto."
+            ],
+            "status": "UNKNOWN",
+            "message": "Pluto no se ejecuta en modo offline."
+          }
+        }
+      ]
+    }
+  ],
+  "contexts": 6,
+  "overall_status": "ERROR",
+  "technical_errors_count": 2,
+  "technical_errors": [
+    {
+      "cluster": "demo-partial",
+      "contexts": [
+        "demo-partial",
+        "demo-partial-admin"
+      ],
+      "causes": [
+        {
+          "context": "demo-partial",
+          "source": "pods",
+          "reason": "inventory_limit",
+          "items_scanned": 120,
+          "action": "Revisar --platform-limit y completar el inventario; no descartar los objetos que quedaron fuera."
+        },
+        {
+          "context": "demo-partial-admin",
+          "source": "pods",
+          "reason": "inventory_limit",
+          "items_scanned": 120,
+          "action": "Revisar --platform-limit y completar el inventario; no descartar los objetos que quedaron fuera."
+        },
+        {
+          "source": "context_comparison",
+          "reason": "CONTEXT_COMPARISON_INCONCLUSIVE",
+          "context": "demo-partial",
+          "action": "Revisar las diferencias de CRDs, productos, versiones y consultas que se muestran debajo."
+        }
+      ],
+      "context_diff": {
+        "crds": {
+          "counts": {
+            "demo-partial": 1,
+            "demo-partial-admin": 1
+          },
+          "only_in": {
+            "demo-partial": [],
+            "demo-partial-admin": []
+          },
+          "changed": []
+        },
+        "products": {
+          "counts": {
+            "demo-partial": 13,
+            "demo-partial-admin": 13
+          },
+          "only_in": {
+            "demo-partial": [],
+            "demo-partial-admin": []
+          },
+          "changed": [
+            "Istio"
+          ]
+        },
+        "inventory_errors": {
+          "by_context": {
+            "demo-partial": [
+              {
+                "source": "pods",
+                "error": "inventory_limit",
+                "required": true,
+                "items_scanned": 120
+              }
+            ],
+            "demo-partial-admin": [
+              {
+                "source": "pods",
+                "error": "inventory_limit",
+                "required": true,
+                "items_scanned": 120
+              }
+            ]
+          },
+          "changed_sources": []
+        },
+        "versions": {},
+        "kubernetes_versions": {
+          "demo-partial": {
+            "current": "1.34.8",
+            "target": "1.35.9"
+          },
+          "demo-partial-admin": {
+            "current": "1.34.8",
+            "target": "1.35.9"
+          }
+        },
+        "areas": [
+          "Productos detectados / evidencia",
+          "Hallazgos globales"
+        ]
+      },
+      "detail_anchor": "cluster-2"
+    },
+    {
+      "cluster": "demo-different",
+      "contexts": [
+        "demo-different",
+        "demo-different-admin"
+      ],
+      "causes": [
+        {
+          "source": "context_comparison",
+          "reason": "CONTEXT_DATA_MISMATCH",
+          "context": "demo-different",
+          "action": "Revisar las diferencias de CRDs, productos, versiones y consultas que se muestran debajo."
+        }
+      ],
+      "context_diff": {
+        "crds": {
+          "counts": {
+            "demo-different": 1,
+            "demo-different-admin": 1
+          },
+          "only_in": {
+            "demo-different": [],
+            "demo-different-admin": []
+          },
+          "changed": []
+        },
+        "products": {
+          "counts": {
+            "demo-different": 13,
+            "demo-different-admin": 13
+          },
+          "only_in": {
+            "demo-different": [],
+            "demo-different-admin": []
+          },
+          "changed": [
+            "Argo CD"
+          ]
+        },
+        "inventory_errors": {
+          "by_context": {
+            "demo-different": [],
+            "demo-different-admin": []
+          },
+          "changed_sources": []
+        },
+        "versions": {
+          "argocd": {
+            "demo-different": [
+              "3.2.0"
+            ],
+            "demo-different-admin": [
+              "3.3.0"
+            ]
+          }
+        },
+        "kubernetes_versions": {
+          "demo-different": {
+            "current": "1.34.8",
+            "target": "1.35.9"
+          },
+          "demo-different-admin": {
+            "current": "1.34.8",
+            "target": "1.35.9"
+          }
+        },
+        "areas": [
+          "Productos detectados / evidencia",
+          "Versiones",
+          "Hallazgos globales"
+        ]
+      },
+      "detail_anchor": "cluster-3"
+    }
+  ]
+}

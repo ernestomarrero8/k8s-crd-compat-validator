@@ -6,6 +6,9 @@ from .collector import CollectionError, read_json
 from .platform_catalog import release, ROOT
 from .detection_status import REQUIRED, OPTIONAL, inventory_sources, workload_activity
 from .workload_evidence import containers as container_evidence, observed_status
+from .distribution_version import normalize as normalize_distribution
+
+DEFAULT_PLATFORM_LIMIT = 20000
 
 WORKLOAD_NAMES = {"gatekeeper": {"gatekeeper-controller-manager", "gatekeeper-audit"},
     "tigera": {"tigera-operator"}, "snapshot": {"snapshot-controller", "csi-snapshot-controller"}}
@@ -27,20 +30,33 @@ def command_json(command, timeout):
         return None, "invalid_response"
 
 
-def collect(collector, crds, limit=2000, definitions=None):
+def optional_command(collector, command):
+    try:
+        timeout = collector.remaining_timeout() if hasattr(collector, "remaining_timeout") else collector.timeout
+    except CollectionError as exc:
+        return None, exc.code
+    return command_json(command, timeout)
+
+
+def collect(collector, crds, limit=DEFAULT_PLATFORM_LIMIT, definitions=None):
     data, errors = {"crds": crds}, []
     for resource in REQUIRED:
         try:
-            response = collector.get(resource, all_namespaces=resource != "nodes")
+            response = collector.list_paginated(resource, limit=limit) if resource == "pods" and hasattr(collector, "list_paginated") else collector.get(resource, all_namespaces=resource != "nodes")
             items = response.get("items", [])
             if not isinstance(items, list) or any(not isinstance(i, dict) for i in items):
                 raise CollectionError("invalid_response")
             data[resource] = items[:limit]
-            if len(items) > limit or response.get("metadata", {}).get("continue"):
+            if "inventory" in response:
+                stats = response["inventory"]
+                data.setdefault("inventory_pages", {})[resource] = stats
+                if not stats["inventory_complete"]:
+                    errors.append({"source": resource, "reason": stats["error"] or "inventory_incomplete"})
+            elif len(items) > limit or response.get("metadata", {}).get("continue"):
                 errors.append({"source": resource, "reason": "inventory_limit"})
         except CollectionError as exc:
             errors.append({"source": resource, "reason": exc.code})
-    helm, error = command_json(["helm", "list", "-A", "-o", "json", "--kube-context", collector.context, "--max", str(limit)], collector.timeout)
+    helm, error = optional_command(collector, ["helm", "list", "-A", "-o", "json", "--kube-context", collector.context, "--max", str(limit)])
     if error or not isinstance(helm, list) or any(not isinstance(item, dict) for item in helm):
         errors.append({"source": "Helm", "reason": error or "invalid_response"})
     else:
@@ -68,7 +84,7 @@ def collect(collector, crds, limit=2000, definitions=None):
         except CollectionError as exc:
             errors.append({"source": resource, "reason": exc.code})
     if any(row["id"] == "istio" for row in safe_detect(data, definitions)[0]):
-        data["istio"], error = command_json(["istioctl", "version", "--context", collector.context, "-o", "json"], collector.timeout)
+        data["istio"], error = optional_command(collector, ["istioctl", "version", "--context", collector.context, "-o", "json"])
         if not error and (not isinstance(data["istio"], dict) or not any(data["istio"].get(k) for k in ("meshVersion", "dataPlaneVersion"))):
             error = "remote_versions_unavailable"
         if error:
@@ -98,13 +114,19 @@ def detect(data, definitions, full_evidence=False):
     def add(definition, namespace, version, evidence):
         key = (definition["id"], namespace)
         row = detected.setdefault(key, {"id": definition["id"], "product": definition["product"], "namespace": namespace,
-            "category": definition.get("category", "operator"), "source": definition["source"], "versions": [], "detected_versions": [], "evidence": [], "version_candidates": [], "unknown_version": False})
+            "category": definition.get("category", "operator"), "source": definition["source"], "versions": [], "detected_versions": [], "version_details": [], "evidence": [], "version_candidates": [], "unknown_version": False})
         version = str(version) if version is not None else "UNKNOWN"
         component_version = definition.get("component_versions") and evidence["from"] != "Helm"
         if component_version:
             evidence["version_scope"] = "component_not_product_release"
         if version != "UNKNOWN" and not component_version and version not in row["detected_versions"]:
             row["detected_versions"].append(version)
+        normalization = normalize_distribution(definition["id"], version, evidence.get("repository"))
+        if normalization and not component_version:
+            if normalization not in row["version_details"]:
+                row["version_details"].append(normalization)
+            evidence["version_normalization"] = normalization
+            version = normalization["upstream_version"]
         if not release(version, definition["product"]) or component_version:
             if evidence["from"] not in ("Helm", "CRD") or not row["versions"]:
                 row["unknown_version"] = True
@@ -133,7 +155,7 @@ def detect(data, definitions, full_evidence=False):
                     if repository in definition["images"]:
                         matched.add(definition["id"])
                         label_version = labels.get("app.kubernetes.io/version")
-                        version = tag if release(tag, definition["product"]) else label_version or tag
+                        version = tag if release(tag, definition["product"]) or normalize_distribution(definition["id"], tag, repository) else label_version or tag
                         evidence = {"from": resource, "namespace": meta.get("namespace", ""), "name": meta.get("name", ""),
                                     "repository": repository, "declared_tag": tag, "revision": meta.get("labels", {}).get("istio.io/rev"),
                                     "identity_basis": "configured_repository" if repository in definition.get("configured_images", []) else "catalog_repository",
@@ -155,7 +177,7 @@ def detect(data, definitions, full_evidence=False):
                         and (definition["id"] != "tigera" or o["container"] in ("tigera-operator", "operator"))]
                     for observation in selected or [None]:
                         tag = observation["declared_tag"] if observation else None
-                        version = tag if release(tag, definition["product"]) else label_version or tag
+                        version = tag if release(tag, definition["product"]) or normalize_distribution(definition["id"], tag, observation["repository"] if observation else None) else label_version or tag
                         add(definition, meta.get("namespace", ""), version, {"from": resource, "name": meta.get("name"),
                             "identity_basis": "known_workload_and_controller_image" if observation else "known_workload_name",
                             "activity": workload_activity(resource, obj), "observed_status": observed_status(obj),

@@ -4,11 +4,14 @@ from .models import finding, aggregate
 from .platform_discovery import collect, safe_detect
 from .detection_status import inventory_sources, presence, product_inventory_errors
 from .workload_evidence import istio_summary
+from .support_evaluation import evaluate_versions, dimensions
+from .platform_discovery import DEFAULT_PLATFORM_LIMIT
+from .collector import CollectionError
 from .azure_validator import collect_aks, analyze as analyze_aks
 from .version_resolver import resolve
 
 
-def analyze(collector, crds, current, target, catalog, snapshot=None, limit=2000, full_evidence=False):
+def analyze(collector, crds, current, target, catalog, snapshot=None, limit=DEFAULT_PLATFORM_LIMIT, full_evidence=False):
     if snapshot is not None:
         if not isinstance(snapshot, dict) or snapshot.get("schema_version") != 1:
             raise ValueError("Snapshot de plataformas requiere schema_version: 1.")
@@ -31,7 +34,11 @@ def analyze(collector, crds, current, target, catalog, snapshot=None, limit=2000
     elif collector:
         data = collect(collector, crds, limit, catalog.detectors)
         if any(str(n.get("spec", {}).get("providerID", "")).lower().startswith("azure:") for n in data.get("nodes", [])):
-            data["aks"], data["aks_error"] = collect_aks(data, collector.timeout)
+            try:
+                timeout = collector.remaining_timeout() if hasattr(collector, "remaining_timeout") else collector.timeout
+                data["aks"], data["aks_error"] = collect_aks(data, timeout, deadline=getattr(collector, "deadline", None))
+            except CollectionError:
+                data["aks_error"] = "Se agotó el presupuesto global de lectura del clúster."
     else:
         data = {"crds": crds, "discovery_errors": [{"source": "offline", "reason": "No hay snapshot de plataformas; no se consultó el clúster."}]}
     if isinstance(data.get("aks"), dict):
@@ -54,6 +61,10 @@ def analyze(collector, crds, current, target, catalog, snapshot=None, limit=2000
         elif definition:
             row = next(r for r in rows if r["id"] == definition["id"])
             row["evidence"].append({"from": "az aks show", "addon": addon["name"], "activity": "active"})
+        if definition:
+            managed = next(r for r in rows if r["id"] == definition["id"])
+            managed["managed_by"] = "AKS"
+            managed.setdefault("management_evidence", []).append({"from": "az aks show", "addon": addon["name"], "enabled": True})
     findings = []
     for row in rows:
         product_errors = product_inventory_errors(sources_inventory, row["category"])
@@ -66,13 +77,17 @@ def analyze(collector, crds, current, target, catalog, snapshot=None, limit=2000
         if row["id"] == "istio":
             definition = next(d for d in catalog.detectors if d["id"] == "istio")
             row["evidence_summary"] = istio_summary(data, definition)
+            reasons = row["evidence_summary"]["data_plane"]["inactive_reasons"]
+            if row["presence_status"] == "DETECTED_INACTIVE" and reasons and set(reasons) <= {"Completed", "Terminating"}:
+                row["presence_status"] = row["detection_status"] = "ARTIFACTS_ONLY"
         if row["id"] == "azure-keyvault":
             row["legacy_product"] = "Azure Key Vault CSI Driver"
-        row_findings = []
-        for version in row["versions"] or row.get("detected_versions", []):
-            row_findings.extend(catalog.evaluate(row["product"], version, target, row["source"]))
-        if not row_findings:
-            row_findings.extend(catalog.evaluate(row["product"], "UNKNOWN", target, row["source"]))
+        if row["id"] == "gatekeeper":
+            row["release_support_status"] = "UNKNOWN"
+            row["release_support_evidence"] = {"source": catalog.notes.get("Gatekeeper", {}).get("source"),
+                "reason": "La política general de releases requiere verificar qué ramas siguen mantenidas; no se deduce mantenimiento desde la versión ni se usa como matriz Kubernetes."}
+        row_findings = evaluate_versions(row, target, catalog)
+        support_findings = list(row_findings)
         if row["detection_status"] == "ARTIFACTS_ONLY":
             row_findings.append(finding("CONTROLLER_NOT_CONFIRMED", "operator_compatibility", "UNKNOWN",
                 "Sólo se encontraron artefactos; no se confirmó un controlador activo.", source=row["source"], relation="limitation",
@@ -99,6 +114,13 @@ def analyze(collector, crds, current, target, catalog, snapshot=None, limit=2000
                     "installed_version": "MANAGED", "detected_version": "MANAGED", "managed_by": "AKS", "reason": row["reason"],
                     "legacy_rule_id": "MANAGED_VERSION_UNEXPOSED"})]
             observed = ["MANAGED"]
+            support_findings = list(row_findings)
+        if row.get("evidence_summary", {}).get("data_plane", {}).get("operational_warnings"):
+            warnings = row["evidence_summary"]["data_plane"]["operational_warnings"]
+            row_findings.append(finding("ISTIO-DATA-PLANE-READINESS", "operator_operations", "WARN",
+                "Se observaron sidecars con condiciones operativas relevantes; los Jobs completados no generan este aviso.",
+                source=row["source"], evidence={"product": row["product"], "operational_warnings": warnings, "technical_status": "NOT_TESTED"}))
+        dimensions(row, current, target, catalog, support_findings)
         for f in row_findings:
             f.evidence["detection_sources"] = row["evidence"]
             f.evidence["resolution_sources"] = row.get("resolution_sources", [])
@@ -109,6 +131,8 @@ def analyze(collector, crds, current, target, catalog, snapshot=None, limit=2000
                 f.evidence["detection_summary"] = row["evidence_summary"]
         states = {f.status for f in row_findings}
         row["status"] = aggregate(row_findings)
+        if row["decision"] == "READY" and row["status"] != "PASS":
+            row["decision"] = "ATTENTION_REQUIRED"
         # WARN lifecycle and UNKNOWN coverage must both remain visible.
         row["compatibility"] = "No" if "FAIL" in states else "No verificada" if "UNKNOWN" in states else "Sí, según evidencia documentada"
         if managed_snapshot:
@@ -120,7 +144,12 @@ def analyze(collector, crds, current, target, catalog, snapshot=None, limit=2000
         elif product_errors:
             row["detection_status"] = "INVENTORY_INCOMPLETE"
         findings.extend(row_findings)
-    errors = data.get("discovery_errors", [])
+    optional_sources = [s for s in sources_inventory if s.get("status") == "OPTIONAL_SOURCE_UNAVAILABLE"]
+    for s in optional_sources:
+        if s["source"] == "istioctl version":
+            has_version = any(r["id"] == "istio" and r["versions"] for r in rows)
+            s["impact"] = "none_for_version_detection" if has_version else "version_detection_incomplete"
+    errors = [{"source": s["source"], "reason": s["error"]} for s in sources_inventory if s.get("error")]
     inventory = finding("PLATFORM-DISCOVERY", "operator_compatibility", "ERROR" if detector_errors else "UNKNOWN" if required_errors else "PASS",
         "Cobertura del descubrimiento de plataformas.", evidence={"errors": errors, "required_errors": required_errors, "detector_errors": detector_errors,
             "inventory_sources": sources_inventory, "products_detected": len(rows)},
@@ -147,7 +176,8 @@ def analyze(collector, crds, current, target, catalog, snapshot=None, limit=2000
             "reason": "Error interno del detector; detalle sensible omitido." if internal_error else "Inventario obligatorio incompleto: " + failure_description if product_errors else "Consultar evidencia de presencia y operación." if row else "Sin coincidencias en el inventario completado; no prueba ausencia absoluta.",
             "inventory_errors": product_errors, "inventory_complete": not bool(product_errors)})
     return {"title": "OPERATOR COMPATIBILITY ANALYSIS", "products": rows, "discovery": inventory.to_dict(), "aks": azure,
-            "detector_diagnostics": diagnostics, "inventory_sources": sources_inventory,
+            "detector_diagnostics": diagnostics, "inventory_sources": sources_inventory, "optional_sources_unavailable": optional_sources,
+            "inventory_complete": not bool(required_errors or detector_errors),
             "support_coverage": {"products": len(rows), "unknown_products": unknown, "unknown_percentage": round(100 * unknown / len(rows), 1) if rows else None,
                                  "note": "Métrica de productos, no promesa de menos de 10%; no se excluyen limitaciones técnicas reales."},
             "catalog": catalog.provenance(), "analyzed_on": date.today().isoformat()}, findings
