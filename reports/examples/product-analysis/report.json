@@ -1,8 +1,8 @@
 {
-  "schema_version": "1.4",
+  "schema_version": "1.5",
   "tool": "k8s-crd-compat-validator",
-  "tool_version": "0.5.0",
-  "analyzed_at": "2026-11-04T20:12:18.235207+00:00",
+  "tool_version": "0.5.1",
+  "analyzed_at": "2026-11-05T14:51:23.187735+00:00",
   "cluster": "offline:product-crds.json",
   "current_version": "1.34.8",
   "target_version": "1.35.9",
@@ -100,6 +100,83 @@
       ]
     },
     {
+      "rule_id": "NO_SUPPORT_DATA",
+      "category": "operator_compatibility",
+      "status": "UNKNOWN",
+      "severity": "INFO",
+      "description": "Objetivo fuera de las versiones probadas; esto no demuestra incompatibilidad.",
+      "evidence": {
+        "product": "Argo CD",
+        "installed_version": "3.2.0",
+        "target": "1.35.9",
+        "matrix": {
+          "version": "3.2.x",
+          "min_kubernetes": "1.31.0",
+          "max_kubernetes": "1.34.x",
+          "matrix_type": "tested",
+          "exclusive": false,
+          "source": "https://argo-cd.readthedocs.io/en/release-3.2/operator-manual/tested-kubernetes-versions/",
+          "reviewed_on": "2026-11-04",
+          "valid_until": "2027-02-02",
+          "evidence": "La tabla de la rama release-3.2 enumera Kubernetes 1.31 a 1.34 como probados. Fuera de esa lista no se acredita incompatibilidad ni soporte.",
+          "support_state": "supported"
+        },
+        "detected_version": "3.2.0",
+        "version_confidence": "image_tag",
+        "catalog_lookup": {
+          "catalog_present": true,
+          "files": [
+            "argocd.json"
+          ],
+          "paths": [
+            "catalogs/support/argocd.json"
+          ],
+          "available_selectors": [
+            "3.2.x"
+          ],
+          "matched_selectors": [
+            "3.2.x"
+          ],
+          "selected_selector": "3.2.x",
+          "normalized_version": "3.2.0",
+          "reason": "matched"
+        },
+        "distribution_revision": null,
+        "reviewed_on": "2026-11-04",
+        "catalog_limitations": [],
+        "detection_sources": [
+          {
+            "from": "deployments.apps",
+            "namespace": "argocd",
+            "name": "argocd-server",
+            "repository": "quay.io/argoproj/argocd",
+            "declared_tag": "v3.2.0",
+            "revision": null,
+            "identity_basis": "catalog_repository",
+            "confidence": "image_tag",
+            "activity": "active",
+            "observed_status": {},
+            "version_label": null,
+            "version_basis": "workload_template_image_tag"
+          }
+        ],
+        "resolution_sources": [
+          "deployments.apps"
+        ],
+        "resolved_versions": [
+          "3.2.0"
+        ],
+        "raw_detected_versions": [
+          "v3.2.0"
+        ]
+      },
+      "recommendation": "Revisar la matriz oficial y actualizar el componente o completar evidencia antes del upgrade.",
+      "source": "https://argo-cd.readthedocs.io/en/release-3.2/operator-manual/tested-kubernetes-versions/",
+      "relation": "documented",
+      "validation_type": "static",
+      "limitations": []
+    },
+    {
       "rule_id": "COMPATIBLE",
       "category": "operator_compatibility",
       "status": "PASS",
@@ -163,12 +240,16 @@
             "revision": null,
             "identity_basis": "catalog_repository",
             "confidence": "image_tag",
+            "activity": "active",
+            "observed_status": {},
+            "version_label": null,
             "version_basis": "workload_template_image_tag"
           },
           {
             "from": "istioctl control plane",
             "component": "pilot",
-            "revision": null
+            "revision": null,
+            "activity": "active"
           }
         ],
         "resolution_sources": [
@@ -183,80 +264,6 @@
       },
       "recommendation": "Revisar la matriz oficial y actualizar el componente o completar evidencia antes del upgrade.",
       "source": "https://istio.io/latest/docs/releases/supported-releases/",
-      "relation": "documented",
-      "validation_type": "static",
-      "limitations": []
-    },
-    {
-      "rule_id": "NO_SUPPORT_DATA",
-      "category": "operator_compatibility",
-      "status": "UNKNOWN",
-      "severity": "INFO",
-      "description": "Objetivo fuera de las versiones probadas; esto no demuestra incompatibilidad.",
-      "evidence": {
-        "product": "Argo CD",
-        "installed_version": "3.2.0",
-        "target": "1.35.9",
-        "matrix": {
-          "version": "3.2.x",
-          "min_kubernetes": "1.31.0",
-          "max_kubernetes": "1.34.x",
-          "matrix_type": "tested",
-          "exclusive": false,
-          "source": "https://argo-cd.readthedocs.io/en/release-3.2/operator-manual/tested-kubernetes-versions/",
-          "reviewed_on": "2026-11-04",
-          "valid_until": "2027-02-02",
-          "evidence": "La tabla de la rama release-3.2 enumera Kubernetes 1.31 a 1.34 como probados. Fuera de esa lista no se acredita incompatibilidad ni soporte.",
-          "support_state": "supported"
-        },
-        "detected_version": "3.2.0",
-        "version_confidence": "image_tag",
-        "catalog_lookup": {
-          "catalog_present": true,
-          "files": [
-            "argocd.json"
-          ],
-          "paths": [
-            "catalogs/support/argocd.json"
-          ],
-          "available_selectors": [
-            "3.2.x"
-          ],
-          "matched_selectors": [
-            "3.2.x"
-          ],
-          "selected_selector": "3.2.x",
-          "normalized_version": "3.2.0",
-          "reason": "matched"
-        },
-        "distribution_revision": null,
-        "reviewed_on": "2026-11-04",
-        "catalog_limitations": [],
-        "detection_sources": [
-          {
-            "from": "deployments.apps",
-            "namespace": "argocd",
-            "name": "argocd-server",
-            "repository": "quay.io/argoproj/argocd",
-            "declared_tag": "v3.2.0",
-            "revision": null,
-            "identity_basis": "catalog_repository",
-            "confidence": "image_tag",
-            "version_basis": "workload_template_image_tag"
-          }
-        ],
-        "resolution_sources": [
-          "deployments.apps"
-        ],
-        "resolved_versions": [
-          "3.2.0"
-        ],
-        "raw_detected_versions": [
-          "v3.2.0"
-        ]
-      },
-      "recommendation": "Revisar la matriz oficial y actualizar el componente o completar evidencia antes del upgrade.",
-      "source": "https://argo-cd.readthedocs.io/en/release-3.2/operator-manual/tested-kubernetes-versions/",
       "relation": "documented",
       "validation_type": "static",
       "limitations": []
@@ -325,6 +332,9 @@
             "revision": null,
             "identity_basis": "catalog_repository",
             "confidence": "image_tag",
+            "activity": "active",
+            "observed_status": {},
+            "version_label": null,
             "version_basis": "workload_template_image_tag"
           }
         ],
@@ -408,6 +418,9 @@
             "revision": null,
             "identity_basis": "catalog_repository",
             "confidence": "image_tag",
+            "activity": "active",
+            "observed_status": {},
+            "version_label": null,
             "version_basis": "workload_template_image_tag"
           }
         ],
@@ -435,6 +448,58 @@
       "description": "Cobertura del descubrimiento de plataformas.",
       "evidence": {
         "errors": [],
+        "required_errors": [],
+        "detector_errors": [],
+        "inventory_sources": [
+          {
+            "source": "deployments.apps",
+            "completed": true,
+            "authorized": true,
+            "error": null,
+            "items_scanned": 3,
+            "required": true
+          },
+          {
+            "source": "daemonsets.apps",
+            "completed": true,
+            "authorized": true,
+            "error": null,
+            "items_scanned": 0,
+            "required": true
+          },
+          {
+            "source": "statefulsets.apps",
+            "completed": true,
+            "authorized": true,
+            "error": null,
+            "items_scanned": 0,
+            "required": true
+          },
+          {
+            "source": "pods",
+            "completed": true,
+            "authorized": true,
+            "error": null,
+            "items_scanned": 0,
+            "required": true
+          },
+          {
+            "source": "nodes",
+            "completed": true,
+            "authorized": true,
+            "error": null,
+            "items_scanned": 0,
+            "required": true
+          },
+          {
+            "source": "Helm",
+            "completed": true,
+            "authorized": true,
+            "error": null,
+            "items_scanned": 0,
+            "required": false
+          }
+        ],
         "products_detected": 3
       },
       "recommendation": "Revisar la evidencia antes del upgrade.",
@@ -561,6 +626,8 @@
             ],
             "target": "1.35.9",
             "product_registry_ref": "istio",
+            "score_weight": 0,
+            "counted_in": "operators",
             "support_status": "PASS",
             "support_findings": [
               "COMPATIBLE"
@@ -572,7 +639,10 @@
           "validation_type": "static",
           "limitations": [
             "El soporte del producto no prueba que la definición, conversión o datos persistidos del CRD sean correctos."
-          ]
+          ],
+          "score_weight": 0,
+          "counted_in": "operators",
+          "product_ref": "istio"
         },
         {
           "rule_id": "K135-CONDITION-GENERATION",
@@ -592,7 +662,7 @@
           "relation": "release_change",
           "validation_type": "static",
           "limitations": [
-            "No se inspecciona el cÃ³digo del operador; este cambio no es un bloqueo por sÃ­ mismo."
+            "No se inspecciona el código del operador; este cambio no es un bloqueo por sí mismo."
           ]
         },
         {
@@ -714,6 +784,8 @@
             ],
             "target": "1.35.9",
             "product_registry_ref": "argocd",
+            "score_weight": 0,
+            "counted_in": "operators",
             "support_status": "UNKNOWN",
             "support_findings": [
               "NO_SUPPORT_DATA"
@@ -725,7 +797,10 @@
           "validation_type": "static",
           "limitations": [
             "El soporte del producto no prueba que la definición, conversión o datos persistidos del CRD sean correctos."
-          ]
+          ],
+          "score_weight": 0,
+          "counted_in": "operators",
+          "product_ref": "argocd"
         },
         {
           "rule_id": "K135-CONDITION-GENERATION",
@@ -745,7 +820,7 @@
           "relation": "release_change",
           "validation_type": "static",
           "limitations": [
-            "No se inspecciona el cÃ³digo del operador; este cambio no es un bloqueo por sÃ­ mismo."
+            "No se inspecciona el código del operador; este cambio no es un bloqueo por sí mismo."
           ]
         },
         {
@@ -867,6 +942,8 @@
             ],
             "target": "1.35.9",
             "product_registry_ref": "cert-manager",
+            "score_weight": 0,
+            "counted_in": "operators",
             "support_status": "FAIL",
             "support_findings": [
               "VERSION_EOL",
@@ -879,7 +956,10 @@
           "validation_type": "static",
           "limitations": [
             "El soporte del producto no prueba que la definición, conversión o datos persistidos del CRD sean correctos."
-          ]
+          ],
+          "score_weight": 0,
+          "counted_in": "operators",
+          "product_ref": "cert-manager"
         },
         {
           "rule_id": "K135-CONDITION-GENERATION",
@@ -899,7 +979,7 @@
           "relation": "release_change",
           "validation_type": "static",
           "limitations": [
-            "No se inspecciona el cÃ³digo del operador; este cambio no es un bloqueo por sÃ­ mismo."
+            "No se inspecciona el código del operador; este cambio no es un bloqueo por sí mismo."
           ]
         },
         {
@@ -948,6 +1028,154 @@
     "title": "OPERATOR COMPATIBILITY ANALYSIS",
     "products": [
       {
+        "id": "argocd",
+        "product": "Argo CD",
+        "namespace": "argocd",
+        "category": "operator",
+        "source": "https://argo-cd.readthedocs.io/",
+        "versions": [
+          "3.2.0"
+        ],
+        "detected_versions": [
+          "v3.2.0"
+        ],
+        "evidence": [
+          {
+            "from": "deployments.apps",
+            "namespace": "argocd",
+            "name": "argocd-server",
+            "repository": "quay.io/argoproj/argocd",
+            "declared_tag": "v3.2.0",
+            "revision": null,
+            "identity_basis": "catalog_repository",
+            "confidence": "image_tag",
+            "activity": "active",
+            "observed_status": {},
+            "version_label": null,
+            "version_basis": "workload_template_image_tag"
+          }
+        ],
+        "version_candidates": [
+          {
+            "version": "v3.2.0",
+            "from": "deployments.apps",
+            "namespace": "argocd",
+            "revision": null,
+            "name": "argocd-server",
+            "version_basis": "workload_template_image_tag",
+            "confidence": "image_tag"
+          }
+        ],
+        "unknown_version": false,
+        "namespaces": [
+          "argocd"
+        ],
+        "resolved_versions": [
+          "3.2.0"
+        ],
+        "resolution_sources": [
+          "deployments.apps"
+        ],
+        "resolution_confidences": [
+          "image_tag"
+        ],
+        "version_conflict": false,
+        "normalized_versions": [
+          "3.2.0"
+        ],
+        "resolution_policy": "cluster-bound server CLI > Helm appVersion > exact image tags > explicit product resource; all known mixed versions evaluated",
+        "detected": true,
+        "legacy_status": "DETECTED",
+        "detection_status": "DETECTED_ACTIVE",
+        "active_controller_confirmed": true,
+        "presence_status": "DETECTED_ACTIVE",
+        "inventory_complete": true,
+        "limitations": [],
+        "confidence": "image_tag",
+        "detected_version": "v3.2.0",
+        "status": "UNKNOWN",
+        "compatibility": "No verificada",
+        "findings": [
+          {
+            "rule_id": "NO_SUPPORT_DATA",
+            "category": "operator_compatibility",
+            "status": "UNKNOWN",
+            "severity": "INFO",
+            "description": "Objetivo fuera de las versiones probadas; esto no demuestra incompatibilidad.",
+            "evidence": {
+              "product": "Argo CD",
+              "installed_version": "3.2.0",
+              "target": "1.35.9",
+              "matrix": {
+                "version": "3.2.x",
+                "min_kubernetes": "1.31.0",
+                "max_kubernetes": "1.34.x",
+                "matrix_type": "tested",
+                "exclusive": false,
+                "source": "https://argo-cd.readthedocs.io/en/release-3.2/operator-manual/tested-kubernetes-versions/",
+                "reviewed_on": "2026-11-04",
+                "valid_until": "2027-02-02",
+                "evidence": "La tabla de la rama release-3.2 enumera Kubernetes 1.31 a 1.34 como probados. Fuera de esa lista no se acredita incompatibilidad ni soporte.",
+                "support_state": "supported"
+              },
+              "detected_version": "3.2.0",
+              "version_confidence": "image_tag",
+              "catalog_lookup": {
+                "catalog_present": true,
+                "files": [
+                  "argocd.json"
+                ],
+                "paths": [
+                  "catalogs/support/argocd.json"
+                ],
+                "available_selectors": [
+                  "3.2.x"
+                ],
+                "matched_selectors": [
+                  "3.2.x"
+                ],
+                "selected_selector": "3.2.x",
+                "normalized_version": "3.2.0",
+                "reason": "matched"
+              },
+              "distribution_revision": null,
+              "reviewed_on": "2026-11-04",
+              "catalog_limitations": [],
+              "detection_sources": [
+                {
+                  "from": "deployments.apps",
+                  "namespace": "argocd",
+                  "name": "argocd-server",
+                  "repository": "quay.io/argoproj/argocd",
+                  "declared_tag": "v3.2.0",
+                  "revision": null,
+                  "identity_basis": "catalog_repository",
+                  "confidence": "image_tag",
+                  "activity": "active",
+                  "observed_status": {},
+                  "version_label": null,
+                  "version_basis": "workload_template_image_tag"
+                }
+              ],
+              "resolution_sources": [
+                "deployments.apps"
+              ],
+              "resolved_versions": [
+                "3.2.0"
+              ],
+              "raw_detected_versions": [
+                "v3.2.0"
+              ]
+            },
+            "recommendation": "Revisar la matriz oficial y actualizar el componente o completar evidencia antes del upgrade.",
+            "source": "https://argo-cd.readthedocs.io/en/release-3.2/operator-manual/tested-kubernetes-versions/",
+            "relation": "documented",
+            "validation_type": "static",
+            "limitations": []
+          }
+        ]
+      },
+      {
         "id": "istio",
         "product": "Istio",
         "namespace": "istio-system, istioctl",
@@ -969,12 +1197,16 @@
             "revision": null,
             "identity_basis": "catalog_repository",
             "confidence": "image_tag",
+            "activity": "active",
+            "observed_status": {},
+            "version_label": null,
             "version_basis": "workload_template_image_tag"
           },
           {
             "from": "istioctl control plane",
             "component": "pilot",
-            "revision": null
+            "revision": null,
+            "activity": "active"
           }
         ],
         "version_candidates": [
@@ -982,13 +1214,19 @@
             "version": "1.30.7",
             "from": "deployments.apps",
             "namespace": "istio-system",
-            "revision": null
+            "revision": null,
+            "name": "istiod",
+            "version_basis": "workload_template_image_tag",
+            "confidence": "image_tag"
           },
           {
             "version": "1.30.7",
             "from": "istioctl control plane",
             "namespace": "istioctl",
-            "revision": null
+            "revision": null,
+            "name": null,
+            "version_basis": null,
+            "confidence": null
           }
         ],
         "unknown_version": false,
@@ -1002,11 +1240,19 @@
         "resolution_sources": [
           "istioctl control plane"
         ],
+        "resolution_confidences": [],
         "version_conflict": false,
         "normalized_versions": [
           "1.30.7"
         ],
         "resolution_policy": "cluster-bound server CLI > Helm appVersion > exact image tags > explicit product resource; all known mixed versions evaluated",
+        "detected": true,
+        "legacy_status": "DETECTED",
+        "detection_status": "DETECTED_ACTIVE",
+        "active_controller_confirmed": true,
+        "presence_status": "DETECTED_ACTIVE",
+        "inventory_complete": true,
+        "limitations": [],
         "confidence": "server_cli",
         "detected_version": "1.30.7",
         "status": "PASS",
@@ -1076,12 +1322,16 @@
                   "revision": null,
                   "identity_basis": "catalog_repository",
                   "confidence": "image_tag",
+                  "activity": "active",
+                  "observed_status": {},
+                  "version_label": null,
                   "version_basis": "workload_template_image_tag"
                 },
                 {
                   "from": "istioctl control plane",
                   "component": "pilot",
-                  "revision": null
+                  "revision": null,
+                  "activity": "active"
                 }
               ],
               "resolution_sources": [
@@ -1096,135 +1346,6 @@
             },
             "recommendation": "Revisar la matriz oficial y actualizar el componente o completar evidencia antes del upgrade.",
             "source": "https://istio.io/latest/docs/releases/supported-releases/",
-            "relation": "documented",
-            "validation_type": "static",
-            "limitations": []
-          }
-        ]
-      },
-      {
-        "id": "argocd",
-        "product": "Argo CD",
-        "namespace": "argocd",
-        "category": "operator",
-        "source": "https://argo-cd.readthedocs.io/",
-        "versions": [
-          "3.2.0"
-        ],
-        "detected_versions": [
-          "v3.2.0"
-        ],
-        "evidence": [
-          {
-            "from": "deployments.apps",
-            "namespace": "argocd",
-            "name": "argocd-server",
-            "repository": "quay.io/argoproj/argocd",
-            "declared_tag": "v3.2.0",
-            "revision": null,
-            "identity_basis": "catalog_repository",
-            "confidence": "image_tag",
-            "version_basis": "workload_template_image_tag"
-          }
-        ],
-        "version_candidates": [
-          {
-            "version": "v3.2.0",
-            "from": "deployments.apps",
-            "namespace": "argocd",
-            "revision": null
-          }
-        ],
-        "unknown_version": false,
-        "namespaces": [
-          "argocd"
-        ],
-        "resolved_versions": [
-          "3.2.0"
-        ],
-        "resolution_sources": [
-          "deployments.apps"
-        ],
-        "version_conflict": false,
-        "normalized_versions": [
-          "3.2.0"
-        ],
-        "resolution_policy": "cluster-bound server CLI > Helm appVersion > exact image tags > explicit product resource; all known mixed versions evaluated",
-        "confidence": "image_tag",
-        "detected_version": "v3.2.0",
-        "status": "UNKNOWN",
-        "compatibility": "No verificada",
-        "findings": [
-          {
-            "rule_id": "NO_SUPPORT_DATA",
-            "category": "operator_compatibility",
-            "status": "UNKNOWN",
-            "severity": "INFO",
-            "description": "Objetivo fuera de las versiones probadas; esto no demuestra incompatibilidad.",
-            "evidence": {
-              "product": "Argo CD",
-              "installed_version": "3.2.0",
-              "target": "1.35.9",
-              "matrix": {
-                "version": "3.2.x",
-                "min_kubernetes": "1.31.0",
-                "max_kubernetes": "1.34.x",
-                "matrix_type": "tested",
-                "exclusive": false,
-                "source": "https://argo-cd.readthedocs.io/en/release-3.2/operator-manual/tested-kubernetes-versions/",
-                "reviewed_on": "2026-11-04",
-                "valid_until": "2027-02-02",
-                "evidence": "La tabla de la rama release-3.2 enumera Kubernetes 1.31 a 1.34 como probados. Fuera de esa lista no se acredita incompatibilidad ni soporte.",
-                "support_state": "supported"
-              },
-              "detected_version": "3.2.0",
-              "version_confidence": "image_tag",
-              "catalog_lookup": {
-                "catalog_present": true,
-                "files": [
-                  "argocd.json"
-                ],
-                "paths": [
-                  "catalogs/support/argocd.json"
-                ],
-                "available_selectors": [
-                  "3.2.x"
-                ],
-                "matched_selectors": [
-                  "3.2.x"
-                ],
-                "selected_selector": "3.2.x",
-                "normalized_version": "3.2.0",
-                "reason": "matched"
-              },
-              "distribution_revision": null,
-              "reviewed_on": "2026-11-04",
-              "catalog_limitations": [],
-              "detection_sources": [
-                {
-                  "from": "deployments.apps",
-                  "namespace": "argocd",
-                  "name": "argocd-server",
-                  "repository": "quay.io/argoproj/argocd",
-                  "declared_tag": "v3.2.0",
-                  "revision": null,
-                  "identity_basis": "catalog_repository",
-                  "confidence": "image_tag",
-                  "version_basis": "workload_template_image_tag"
-                }
-              ],
-              "resolution_sources": [
-                "deployments.apps"
-              ],
-              "resolved_versions": [
-                "3.2.0"
-              ],
-              "raw_detected_versions": [
-                "v3.2.0"
-              ]
-            },
-            "recommendation": "Revisar la matriz oficial y actualizar el componente o completar evidencia antes del upgrade.",
-            "source": "https://argo-cd.readthedocs.io/en/release-3.2/operator-manual/tested-kubernetes-versions/",
             "relation": "documented",
             "validation_type": "static",
             "limitations": []
@@ -1253,6 +1374,9 @@
             "revision": null,
             "identity_basis": "catalog_repository",
             "confidence": "image_tag",
+            "activity": "active",
+            "observed_status": {},
+            "version_label": null,
             "version_basis": "workload_template_image_tag"
           }
         ],
@@ -1261,7 +1385,10 @@
             "version": "v1.16.0",
             "from": "deployments.apps",
             "namespace": "cert-manager",
-            "revision": null
+            "revision": null,
+            "name": "cert-manager",
+            "version_basis": "workload_template_image_tag",
+            "confidence": "image_tag"
           }
         ],
         "unknown_version": false,
@@ -1274,11 +1401,21 @@
         "resolution_sources": [
           "deployments.apps"
         ],
+        "resolution_confidences": [
+          "image_tag"
+        ],
         "version_conflict": false,
         "normalized_versions": [
           "1.16.0"
         ],
         "resolution_policy": "cluster-bound server CLI > Helm appVersion > exact image tags > explicit product resource; all known mixed versions evaluated",
+        "detected": true,
+        "legacy_status": "DETECTED",
+        "detection_status": "DETECTED_ACTIVE",
+        "active_controller_confirmed": true,
+        "presence_status": "DETECTED_ACTIVE",
+        "inventory_complete": true,
+        "limitations": [],
         "confidence": "image_tag",
         "detected_version": "v1.16.0",
         "status": "FAIL",
@@ -1348,6 +1485,9 @@
                   "revision": null,
                   "identity_basis": "catalog_repository",
                   "confidence": "image_tag",
+                  "activity": "active",
+                  "observed_status": {},
+                  "version_label": null,
                   "version_basis": "workload_template_image_tag"
                 }
               ],
@@ -1431,6 +1571,9 @@
                   "revision": null,
                   "identity_basis": "catalog_repository",
                   "confidence": "image_tag",
+                  "activity": "active",
+                  "observed_status": {},
+                  "version_label": null,
                   "version_basis": "workload_template_image_tag"
                 }
               ],
@@ -1461,6 +1604,58 @@
       "description": "Cobertura del descubrimiento de plataformas.",
       "evidence": {
         "errors": [],
+        "required_errors": [],
+        "detector_errors": [],
+        "inventory_sources": [
+          {
+            "source": "deployments.apps",
+            "completed": true,
+            "authorized": true,
+            "error": null,
+            "items_scanned": 3,
+            "required": true
+          },
+          {
+            "source": "daemonsets.apps",
+            "completed": true,
+            "authorized": true,
+            "error": null,
+            "items_scanned": 0,
+            "required": true
+          },
+          {
+            "source": "statefulsets.apps",
+            "completed": true,
+            "authorized": true,
+            "error": null,
+            "items_scanned": 0,
+            "required": true
+          },
+          {
+            "source": "pods",
+            "completed": true,
+            "authorized": true,
+            "error": null,
+            "items_scanned": 0,
+            "required": true
+          },
+          {
+            "source": "nodes",
+            "completed": true,
+            "authorized": true,
+            "error": null,
+            "items_scanned": 0,
+            "required": true
+          },
+          {
+            "source": "Helm",
+            "completed": true,
+            "authorized": true,
+            "error": null,
+            "items_scanned": 0,
+            "required": false
+          }
+        ],
         "products_detected": 3
       },
       "recommendation": "Revisar la evidencia antes del upgrade.",
@@ -1490,242 +1685,486 @@
       {
         "product": "Argo CD",
         "id": "argocd",
-        "status": "DETECTED",
+        "status": "DETECTED_ACTIVE",
+        "detection_status": "DETECTED_ACTIVE",
+        "detected": true,
+        "legacy_status": "DETECTED",
+        "active_controller_confirmed": true,
         "catalog_present": true,
-        "reason": "Identidad exacta encontrada",
-        "inventory_errors": []
+        "limitations": [],
+        "reason": "Consultar evidencia de presencia y operación.",
+        "inventory_errors": [],
+        "inventory_complete": true
       },
       {
         "product": "Argo Workflows",
         "id": "argo-workflows",
         "status": "NOT_DETECTED",
+        "detection_status": "NOT_DETECTED",
+        "detected": false,
+        "legacy_status": "NOT_DETECTED",
+        "active_controller_confirmed": false,
         "catalog_present": false,
-        "reason": "Sin coincidencia en repositorios/charts/grupos configurados; no prueba ausencia absoluta.",
-        "inventory_errors": []
+        "limitations": [],
+        "reason": "Sin coincidencias en el inventario completado; no prueba ausencia absoluta.",
+        "inventory_errors": [],
+        "inventory_complete": true
       },
       {
         "product": "Istio",
         "id": "istio",
-        "status": "DETECTED",
+        "status": "DETECTED_ACTIVE",
+        "detection_status": "DETECTED_ACTIVE",
+        "detected": true,
+        "legacy_status": "DETECTED",
+        "active_controller_confirmed": true,
         "catalog_present": true,
-        "reason": "Identidad exacta encontrada",
-        "inventory_errors": []
+        "limitations": [],
+        "reason": "Consultar evidencia de presencia y operación.",
+        "inventory_errors": [],
+        "inventory_complete": true
       },
       {
         "product": "Gatekeeper",
         "id": "gatekeeper",
         "status": "NOT_DETECTED",
+        "detection_status": "NOT_DETECTED",
+        "detected": false,
+        "legacy_status": "NOT_DETECTED",
+        "active_controller_confirmed": false,
         "catalog_present": true,
-        "reason": "Sin coincidencia en repositorios/charts/grupos configurados; no prueba ausencia absoluta.",
-        "inventory_errors": []
+        "limitations": [],
+        "reason": "Sin coincidencias en el inventario completado; no prueba ausencia absoluta.",
+        "inventory_errors": [],
+        "inventory_complete": true
       },
       {
         "product": "Calico",
         "id": "calico",
         "status": "NOT_DETECTED",
+        "detection_status": "NOT_DETECTED",
+        "detected": false,
+        "legacy_status": "NOT_DETECTED",
+        "active_controller_confirmed": false,
         "catalog_present": true,
-        "reason": "Sin coincidencia en repositorios/charts/grupos configurados; no prueba ausencia absoluta.",
-        "inventory_errors": []
+        "limitations": [],
+        "reason": "Sin coincidencias en el inventario completado; no prueba ausencia absoluta.",
+        "inventory_errors": [],
+        "inventory_complete": true
       },
       {
         "product": "Tigera Operator",
         "id": "tigera",
         "status": "NOT_DETECTED",
+        "detection_status": "NOT_DETECTED",
+        "detected": false,
+        "legacy_status": "NOT_DETECTED",
+        "active_controller_confirmed": false,
         "catalog_present": true,
-        "reason": "Sin coincidencia en repositorios/charts/grupos configurados; no prueba ausencia absoluta.",
-        "inventory_errors": []
+        "limitations": [],
+        "reason": "Sin coincidencias en el inventario completado; no prueba ausencia absoluta.",
+        "inventory_errors": [],
+        "inventory_complete": true
       },
       {
         "product": "Dapr",
         "id": "dapr",
         "status": "NOT_DETECTED",
+        "detection_status": "NOT_DETECTED",
+        "detected": false,
+        "legacy_status": "NOT_DETECTED",
+        "active_controller_confirmed": false,
         "catalog_present": true,
-        "reason": "Sin coincidencia en repositorios/charts/grupos configurados; no prueba ausencia absoluta.",
-        "inventory_errors": []
+        "limitations": [],
+        "reason": "Sin coincidencias en el inventario completado; no prueba ausencia absoluta.",
+        "inventory_errors": [],
+        "inventory_complete": true
       },
       {
         "product": "Secrets Store CSI Driver",
         "id": "secrets-store-csi",
         "status": "NOT_DETECTED",
+        "detection_status": "NOT_DETECTED",
+        "detected": false,
+        "legacy_status": "NOT_DETECTED",
+        "active_controller_confirmed": false,
         "catalog_present": true,
-        "reason": "Sin coincidencia en repositorios/charts/grupos configurados; no prueba ausencia absoluta.",
-        "inventory_errors": []
+        "limitations": [],
+        "reason": "Sin coincidencias en el inventario completado; no prueba ausencia absoluta.",
+        "inventory_errors": [],
+        "inventory_complete": true
       },
       {
         "product": "Azure Policy Add-on",
         "id": "azure-policy",
         "status": "NOT_DETECTED",
+        "detection_status": "NOT_DETECTED",
+        "detected": false,
+        "legacy_status": "NOT_DETECTED",
+        "active_controller_confirmed": false,
         "catalog_present": false,
-        "reason": "Sin coincidencia en repositorios/charts/grupos configurados; no prueba ausencia absoluta.",
-        "inventory_errors": []
+        "limitations": [],
+        "reason": "Sin coincidencias en el inventario completado; no prueba ausencia absoluta.",
+        "inventory_errors": [],
+        "inventory_complete": true
       },
       {
         "product": "Defender for Cloud",
         "id": "defender",
         "status": "NOT_DETECTED",
+        "detection_status": "NOT_DETECTED",
+        "detected": false,
+        "legacy_status": "NOT_DETECTED",
+        "active_controller_confirmed": false,
         "catalog_present": false,
-        "reason": "Sin coincidencia en repositorios/charts/grupos configurados; no prueba ausencia absoluta.",
-        "inventory_errors": []
+        "limitations": [],
+        "reason": "Sin coincidencias en el inventario completado; no prueba ausencia absoluta.",
+        "inventory_errors": [],
+        "inventory_complete": true
       },
       {
         "product": "Cluster Autoscaler",
         "id": "autoscaler",
         "status": "NOT_DETECTED",
+        "detection_status": "NOT_DETECTED",
+        "detected": false,
+        "legacy_status": "NOT_DETECTED",
+        "active_controller_confirmed": false,
         "catalog_present": false,
-        "reason": "Sin coincidencia en repositorios/charts/grupos configurados; no prueba ausencia absoluta.",
-        "inventory_errors": []
+        "limitations": [],
+        "reason": "Sin coincidencias en el inventario completado; no prueba ausencia absoluta.",
+        "inventory_errors": [],
+        "inventory_complete": true
       },
       {
         "product": "Karpenter",
         "id": "karpenter",
         "status": "NOT_DETECTED",
+        "detection_status": "NOT_DETECTED",
+        "detected": false,
+        "legacy_status": "NOT_DETECTED",
+        "active_controller_confirmed": false,
         "catalog_present": false,
-        "reason": "Sin coincidencia en repositorios/charts/grupos configurados; no prueba ausencia absoluta.",
-        "inventory_errors": []
+        "limitations": [],
+        "reason": "Sin coincidencias en el inventario completado; no prueba ausencia absoluta.",
+        "inventory_errors": [],
+        "inventory_complete": true
       },
       {
         "product": "Cert Manager",
         "id": "cert-manager",
-        "status": "DETECTED",
+        "status": "DETECTED_ACTIVE",
+        "detection_status": "DETECTED_ACTIVE",
+        "detected": true,
+        "legacy_status": "DETECTED",
+        "active_controller_confirmed": true,
         "catalog_present": true,
-        "reason": "Identidad exacta encontrada",
-        "inventory_errors": []
+        "limitations": [],
+        "reason": "Consultar evidencia de presencia y operación.",
+        "inventory_errors": [],
+        "inventory_complete": true
       },
       {
         "product": "NGINX Ingress Controller (community)",
         "id": "ingress-nginx",
         "status": "NOT_DETECTED",
+        "detection_status": "NOT_DETECTED",
+        "detected": false,
+        "legacy_status": "NOT_DETECTED",
+        "active_controller_confirmed": false,
         "catalog_present": false,
-        "reason": "Sin coincidencia en repositorios/charts/grupos configurados; no prueba ausencia absoluta.",
-        "inventory_errors": []
+        "limitations": [],
+        "reason": "Sin coincidencias en el inventario completado; no prueba ausencia absoluta.",
+        "inventory_errors": [],
+        "inventory_complete": true
       },
       {
         "product": "NGINX Ingress Controller (F5)",
         "id": "nginx",
         "status": "NOT_DETECTED",
+        "detection_status": "NOT_DETECTED",
+        "detected": false,
+        "legacy_status": "NOT_DETECTED",
+        "active_controller_confirmed": false,
         "catalog_present": false,
-        "reason": "Sin coincidencia en repositorios/charts/grupos configurados; no prueba ausencia absoluta.",
-        "inventory_errors": []
+        "limitations": [],
+        "reason": "Sin coincidencias en el inventario completado; no prueba ausencia absoluta.",
+        "inventory_errors": [],
+        "inventory_complete": true
       },
       {
         "product": "AGIC",
         "id": "agic",
         "status": "NOT_DETECTED",
+        "detection_status": "NOT_DETECTED",
+        "detected": false,
+        "legacy_status": "NOT_DETECTED",
+        "active_controller_confirmed": false,
         "catalog_present": false,
-        "reason": "Sin coincidencia en repositorios/charts/grupos configurados; no prueba ausencia absoluta.",
-        "inventory_errors": []
+        "limitations": [],
+        "reason": "Sin coincidencias en el inventario completado; no prueba ausencia absoluta.",
+        "inventory_errors": [],
+        "inventory_complete": true
       },
       {
         "product": "External DNS",
         "id": "external-dns",
         "status": "NOT_DETECTED",
+        "detection_status": "NOT_DETECTED",
+        "detected": false,
+        "legacy_status": "NOT_DETECTED",
+        "active_controller_confirmed": false,
         "catalog_present": false,
-        "reason": "Sin coincidencia en repositorios/charts/grupos configurados; no prueba ausencia absoluta.",
-        "inventory_errors": []
+        "limitations": [],
+        "reason": "Sin coincidencias en el inventario completado; no prueba ausencia absoluta.",
+        "inventory_errors": [],
+        "inventory_complete": true
       },
       {
         "product": "Velero",
         "id": "velero",
         "status": "NOT_DETECTED",
+        "detection_status": "NOT_DETECTED",
+        "detected": false,
+        "legacy_status": "NOT_DETECTED",
+        "active_controller_confirmed": false,
         "catalog_present": true,
-        "reason": "Sin coincidencia en repositorios/charts/grupos configurados; no prueba ausencia absoluta.",
-        "inventory_errors": []
+        "limitations": [],
+        "reason": "Sin coincidencias en el inventario completado; no prueba ausencia absoluta.",
+        "inventory_errors": [],
+        "inventory_complete": true
       },
       {
         "product": "Snapshot Controller",
         "id": "snapshot",
         "status": "NOT_DETECTED",
+        "detection_status": "NOT_DETECTED",
+        "detected": false,
+        "legacy_status": "NOT_DETECTED",
+        "active_controller_confirmed": false,
         "catalog_present": false,
-        "reason": "Sin coincidencia en repositorios/charts/grupos configurados; no prueba ausencia absoluta.",
-        "inventory_errors": []
+        "limitations": [],
+        "reason": "Sin coincidencias en el inventario completado; no prueba ausencia absoluta.",
+        "inventory_errors": [],
+        "inventory_complete": true
+      },
+      {
+        "product": "CSI Snapshotter sidecar",
+        "id": "csi-snapshotter",
+        "status": "NOT_DETECTED",
+        "detection_status": "NOT_DETECTED",
+        "detected": false,
+        "legacy_status": "NOT_DETECTED",
+        "active_controller_confirmed": false,
+        "catalog_present": false,
+        "limitations": [],
+        "reason": "Sin coincidencias en el inventario completado; no prueba ausencia absoluta.",
+        "inventory_errors": [],
+        "inventory_complete": true
       },
       {
         "product": "Prometheus Operator",
         "id": "prometheus",
         "status": "NOT_DETECTED",
+        "detection_status": "NOT_DETECTED",
+        "detected": false,
+        "legacy_status": "NOT_DETECTED",
+        "active_controller_confirmed": false,
         "catalog_present": false,
-        "reason": "Sin coincidencia en repositorios/charts/grupos configurados; no prueba ausencia absoluta.",
-        "inventory_errors": []
+        "limitations": [],
+        "reason": "Sin coincidencias en el inventario completado; no prueba ausencia absoluta.",
+        "inventory_errors": [],
+        "inventory_complete": true
       },
       {
         "product": "OpenTelemetry Operator",
         "id": "otel",
         "status": "NOT_DETECTED",
+        "detection_status": "NOT_DETECTED",
+        "detected": false,
+        "legacy_status": "NOT_DETECTED",
+        "active_controller_confirmed": false,
         "catalog_present": false,
-        "reason": "Sin coincidencia en repositorios/charts/grupos configurados; no prueba ausencia absoluta.",
-        "inventory_errors": []
+        "limitations": [],
+        "reason": "Sin coincidencias en el inventario completado; no prueba ausencia absoluta.",
+        "inventory_errors": [],
+        "inventory_complete": true
       },
       {
         "product": "FluxCD",
         "id": "flux",
         "status": "NOT_DETECTED",
+        "detection_status": "NOT_DETECTED",
+        "detected": false,
+        "legacy_status": "NOT_DETECTED",
+        "active_controller_confirmed": false,
         "catalog_present": false,
-        "reason": "Sin coincidencia en repositorios/charts/grupos configurados; no prueba ausencia absoluta.",
-        "inventory_errors": []
+        "limitations": [],
+        "reason": "Sin coincidencias en el inventario completado; no prueba ausencia absoluta.",
+        "inventory_errors": [],
+        "inventory_complete": true
       },
       {
         "product": "Kyverno",
         "id": "kyverno",
         "status": "NOT_DETECTED",
+        "detection_status": "NOT_DETECTED",
+        "detected": false,
+        "legacy_status": "NOT_DETECTED",
+        "active_controller_confirmed": false,
         "catalog_present": false,
-        "reason": "Sin coincidencia en repositorios/charts/grupos configurados; no prueba ausencia absoluta.",
-        "inventory_errors": []
+        "limitations": [],
+        "reason": "Sin coincidencias en el inventario completado; no prueba ausencia absoluta.",
+        "inventory_errors": [],
+        "inventory_complete": true
       },
       {
         "product": "OMS Agent / AMA",
         "id": "ama",
         "status": "NOT_DETECTED",
+        "detection_status": "NOT_DETECTED",
+        "detected": false,
+        "legacy_status": "NOT_DETECTED",
+        "active_controller_confirmed": false,
         "catalog_present": false,
-        "reason": "Sin coincidencia en repositorios/charts/grupos configurados; no prueba ausencia absoluta.",
-        "inventory_errors": []
+        "limitations": [],
+        "reason": "Sin coincidencias en el inventario completado; no prueba ausencia absoluta.",
+        "inventory_errors": [],
+        "inventory_complete": true
       },
       {
-        "product": "Azure Key Vault CSI Driver",
+        "product": "Azure Key Vault Provider for Secrets Store CSI Driver",
         "id": "azure-keyvault",
         "status": "NOT_DETECTED",
+        "detection_status": "NOT_DETECTED",
+        "detected": false,
+        "legacy_status": "NOT_DETECTED",
+        "active_controller_confirmed": false,
         "catalog_present": false,
-        "reason": "Sin coincidencia en repositorios/charts/grupos configurados; no prueba ausencia absoluta.",
-        "inventory_errors": []
+        "limitations": [],
+        "reason": "Sin coincidencias en el inventario completado; no prueba ausencia absoluta.",
+        "inventory_errors": [],
+        "inventory_complete": true
       },
       {
         "product": "Azure Disk CSI Driver",
         "id": "azure-disk",
         "status": "NOT_DETECTED",
+        "detection_status": "NOT_DETECTED",
+        "detected": false,
+        "legacy_status": "NOT_DETECTED",
+        "active_controller_confirmed": false,
         "catalog_present": true,
-        "reason": "Sin coincidencia en repositorios/charts/grupos configurados; no prueba ausencia absoluta.",
-        "inventory_errors": []
+        "limitations": [],
+        "reason": "Sin coincidencias en el inventario completado; no prueba ausencia absoluta.",
+        "inventory_errors": [],
+        "inventory_complete": true
       },
       {
         "product": "Azure File CSI Driver",
         "id": "azure-file",
         "status": "NOT_DETECTED",
+        "detection_status": "NOT_DETECTED",
+        "detected": false,
+        "legacy_status": "NOT_DETECTED",
+        "active_controller_confirmed": false,
         "catalog_present": true,
-        "reason": "Sin coincidencia en repositorios/charts/grupos configurados; no prueba ausencia absoluta.",
-        "inventory_errors": []
+        "limitations": [],
+        "reason": "Sin coincidencias en el inventario completado; no prueba ausencia absoluta.",
+        "inventory_errors": [],
+        "inventory_complete": true
       },
       {
         "product": "External Secrets Operator",
         "id": "external-secrets",
         "status": "NOT_DETECTED",
+        "detection_status": "NOT_DETECTED",
+        "detected": false,
+        "legacy_status": "NOT_DETECTED",
+        "active_controller_confirmed": false,
         "catalog_present": false,
-        "reason": "Sin coincidencia en repositorios/charts/grupos configurados; no prueba ausencia absoluta.",
-        "inventory_errors": []
+        "limitations": [],
+        "reason": "Sin coincidencias en el inventario completado; no prueba ausencia absoluta.",
+        "inventory_errors": [],
+        "inventory_complete": true
       },
       {
         "product": "Cilium",
         "id": "cilium",
         "status": "NOT_DETECTED",
+        "detection_status": "NOT_DETECTED",
+        "detected": false,
+        "legacy_status": "NOT_DETECTED",
+        "active_controller_confirmed": false,
         "catalog_present": false,
-        "reason": "Sin coincidencia en repositorios/charts/grupos configurados; no prueba ausencia absoluta.",
-        "inventory_errors": []
+        "limitations": [],
+        "reason": "Sin coincidencias en el inventario completado; no prueba ausencia absoluta.",
+        "inventory_errors": [],
+        "inventory_complete": true
       },
       {
         "product": "Azure CNI",
         "id": "azure-cni",
         "status": "NOT_DETECTED",
+        "detection_status": "NOT_DETECTED",
+        "detected": false,
+        "legacy_status": "NOT_DETECTED",
+        "active_controller_confirmed": false,
         "catalog_present": false,
-        "reason": "Sin coincidencia en repositorios/charts/grupos configurados; no prueba ausencia absoluta.",
-        "inventory_errors": []
+        "limitations": [],
+        "reason": "Sin coincidencias en el inventario completado; no prueba ausencia absoluta.",
+        "inventory_errors": [],
+        "inventory_complete": true
+      }
+    ],
+    "inventory_sources": [
+      {
+        "source": "deployments.apps",
+        "completed": true,
+        "authorized": true,
+        "error": null,
+        "items_scanned": 3,
+        "required": true
+      },
+      {
+        "source": "daemonsets.apps",
+        "completed": true,
+        "authorized": true,
+        "error": null,
+        "items_scanned": 0,
+        "required": true
+      },
+      {
+        "source": "statefulsets.apps",
+        "completed": true,
+        "authorized": true,
+        "error": null,
+        "items_scanned": 0,
+        "required": true
+      },
+      {
+        "source": "pods",
+        "completed": true,
+        "authorized": true,
+        "error": null,
+        "items_scanned": 0,
+        "required": true
+      },
+      {
+        "source": "nodes",
+        "completed": true,
+        "authorized": true,
+        "error": null,
+        "items_scanned": 0,
+        "required": true
+      },
+      {
+        "source": "Helm",
+        "completed": true,
+        "authorized": true,
+        "error": null,
+        "items_scanned": 0,
+        "required": false
       }
     ],
     "support_coverage": {
@@ -1803,13 +2242,19 @@
           "sha256": "fb6c3f8f579c95a86a6e0eac8b01b7302e174ab988826a125703871a26711662"
         }
       ],
-      "detectors_sha256": "408114b82ee94e03702d573f9ec96cbd3fda6fde950cc95fe5ae1827be0a8cb4",
+      "detectors_sha256": "11c01690b24633b9594031104a62b89a96c38da009b2e509c184ebb161fc17bb",
       "ownership_sha256": "73fdd7bdcb98ede36f0a65e186d43554ca9aaaf953917f00203a2ebae0c23bde"
     },
-    "analyzed_on": "2026-11-04"
+    "analyzed_on": "2026-11-05"
+  },
+  "cluster_identity": "context:d161520e836e529885184a4165058d67ee4430d2d631b9ac63608528c1ce1e27",
+  "cluster_identity_evidence": {
+    "cluster_identity": "context:d161520e836e529885184a4165058d67ee4430d2d631b9ac63608528c1ce1e27",
+    "source": "context_fallback",
+    "limitation": "No se obtuvo identidad compartida verificable; no se agrupan contextos por nombre."
   },
   "readiness": {
-    "score": 53.7,
+    "score": 78.4,
     "scale": 100,
     "decision": "BLOCKED",
     "categories": {
@@ -1878,14 +2323,32 @@
         }
       }
     },
-    "scoring_version": "2.0",
-    "evidence_coverage": 68.5,
+    "scoring_version": "2.1",
+    "evidence_coverage": 80.0,
+    "evaluated_units": 8,
+    "applicable_units": 10,
+    "weighted_evidence_coverage": 68.5,
+    "verified_readiness_score": 53.7,
     "assessed_compatibility_score": 78.4,
+    "config": {
+      "minimum_evidence_coverage": 90.0,
+      "unknown_blocks_ready": true,
+      "warning_blocks_ready": true
+    },
+    "required_inventory_missing": false,
     "applicable_weight": 90,
     "confirmed_blockers": true,
     "pending_evidence": true,
-    "method": "Worst finding per product/CRD, then average units within each weighted category. PASS=100%, WARN=50%, UNKNOWN/FAIL/ERROR=0%; N/A excluded. Evidence coverage and compatibility of assessed units reported separately.",
+    "incomplete_evaluation": true,
+    "decision_legacy": "BLOCKED",
+    "method": "One unit per product/technical CRD/storage CRD and one Pluto unit. Weighted compatibility over evaluated PASS=100%, WARN=50%, FAIL=0% units only; UNKNOWN/ERROR excluded from compatibility, retained in coverage. Evidence coverage = evaluated/applicable units. PRODUCT_SUPPORT references have zero additional weight.",
     "limitation": "El score es una ayuda de revisión; READY exige ausencia de bloqueos, avisos y evidencia pendiente en todo el informe."
+  },
+  "validator": {
+    "status": "FAIL",
+    "exit_code": 1,
+    "decision": "BLOCKED",
+    "exit_policy": "FAIL,ERROR"
   },
   "knowledge": {
     "coverage_catalog_version": "2026.11.04.1",
@@ -1894,11 +2357,11 @@
       "files": [
         {
           "file": "kubernetes.json",
-          "sha256": "cce532134940543b129e563ec8b27f20a2fea82d72553738d4193731bd9fca78",
-          "catalog_version": "2026.11.04.1"
+          "sha256": "84fb46082fe596ffab851a394a6a45db6ff757f8247a3fb7a4a4135df3dd0dbc",
+          "catalog_version": "2026.11.05.1"
         }
       ],
-      "rules_sha256": "84bf20919b949d4bb9141c0fb86710f5147ecd1e00116d18e9b0a7654936ff5e"
+      "rules_sha256": "64f5de123ca9fb3a2bf2fe631926b3ded16231175dabcc19b0c6e8f45dcb6e07"
     }
   }
 }

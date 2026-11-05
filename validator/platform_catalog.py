@@ -13,7 +13,7 @@ ROOT = Path(__file__).resolve().parents[1] / "catalogs/operators"
 SUPPORT_ROOT = ROOT.parent / "support"
 
 
-VENDOR_PRODUCTS = {"Azure Disk CSI Driver", "Azure File CSI Driver", "Azure Key Vault CSI Driver", "Azure CNI"}
+VENDOR_PRODUCTS = {"Azure Disk CSI Driver", "Azure File CSI Driver", "Azure Key Vault CSI Driver", "Azure Key Vault Provider for Secrets Store CSI Driver", "Azure CNI"}
 
 
 def release(value, product=None):
@@ -120,6 +120,11 @@ class PlatformCatalog:
                 except (KeyError, TypeError, ValueError):
                     raise ValueError("Registro de compatibilidad incompleto o inválido.") from None
             self.records.setdefault(data["product"], []).extend(data["versions"])
+        # The corrected provider display name keeps custom catalogs using the legacy name usable.
+        for mapping in (self.records, self.notes, self.product_files, self.product_paths):
+            legacy, provider = "Azure Key Vault CSI Driver", "Azure Key Vault Provider for Secrets Store CSI Driver"
+            if legacy in mapping and provider not in mapping:
+                mapping[provider] = mapping[legacy]
 
     def evaluate(self, product, version, target, source, today=None):
         today = today or date.today()

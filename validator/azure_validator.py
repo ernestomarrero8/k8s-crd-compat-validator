@@ -37,6 +37,10 @@ def analyze(data, current, target):
             "node_kubelet_versions": sorted({n.get("status", {}).get("nodeInfo", {}).get("kubeletVersion", "UNKNOWN") for n in nodes}),
             "addons": [], "limitations": []}
     if isinstance(aks, dict):
+        info["resource_id"] = aks.get("id")
+        info["subscription_id"] = aks.get("subscriptionId")
+        info["resource_group"] = aks.get("resourceGroup")
+        info["cluster_name"] = aks.get("name")
         info["current_version"] = aks.get("currentKubernetesVersion") or aks.get("kubernetesVersion")
         network = aks.get("networkProfile") or {}
         info["network_profile"] = {k: network.get(k) for k in ("networkPlugin", "networkPluginMode", "networkDataplane", "networkPolicy")}

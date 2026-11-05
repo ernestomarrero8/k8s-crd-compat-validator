@@ -13,7 +13,8 @@ from .models import finding, STATES
 from .report_generator import build_report, write_reports
 from .platform_catalog import PlatformCatalog
 from .platform_analyzer import analyze as analyze_platform
-from .readiness import score
+from .readiness import score, load_config
+from .cluster_identity import collect_identity
 from .product_link import owner_result, annotate
 
 
@@ -45,6 +46,7 @@ def parser():
     p.add_argument("--platform-input", type=Path, help="Snapshot JSON de inventario de plataformas; permite análisis offline")
     p.add_argument("--platform-limit", type=positive, default=2000, help="Máximo de objetos examinados por fuente de plataformas")
     p.add_argument("--detectors-path", type=Path, help="Aliases explícitos de repositorios/charts para productos conocidos")
+    p.add_argument("--readiness-config", type=Path, help="Configuración readiness JSON o YAML de escalares documentados")
     p.add_argument("--verify-sources", action="store_true", help="Consulta documentos HTTPS del catálogo y verifica SHA256; solo LIVE")
     p.add_argument("--target-context", help="Clúster objetivo: comparar CRDs preinstalados y discovery, sin escrituras")
     p.add_argument("--verbose", action="store_true", help="Mostrar conteos y reglas; nunca salida cruda de kubectl")
@@ -61,6 +63,10 @@ def exit_code(report, fail_on):
     findings = report["global_findings"] + [f for c in report["crds"] for f in c["findings"]]
     states = {f["status"] for f in findings}
     if "ERROR" in states:
+        return 2
+    if report.get("readiness", {}).get("required_inventory_missing"):
+        return 2
+    if report.get("readiness", {}).get("decision") == "INCOMPLETE":
         return 2
     return 1 if states.intersection(fail_on) else 0
 
@@ -86,6 +92,7 @@ def main(argv=None):
         engine = RuleEngine(args.rules_path)
         catalog = OperatorCatalog(args.operator_catalog, args.verify_sources, args.timeout)
         platform_catalog = PlatformCatalog(args.platform_catalog, args.detectors_path)
+        readiness_config = load_config(args.readiness_config)
         collector = None
         if args.input:
             current = declared_current
@@ -139,13 +146,19 @@ def main(argv=None):
             results.append(annotate(result, linked))
             if args.verbose:
                 print(f"CRD {len(results)}/{len(crds)}: {result['status']} ({len(result['findings'])} hallazgos)", file=sys.stderr)
+        identity = collect_identity(collector, platform, cluster)
         queries = (collector.queries if collector else 0) + (target_collector.queries if target_collector else 0)
         pluto_result, pluto_finding = pluto.run(cluster, target, args.pluto_timeout, offline=bool(args.input))
         global_findings.append(pluto_finding)
         report = build_report(cluster, current, target, path, results, global_findings, queries, args.target_context)
         report["pluto"] = pluto_result
         report["platform"] = platform
-        report["readiness"] = score(report)
+        report["cluster_identity"] = identity["cluster_identity"]
+        report["cluster_identity_evidence"] = identity
+        report["readiness"] = score(report, readiness_config)
+        code = exit_code(report, fail_on)
+        report["validator"] = {"status": "ERROR" if code == 2 else "FAIL" if code == 1 else report["overall_status"],
+            "exit_code": code, "decision": report["readiness"]["decision"], "exit_policy": args.fail_on}
         report["summary"]["platform_products"] = len(platform["products"])
         report["summary"]["unknown_products"] = platform.get("support_coverage", {}).get("unknown_products")
         report["summary"]["unknown_product_percentage"] = platform.get("support_coverage", {}).get("unknown_percentage")
@@ -161,7 +174,7 @@ def main(argv=None):
         print("PASS acredita comprobaciones realizadas; no garantiza compatibilidad completa.")
         for file in written:
             print(f"Reporte: {file.resolve()}")
-        return exit_code(report, fail_on)
+        return code
     except CollectionError as exc:
         print(f"ERROR [{exc.code}]: {exc}", file=sys.stderr)
         return 2

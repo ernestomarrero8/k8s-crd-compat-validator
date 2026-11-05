@@ -115,7 +115,8 @@ def test_offline_does_not_call_subprocess_or_network(tmp_path, monkeypatch):
     monkeypatch.setattr(subprocess, "run", forbidden)
     import urllib.request
     monkeypatch.setattr(urllib.request.OpenerDirector, "open", forbidden)
-    assert main(["--input", str(ROOT / "fixtures/valid-crds.json"), "--current", "1.34.8", "--target", "1.35.9", "--include-instances", "--output", str(tmp_path)]) == 0
+    # Missing platform/Pluto inventories now correctly mean incomplete (2), still without network.
+    assert main(["--input", str(ROOT / "fixtures/valid-crds.json"), "--current", "1.34.8", "--target", "1.35.9", "--include-instances", "--output", str(tmp_path)]) == 2
     report = read_json(tmp_path / "report.json")
     assert report["kubectl_queries"] == 0
     assert report["crds"][0]["status"] == "UNKNOWN"
@@ -123,7 +124,7 @@ def test_offline_does_not_call_subprocess_or_network(tmp_path, monkeypatch):
 
 
 def test_strict_unknown_fails_ci(tmp_path):
-    assert main(["--input", str(ROOT / "fixtures/valid-crds.json"), "--current", "1.34.8", "--target", "1.35.9", "--fail-on", "FAIL,WARN,UNKNOWN", "--output", str(tmp_path)]) == 1
+    assert main(["--input", str(ROOT / "fixtures/valid-crds.json"), "--current", "1.34.8", "--target", "1.35.9", "--fail-on", "FAIL,WARN,UNKNOWN", "--output", str(tmp_path)]) == 2
 
 
 @pytest.mark.parametrize("extra", [["--target", "1..35.9"], ["--target", "1.33.0"], ["--target", "1.35.9", "--context", "prod"], ["--target", "1.35.9", "--verify-sources"]])
@@ -157,12 +158,16 @@ def test_live_cli_uses_only_read_commands(tmp_path, crd, monkeypatch):
             return response({}, 1, "NotFound")
         if cmd[0] == "helm":
             return response([])
+        if "namespaces" in cmd:
+            return response({"metadata": {"uid": "test-cluster-uid"}})
         if "get" in cmd:
             return response({"items": []})
         raise AssertionError(cmd)
     monkeypatch.setattr(subprocess, "run", runner)
     assert main(["--context", "source", "--target", "1.35.9", "--output", str(tmp_path)]) == 0
-    assert len([c for c in calls if c[0] == "kubectl"]) == 7
+    report = read_json(tmp_path / "report.json")
+    assert report["kubectl_queries"] == len([c for c in calls if c[0] == "kubectl"])
+    assert report["cluster_identity"] == "kube-system:test-cluster-uid"
     assert all(set(cmd).isdisjoint({"apply", "create", "patch", "delete", "replace", "edit"}) for cmd in calls)
 
 
@@ -178,7 +183,7 @@ def test_target_context_mismatch_aborts(tmp_path, crd, monkeypatch):
 
 
 def test_mixed_fixture_exercises_all_intended_categories(tmp_path):
-    assert main(["--input", str(ROOT / "fixtures/mixed-crds.json"), "--current", "1.34.8", "--target", "1.35.9", "--output", str(tmp_path)]) == 1
+    assert main(["--input", str(ROOT / "fixtures/mixed-crds.json"), "--current", "1.34.8", "--target", "1.35.9", "--output", str(tmp_path)]) == 2
     report = read_json(tmp_path / "report.json")
     assert report["summary"]["states"] == {"PASS": 0, "UNKNOWN": 1, "WARN": 2, "FAIL": 3, "ERROR": 0}
     assert not any(f["rule_id"] == "STRUCTURE-INVALID" for c in report["crds"] for f in c["findings"])
@@ -199,6 +204,8 @@ def test_target_context_and_instances_full_cli(tmp_path, crd, monkeypatch):
             return response({"kind": "List", "items": [crd]})
         if "clusterserviceversions.operators.coreos.com" in cmd:
             return response({"items": []})
+        if "namespaces" in cmd:
+            return response({"metadata": {"uid": "test-cluster-uid"}})
         if "--raw" in cmd:
             if context == "target":
                 return response({"resources": [{"name": "widgets"}]})
@@ -207,7 +214,8 @@ def test_target_context_and_instances_full_cli(tmp_path, crd, monkeypatch):
             return response({"items": []})
         raise AssertionError(cmd)
     monkeypatch.setattr(subprocess, "run", runner)
-    assert main(["--context", "source", "--target", "1.35.9", "--target-context", "target", "--include-instances", "--output", str(tmp_path)]) == 0
+    # TARGET-WRITE-UNTESTED remains UNKNOWN; coverage below 90 now returns incomplete (2).
+    assert main(["--context", "source", "--target", "1.35.9", "--target-context", "target", "--include-instances", "--output", str(tmp_path)]) == 2
     report = read_json(tmp_path / "report.json")
     assert report["kubectl_queries"] == len(calls)
     findings = {f["rule_id"]: f for f in report["crds"][0]["findings"]}
@@ -229,7 +237,7 @@ def test_no_credentials_in_any_generated_report(tmp_path, crd, monkeypatch):
             return response({"items": [{"apiVersion": "example.com/v1alpha1", "spec": {"replicas": "DO_NOT_EXPOSE"}}], "metadata": {}})
         return response({}, 1, "Forbidden credentials DO_NOT_EXPOSE")
     monkeypatch.setattr(subprocess, "run", runner)
-    assert main(["--context", "test", "--target", "1.35.9", "--include-instances", "--output", str(tmp_path)]) == 0
+    assert main(["--context", "test", "--target", "1.35.9", "--include-instances", "--output", str(tmp_path)]) == 2
     for path in tmp_path.iterdir():
         assert "DO_NOT_EXPOSE" not in path.read_text(encoding="utf-8")
 

@@ -23,7 +23,11 @@ class Finding:
     limitations: list[str] = field(default_factory=list)
 
     def to_dict(self):
-        return asdict(self)
+        result = asdict(self)
+        if self.rule_id == "PRODUCT_SUPPORT":
+            result.update(score_weight=0, counted_in=self.evidence.get("counted_in", "operators"),
+                          product_ref=self.evidence.get("product_registry_ref"))
+        return result
 
 
 def finding(rule_id, category, status, description, *, severity=None, **kwargs):

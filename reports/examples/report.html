@@ -5,7 +5,9 @@ body{font:16px/1.55 system-ui,sans-serif;max-width:1100px;margin:40px auto;paddi
 h1,h2{line-height:1.25}table{border-collapse:collapse;width:100%;background:white}td,th{border:1px solid #b8c9d8;padding:10px;text-align:left}
 details{background:white;border:1px solid #bccbdb;border-radius:6px;margin:12px 0;padding:14px}summary{cursor:pointer}pre{white-space:pre-wrap;overflow-wrap:anywhere;background:#eef3f8;padding:12px}
 .FAIL,.ERROR{color:#a81818}.WARN{color:#805000}.UNKNOWN{color:#525b67}.PASS{color:#176232}.limit{color:#4e6073}a{color:#154f91}section{margin:32px 0}p{overflow-wrap:anywhere}
-@media print{body{background:white;margin:0;max-width:none}details{break-inside:avoid}}</style><main><h1>Kubernetes CRD Compatibility Validator</h1><p>offline:mixed-crds.json · 1.34.8 → 1.35.9</p><p>2026-11-04T20:12:18.224724+00:00 · Estado general: <b>FAIL</b></p><p>6 CRDs · PASS: 0 · UNKNOWN: 1 · WARN: 2 · FAIL: 3 · ERROR: 0</p><p>Riesgos por severidad: CRITICAL: 0 · HIGH: 6 · MEDIUM: 3 · LOW: 1 · INFO: 0</p><section><h2>Upgrade Readiness Score</h2><p style="font-size:1.6em"><b>22.2/100 · BLOCKED</b></p><p>Cobertura de evidencia: <b>49.1%</b> · Compatibilidad de unidades evaluadas: 45.3/100</p><table><thead><tr><th>Categoría</th><th>Peso</th><th>Estado</th><th>Puntos</th><th>Cobertura</th><th>Unidades por resultado</th></tr></thead><tbody><tr><td>operators</td><td>40%</td><td>FAIL</td><td>0.0</td><td>33.3%</td><td>{&quot;PASS&quot;: 0, &quot;WARN&quot;: 0, &quot;FAIL&quot;: 1, &quot;UNKNOWN&quot;: 2, &quot;ERROR&quot;: 0}</td></tr><tr><td>crds</td><td>25%</td><td>FAIL</td><td>12.5</td><td>83.3%</td><td>{&quot;PASS&quot;: 3, &quot;WARN&quot;: 0, &quot;FAIL&quot;: 2, &quot;UNKNOWN&quot;: 1, &quot;ERROR&quot;: 0}</td></tr><tr><td>pluto</td><td>15%</td><td>UNKNOWN</td><td>0.0</td><td>0.0%</td><td>{&quot;PASS&quot;: 0, &quot;WARN&quot;: 0, &quot;FAIL&quot;: 0, &quot;UNKNOWN&quot;: 1, &quot;ERROR&quot;: 0}</td></tr><tr><td>aks_addons</td><td>10%</td><td>NOT_APPLICABLE</td><td>0</td><td>None%</td><td>{}</td></tr><tr><td>storage</td><td>10%</td><td>FAIL</td><td>7.5</td><td>100.0%</td><td>{&quot;PASS&quot;: 4, &quot;WARN&quot;: 1, &quot;FAIL&quot;: 1, &quot;UNKNOWN&quot;: 0, &quot;ERROR&quot;: 0}</td></tr></tbody></table><p>Worst finding per product/CRD, then average units within each weighted category. PASS=100%, WARN=50%, UNKNOWN/FAIL/ERROR=0%; N/A excluded. Evidence coverage and compatibility of assessed units reported separately.</p><p>El score es una ayuda de revisión; READY exige ausencia de bloqueos, avisos y evidencia pendiente en todo el informe.</p></section><section><h2>Cluster Platform Compatibility</h2><h3>OPERATOR COMPATIBILITY ANALYSIS</h3><p>Objetivo Kubernetes/AKS: 1.35.9. Una versión de imagen o Helm no demuestra el binario ejecutado ni soporte de la distribución administrada.</p><div style="overflow-x:auto"><table><thead><tr><th>Producto / namespace</th><th>Versiones observadas</th><th>Detectado desde</th><th>Compatibilidad objetivo</th><th>Resultado</th><th>Evidencia</th></tr></thead><tbody><tr><td>Argo CD<br>argocd</td><td>3.2.0, v3.2.0<br><small>helm_app_version</small></td><td>Helm, deployments.apps</td><td>No verificada</td><td>UNKNOWN</td><td><a href="https://argo-cd.readthedocs.io/en/release-3.2/operator-manual/tested-kubernetes-versions/" rel="noreferrer">Fuente oficial</a></td></tr><tr><td>Istio<br>istio-system</td><td>1.21.1<br><small>image_tag</small></td><td>deployments.apps</td><td>No</td><td>FAIL</td><td><a href="https://istio.io/latest/docs/releases/supported-releases/" rel="noreferrer">Fuente oficial</a></td></tr><tr><td>Gatekeeper<br>gatekeeper-system</td><td>v3.17.0<br><small>image_tag</small></td><td>deployments.apps</td><td>No verificada</td><td>UNKNOWN</td><td><a href="https://github.com/open-policy-agent/gatekeeper/blob/master/docs/Release_Management.md" rel="noreferrer">Fuente oficial</a></td></tr></tbody></table></div><details><summary>Argo CD — resolución y evidencia de detección</summary><pre>{
+@media print{body{background:white;margin:0;max-width:none}details{break-inside:avoid}}</style><main><h1>Kubernetes CRD Compatibility Validator</h1><p>offline:mixed-crds.json · 1.34.8 → 1.35.9</p><p>2026-11-05T14:51:23.137352+00:00 · Estado general: <b>FAIL</b></p><p>6 CRDs · PASS: 0 · UNKNOWN: 1 · WARN: 2 · FAIL: 3 · ERROR: 0</p><p>Riesgos por severidad: CRITICAL: 0 · HIGH: 6 · MEDIUM: 3 · LOW: 1 · INFO: 0</p><section><h2>Upgrade Readiness Score</h2><p style="font-size:1.6em"><b>Compatibility score: 45.3/100</b></p><p>Evidence coverage / Cobertura de evidencia: <b>75.0%</b> · Compatibilidad de unidades evaluadas: 45.3/100</p><p><b>Decision: BLOCKED</b></p><table><thead><tr><th>Categoría</th><th>Peso</th><th>Estado</th><th>Puntos</th><th>Cobertura</th><th>Unidades por resultado</th></tr></thead><tbody><tr><td>operators</td><td>40%</td><td>FAIL</td><td>0.0</td><td>33.3%</td><td>{&quot;PASS&quot;: 0, &quot;WARN&quot;: 0, &quot;FAIL&quot;: 1, &quot;UNKNOWN&quot;: 2, &quot;ERROR&quot;: 0}</td></tr><tr><td>crds</td><td>25%</td><td>FAIL</td><td>12.5</td><td>83.3%</td><td>{&quot;PASS&quot;: 3, &quot;WARN&quot;: 0, &quot;FAIL&quot;: 2, &quot;UNKNOWN&quot;: 1, &quot;ERROR&quot;: 0}</td></tr><tr><td>pluto</td><td>15%</td><td>UNKNOWN</td><td>0.0</td><td>0.0%</td><td>{&quot;PASS&quot;: 0, &quot;WARN&quot;: 0, &quot;FAIL&quot;: 0, &quot;UNKNOWN&quot;: 1, &quot;ERROR&quot;: 0}</td></tr><tr><td>aks_addons</td><td>10%</td><td>NOT_APPLICABLE</td><td>0</td><td>None%</td><td>{}</td></tr><tr><td>storage</td><td>10%</td><td>FAIL</td><td>7.5</td><td>100.0%</td><td>{&quot;PASS&quot;: 4, &quot;WARN&quot;: 1, &quot;FAIL&quot;: 1, &quot;UNKNOWN&quot;: 0, &quot;ERROR&quot;: 0}</td></tr></tbody></table><p>One unit per product/technical CRD/storage CRD and one Pluto unit. Weighted compatibility over evaluated PASS=100%, WARN=50%, FAIL=0% units only; UNKNOWN/ERROR excluded from compatibility, retained in coverage. Evidence coverage = evaluated/applicable units. PRODUCT_SUPPORT references have zero additional weight.</p><p>El score es una ayuda de revisión; READY exige ausencia de bloqueos, avisos y evidencia pendiente en todo el informe.</p></section><section><h2>Cluster Platform Compatibility</h2><h3>OPERATOR COMPATIBILITY ANALYSIS</h3><p>Objetivo Kubernetes/AKS: 1.35.9. Una versión de imagen o Helm no demuestra el binario ejecutado ni soporte de la distribución administrada.</p><div style="overflow-x:auto"><table><thead><tr><th>Producto / namespace</th><th>Versiones observadas</th><th>Detectado desde</th><th>Compatibilidad objetivo</th><th>Resultado</th><th>Evidencia</th><th>Detección</th></tr></thead><tbody><tr><td>Argo CD<br>argocd</td><td>3.2.0, v3.2.0<br><small>helm_app_version</small></td><td>Helm, deployments.apps</td><td>No verificada</td><td>UNKNOWN</td><td><a href="https://argo-cd.readthedocs.io/en/release-3.2/operator-manual/tested-kubernetes-versions/" rel="noreferrer">Fuente oficial</a></td><td>DETECTED_ACTIVE<br>Controlador activo confirmado: True</td></tr><tr><td>Istio<br>istio-system</td><td>1.21.1<br><small>image_tag</small></td><td>deployments.apps</td><td>No</td><td>FAIL</td><td><a href="https://istio.io/latest/docs/releases/supported-releases/" rel="noreferrer">Fuente oficial</a></td><td>DETECTED_ACTIVE<br>Controlador activo confirmado: True</td></tr><tr><td>Gatekeeper<br>gatekeeper-system</td><td>v3.17.0<br><small>image_tag</small></td><td>deployments.apps</td><td>No verificada</td><td>UNKNOWN</td><td><a href="https://github.com/open-policy-agent/gatekeeper/blob/master/docs/Release_Management.md" rel="noreferrer">Fuente oficial</a></td><td>DETECTED_ACTIVE<br>Controlador activo confirmado: True</td></tr></tbody></table></div><details><summary>Argo CD — resolución y evidencia de detección</summary><pre>{
+  &quot;detection_status&quot;: &quot;DETECTED_ACTIVE&quot;,
+  &quot;active_controller_confirmed&quot;: true,
   &quot;detected_versions&quot;: [
     &quot;3.2.0&quot;,
     &quot;v3.2.0&quot;
@@ -54,16 +56,23 @@ details{background:white;border:1px solid #bccbdb;border-radius:6px;margin:12px 
       &quot;revision&quot;: null,
       &quot;identity_basis&quot;: &quot;catalog_repository&quot;,
       &quot;confidence&quot;: &quot;image_tag&quot;,
+      &quot;activity&quot;: &quot;active&quot;,
+      &quot;observed_status&quot;: {},
+      &quot;version_label&quot;: null,
       &quot;version_basis&quot;: &quot;workload_template_image_tag&quot;
     },
     {
       &quot;from&quot;: &quot;Helm&quot;,
       &quot;name&quot;: &quot;argo-cd&quot;,
       &quot;chart&quot;: &quot;argo-cd-8.3.0&quot;,
-      &quot;app_version&quot;: &quot;3.2.0&quot;
+      &quot;app_version&quot;: &quot;3.2.0&quot;,
+      &quot;activity&quot;: &quot;active&quot;,
+      &quot;release_status&quot;: null
     }
   ]
 }</pre></details><details><summary>Istio — resolución y evidencia de detección</summary><pre>{
+  &quot;detection_status&quot;: &quot;DETECTED_ACTIVE&quot;,
+  &quot;active_controller_confirmed&quot;: true,
   &quot;detected_versions&quot;: [
     &quot;1.21.1&quot;
   ],
@@ -147,10 +156,15 @@ details{background:white;border:1px solid #bccbdb;border-radius:6px;margin:12px 
       &quot;revision&quot;: &quot;old&quot;,
       &quot;identity_basis&quot;: &quot;catalog_repository&quot;,
       &quot;confidence&quot;: &quot;image_tag&quot;,
+      &quot;activity&quot;: &quot;active&quot;,
+      &quot;observed_status&quot;: {},
+      &quot;version_label&quot;: null,
       &quot;version_basis&quot;: &quot;workload_template_image_tag&quot;
     }
   ]
 }</pre></details><details><summary>Gatekeeper — resolución y evidencia de detección</summary><pre>{
+  &quot;detection_status&quot;: &quot;DETECTED_ACTIVE&quot;,
+  &quot;active_controller_confirmed&quot;: true,
   &quot;detected_versions&quot;: [
     &quot;v3.17.0&quot;
   ],
@@ -194,10 +208,62 @@ details{background:white;border:1px solid #bccbdb;border-radius:6px;margin:12px 
       &quot;revision&quot;: null,
       &quot;identity_basis&quot;: &quot;catalog_repository&quot;,
       &quot;confidence&quot;: &quot;image_tag&quot;,
+      &quot;activity&quot;: &quot;active&quot;,
+      &quot;observed_status&quot;: {},
+      &quot;version_label&quot;: null,
       &quot;version_basis&quot;: &quot;workload_template_image_tag&quot;
     }
   ]
-}</pre></details><details><summary>Diagnóstico de todos los detectores, incluidos productos no encontrados</summary><table><thead><tr><th>Producto</th><th>Detección</th><th>Catálogo cargado</th><th>Motivo</th></tr></thead><tbody><tr><td>Argo CD</td><td>DETECTED</td><td>True</td><td>Identidad exacta encontrada</td></tr><tr><td>Argo Workflows</td><td>NOT_DETECTED</td><td>False</td><td>Sin coincidencia en repositorios/charts/grupos configurados; no prueba ausencia absoluta.</td></tr><tr><td>Istio</td><td>DETECTED</td><td>True</td><td>Identidad exacta encontrada</td></tr><tr><td>Gatekeeper</td><td>DETECTED</td><td>True</td><td>Identidad exacta encontrada</td></tr><tr><td>Calico</td><td>NOT_DETECTED</td><td>True</td><td>Sin coincidencia en repositorios/charts/grupos configurados; no prueba ausencia absoluta.</td></tr><tr><td>Tigera Operator</td><td>NOT_DETECTED</td><td>True</td><td>Sin coincidencia en repositorios/charts/grupos configurados; no prueba ausencia absoluta.</td></tr><tr><td>Dapr</td><td>NOT_DETECTED</td><td>True</td><td>Sin coincidencia en repositorios/charts/grupos configurados; no prueba ausencia absoluta.</td></tr><tr><td>Secrets Store CSI Driver</td><td>NOT_DETECTED</td><td>True</td><td>Sin coincidencia en repositorios/charts/grupos configurados; no prueba ausencia absoluta.</td></tr><tr><td>Azure Policy Add-on</td><td>NOT_DETECTED</td><td>False</td><td>Sin coincidencia en repositorios/charts/grupos configurados; no prueba ausencia absoluta.</td></tr><tr><td>Defender for Cloud</td><td>NOT_DETECTED</td><td>False</td><td>Sin coincidencia en repositorios/charts/grupos configurados; no prueba ausencia absoluta.</td></tr><tr><td>Cluster Autoscaler</td><td>NOT_DETECTED</td><td>False</td><td>Sin coincidencia en repositorios/charts/grupos configurados; no prueba ausencia absoluta.</td></tr><tr><td>Karpenter</td><td>NOT_DETECTED</td><td>False</td><td>Sin coincidencia en repositorios/charts/grupos configurados; no prueba ausencia absoluta.</td></tr><tr><td>Cert Manager</td><td>NOT_DETECTED</td><td>True</td><td>Sin coincidencia en repositorios/charts/grupos configurados; no prueba ausencia absoluta.</td></tr><tr><td>NGINX Ingress Controller (community)</td><td>NOT_DETECTED</td><td>False</td><td>Sin coincidencia en repositorios/charts/grupos configurados; no prueba ausencia absoluta.</td></tr><tr><td>NGINX Ingress Controller (F5)</td><td>NOT_DETECTED</td><td>False</td><td>Sin coincidencia en repositorios/charts/grupos configurados; no prueba ausencia absoluta.</td></tr><tr><td>AGIC</td><td>NOT_DETECTED</td><td>False</td><td>Sin coincidencia en repositorios/charts/grupos configurados; no prueba ausencia absoluta.</td></tr><tr><td>External DNS</td><td>NOT_DETECTED</td><td>False</td><td>Sin coincidencia en repositorios/charts/grupos configurados; no prueba ausencia absoluta.</td></tr><tr><td>Velero</td><td>NOT_DETECTED</td><td>True</td><td>Sin coincidencia en repositorios/charts/grupos configurados; no prueba ausencia absoluta.</td></tr><tr><td>Snapshot Controller</td><td>NOT_DETECTED</td><td>False</td><td>Sin coincidencia en repositorios/charts/grupos configurados; no prueba ausencia absoluta.</td></tr><tr><td>Prometheus Operator</td><td>NOT_DETECTED</td><td>False</td><td>Sin coincidencia en repositorios/charts/grupos configurados; no prueba ausencia absoluta.</td></tr><tr><td>OpenTelemetry Operator</td><td>NOT_DETECTED</td><td>False</td><td>Sin coincidencia en repositorios/charts/grupos configurados; no prueba ausencia absoluta.</td></tr><tr><td>FluxCD</td><td>NOT_DETECTED</td><td>False</td><td>Sin coincidencia en repositorios/charts/grupos configurados; no prueba ausencia absoluta.</td></tr><tr><td>Kyverno</td><td>NOT_DETECTED</td><td>False</td><td>Sin coincidencia en repositorios/charts/grupos configurados; no prueba ausencia absoluta.</td></tr><tr><td>OMS Agent / AMA</td><td>NOT_DETECTED</td><td>False</td><td>Sin coincidencia en repositorios/charts/grupos configurados; no prueba ausencia absoluta.</td></tr><tr><td>Azure Key Vault CSI Driver</td><td>NOT_DETECTED</td><td>False</td><td>Sin coincidencia en repositorios/charts/grupos configurados; no prueba ausencia absoluta.</td></tr><tr><td>Azure Disk CSI Driver</td><td>NOT_DETECTED</td><td>True</td><td>Sin coincidencia en repositorios/charts/grupos configurados; no prueba ausencia absoluta.</td></tr><tr><td>Azure File CSI Driver</td><td>NOT_DETECTED</td><td>True</td><td>Sin coincidencia en repositorios/charts/grupos configurados; no prueba ausencia absoluta.</td></tr><tr><td>External Secrets Operator</td><td>NOT_DETECTED</td><td>False</td><td>Sin coincidencia en repositorios/charts/grupos configurados; no prueba ausencia absoluta.</td></tr><tr><td>Cilium</td><td>NOT_DETECTED</td><td>False</td><td>Sin coincidencia en repositorios/charts/grupos configurados; no prueba ausencia absoluta.</td></tr><tr><td>Azure CNI</td><td>NOT_DETECTED</td><td>False</td><td>Sin coincidencia en repositorios/charts/grupos configurados; no prueba ausencia absoluta.</td></tr></tbody></table></details><h3>AKS Platform Compatibility</h3><pre>{
+}</pre></details><details><summary>Diagnóstico de todos los detectores, incluidos productos no encontrados</summary><table><thead><tr><th>Producto</th><th>Detección</th><th>Catálogo cargado</th><th>Motivo</th></tr></thead><tbody><tr><td>Argo CD</td><td>DETECTED_ACTIVE</td><td>True</td><td>Consultar evidencia de presencia y operación.<br></td></tr><tr><td>Argo Workflows</td><td>NOT_DETECTED</td><td>False</td><td>Sin coincidencias en el inventario completado; no prueba ausencia absoluta.<br></td></tr><tr><td>Istio</td><td>DETECTED_ACTIVE</td><td>True</td><td>Consultar evidencia de presencia y operación.<br></td></tr><tr><td>Gatekeeper</td><td>DETECTED_ACTIVE</td><td>True</td><td>Consultar evidencia de presencia y operación.<br></td></tr><tr><td>Calico</td><td>NOT_DETECTED</td><td>True</td><td>Sin coincidencias en el inventario completado; no prueba ausencia absoluta.<br></td></tr><tr><td>Tigera Operator</td><td>NOT_DETECTED</td><td>True</td><td>Sin coincidencias en el inventario completado; no prueba ausencia absoluta.<br></td></tr><tr><td>Dapr</td><td>NOT_DETECTED</td><td>True</td><td>Sin coincidencias en el inventario completado; no prueba ausencia absoluta.<br></td></tr><tr><td>Secrets Store CSI Driver</td><td>NOT_DETECTED</td><td>True</td><td>Sin coincidencias en el inventario completado; no prueba ausencia absoluta.<br></td></tr><tr><td>Azure Policy Add-on</td><td>NOT_DETECTED</td><td>False</td><td>Sin coincidencias en el inventario completado; no prueba ausencia absoluta.<br></td></tr><tr><td>Defender for Cloud</td><td>NOT_DETECTED</td><td>False</td><td>Sin coincidencias en el inventario completado; no prueba ausencia absoluta.<br></td></tr><tr><td>Cluster Autoscaler</td><td>NOT_DETECTED</td><td>False</td><td>Sin coincidencias en el inventario completado; no prueba ausencia absoluta.<br></td></tr><tr><td>Karpenter</td><td>NOT_DETECTED</td><td>False</td><td>Sin coincidencias en el inventario completado; no prueba ausencia absoluta.<br></td></tr><tr><td>Cert Manager</td><td>NOT_DETECTED</td><td>True</td><td>Sin coincidencias en el inventario completado; no prueba ausencia absoluta.<br></td></tr><tr><td>NGINX Ingress Controller (community)</td><td>NOT_DETECTED</td><td>False</td><td>Sin coincidencias en el inventario completado; no prueba ausencia absoluta.<br></td></tr><tr><td>NGINX Ingress Controller (F5)</td><td>NOT_DETECTED</td><td>False</td><td>Sin coincidencias en el inventario completado; no prueba ausencia absoluta.<br></td></tr><tr><td>AGIC</td><td>NOT_DETECTED</td><td>False</td><td>Sin coincidencias en el inventario completado; no prueba ausencia absoluta.<br></td></tr><tr><td>External DNS</td><td>NOT_DETECTED</td><td>False</td><td>Sin coincidencias en el inventario completado; no prueba ausencia absoluta.<br></td></tr><tr><td>Velero</td><td>NOT_DETECTED</td><td>True</td><td>Sin coincidencias en el inventario completado; no prueba ausencia absoluta.<br></td></tr><tr><td>Snapshot Controller</td><td>NOT_DETECTED</td><td>False</td><td>Sin coincidencias en el inventario completado; no prueba ausencia absoluta.<br></td></tr><tr><td>CSI Snapshotter sidecar</td><td>NOT_DETECTED</td><td>False</td><td>Sin coincidencias en el inventario completado; no prueba ausencia absoluta.<br></td></tr><tr><td>Prometheus Operator</td><td>NOT_DETECTED</td><td>False</td><td>Sin coincidencias en el inventario completado; no prueba ausencia absoluta.<br></td></tr><tr><td>OpenTelemetry Operator</td><td>NOT_DETECTED</td><td>False</td><td>Sin coincidencias en el inventario completado; no prueba ausencia absoluta.<br></td></tr><tr><td>FluxCD</td><td>NOT_DETECTED</td><td>False</td><td>Sin coincidencias en el inventario completado; no prueba ausencia absoluta.<br></td></tr><tr><td>Kyverno</td><td>NOT_DETECTED</td><td>False</td><td>Sin coincidencias en el inventario completado; no prueba ausencia absoluta.<br></td></tr><tr><td>OMS Agent / AMA</td><td>NOT_DETECTED</td><td>False</td><td>Sin coincidencias en el inventario completado; no prueba ausencia absoluta.<br></td></tr><tr><td>Azure Key Vault Provider for Secrets Store CSI Driver</td><td>NOT_DETECTED</td><td>False</td><td>Sin coincidencias en el inventario completado; no prueba ausencia absoluta.<br></td></tr><tr><td>Azure Disk CSI Driver</td><td>NOT_DETECTED</td><td>True</td><td>Sin coincidencias en el inventario completado; no prueba ausencia absoluta.<br></td></tr><tr><td>Azure File CSI Driver</td><td>NOT_DETECTED</td><td>True</td><td>Sin coincidencias en el inventario completado; no prueba ausencia absoluta.<br></td></tr><tr><td>External Secrets Operator</td><td>NOT_DETECTED</td><td>False</td><td>Sin coincidencias en el inventario completado; no prueba ausencia absoluta.<br></td></tr><tr><td>Cilium</td><td>NOT_DETECTED</td><td>False</td><td>Sin coincidencias en el inventario completado; no prueba ausencia absoluta.<br></td></tr><tr><td>Azure CNI</td><td>NOT_DETECTED</td><td>False</td><td>Sin coincidencias en el inventario completado; no prueba ausencia absoluta.<br></td></tr></tbody></table></details><h3>Fuentes del inventario</h3><pre>[
+  {
+    &quot;source&quot;: &quot;deployments.apps&quot;,
+    &quot;completed&quot;: true,
+    &quot;authorized&quot;: true,
+    &quot;error&quot;: null,
+    &quot;items_scanned&quot;: 3,
+    &quot;required&quot;: true
+  },
+  {
+    &quot;source&quot;: &quot;daemonsets.apps&quot;,
+    &quot;completed&quot;: true,
+    &quot;authorized&quot;: true,
+    &quot;error&quot;: null,
+    &quot;items_scanned&quot;: 0,
+    &quot;required&quot;: true
+  },
+  {
+    &quot;source&quot;: &quot;statefulsets.apps&quot;,
+    &quot;completed&quot;: true,
+    &quot;authorized&quot;: true,
+    &quot;error&quot;: null,
+    &quot;items_scanned&quot;: 0,
+    &quot;required&quot;: true
+  },
+  {
+    &quot;source&quot;: &quot;pods&quot;,
+    &quot;completed&quot;: true,
+    &quot;authorized&quot;: true,
+    &quot;error&quot;: null,
+    &quot;items_scanned&quot;: 0,
+    &quot;required&quot;: true
+  },
+  {
+    &quot;source&quot;: &quot;nodes&quot;,
+    &quot;completed&quot;: true,
+    &quot;authorized&quot;: true,
+    &quot;error&quot;: null,
+    &quot;items_scanned&quot;: 0,
+    &quot;required&quot;: true
+  },
+  {
+    &quot;source&quot;: &quot;Helm&quot;,
+    &quot;completed&quot;: true,
+    &quot;authorized&quot;: true,
+    &quot;error&quot;: null,
+    &quot;items_scanned&quot;: 1,
+    &quot;required&quot;: false
+  }
+]</pre><h3>AKS Platform Compatibility</h3><pre>{
   &quot;detected&quot;: false,
   &quot;target_version&quot;: &quot;1.35.9&quot;,
   &quot;current_version&quot;: null,
@@ -283,22 +349,27 @@ details{background:white;border:1px solid #bccbdb;border-radius:6px;margin:12px 
       &quot;sha256&quot;: &quot;fb6c3f8f579c95a86a6e0eac8b01b7302e174ab988826a125703871a26711662&quot;
     }
   ],
-  &quot;detectors_sha256&quot;: &quot;408114b82ee94e03702d573f9ec96cbd3fda6fde950cc95fe5ae1827be0a8cb4&quot;,
+  &quot;detectors_sha256&quot;: &quot;11c01690b24633b9594031104a62b89a96c38da009b2e509c184ebb161fc17bb&quot;,
   &quot;ownership_sha256&quot;: &quot;73fdd7bdcb98ede36f0a65e186d43554ca9aaaf953917f00203a2ebae0c23bde&quot;
-}</pre></section><h2>Alcance y limitaciones</h2><ul><li>PASS solo acredita las comprobaciones realizadas, no garantiza el upgrade.</li><li>La detección de APIs nativas se delega en Pluto; consultar su sección y estado.</li><li>No se prueban escrituras, reconciliación, CEL completo ni versiones persistidas por objeto.</li><li>La cobertura documental y los hashes del catálogo se registran en este informe.</li><li>No se exportan cuerpos de Custom Resources, annotations completas, kubeconfig, certificados ni stderr de kubectl.</li></ul><table><thead><tr><th>CRD afectado</th><th>Estado técnico / cobertura</th><th>Severidad</th><th>Producto / versiones</th><th>Soporte producto</th><th>Riesgo upgrade</th></tr></thead><tbody><tr><td>widgets.example.com</td><td>UNKNOWN</td><td>INFO</td><td>—<br></td><td>—</td><td>INFO</td></tr><tr><td>broken-schemas.example.com</td><td>FAIL</td><td>HIGH</td><td>—<br></td><td>—</td><td>HIGH</td></tr><tr><td>retired-versions.example.com</td><td>FAIL</td><td>HIGH</td><td>—<br></td><td>—</td><td>HIGH</td></tr><tr><td>broken-webhooks.example.com</td><td>FAIL</td><td>HIGH</td><td>—<br></td><td>—</td><td>HIGH</td></tr><tr><td>cel-widgets.example.com</td><td>WARN</td><td>LOW</td><td>—<br></td><td>—</td><td>LOW</td></tr><tr><td>migrating-widgets.example.com</td><td>WARN</td><td>MEDIUM</td><td>—<br></td><td>—</td><td>MEDIUM</td></tr></tbody></table><section><h2>Catálogos utilizados</h2><pre>{
+}</pre></section><h2>Alcance y limitaciones</h2><ul><li>PASS solo acredita las comprobaciones realizadas, no garantiza el upgrade.</li><li>La detección de APIs nativas se delega en Pluto; consultar su sección y estado.</li><li>No se prueban escrituras, reconciliación, CEL completo ni versiones persistidas por objeto.</li><li>La cobertura documental y los hashes del catálogo se registran en este informe.</li><li>No se exportan cuerpos de Custom Resources, annotations completas, kubeconfig, certificados ni stderr de kubectl.</li></ul><table><thead><tr><th>CRD afectado</th><th>Estado técnico / cobertura</th><th>Severidad</th><th>Producto / versiones</th><th>Soporte producto</th><th>Riesgo upgrade</th></tr></thead><tbody><tr><td>widgets.example.com</td><td>UNKNOWN</td><td>INFO</td><td>—<br></td><td>—</td><td>INFO</td></tr><tr><td>broken-schemas.example.com</td><td>FAIL</td><td>HIGH</td><td>—<br></td><td>—</td><td>HIGH</td></tr><tr><td>retired-versions.example.com</td><td>FAIL</td><td>HIGH</td><td>—<br></td><td>—</td><td>HIGH</td></tr><tr><td>broken-webhooks.example.com</td><td>FAIL</td><td>HIGH</td><td>—<br></td><td>—</td><td>HIGH</td></tr><tr><td>cel-widgets.example.com</td><td>WARN</td><td>LOW</td><td>—<br></td><td>—</td><td>LOW</td></tr><tr><td>migrating-widgets.example.com</td><td>WARN</td><td>MEDIUM</td><td>—<br></td><td>—</td><td>MEDIUM</td></tr></tbody></table><section><h2>Validador</h2><pre>{
+  &quot;status&quot;: &quot;FAIL&quot;,
+  &quot;exit_code&quot;: 1,
+  &quot;decision&quot;: &quot;BLOCKED&quot;,
+  &quot;exit_policy&quot;: &quot;FAIL,ERROR&quot;
+}</pre></section><section><h2>Catálogos utilizados</h2><pre>{
   &quot;coverage_catalog_version&quot;: &quot;2026.11.04.1&quot;,
   &quot;coverage_sha256&quot;: &quot;01c7959a428e1d9bd32229cc54106f3c99561db1d83601b8558cb8108c6b16fb&quot;,
   &quot;rule_catalogs&quot;: {
     &quot;files&quot;: [
       {
         &quot;file&quot;: &quot;kubernetes.json&quot;,
-        &quot;sha256&quot;: &quot;cce532134940543b129e563ec8b27f20a2fea82d72553738d4193731bd9fca78&quot;,
-        &quot;catalog_version&quot;: &quot;2026.11.04.1&quot;
+        &quot;sha256&quot;: &quot;84fb46082fe596ffab851a394a6a45db6ff757f8247a3fb7a4a4135df3dd0dbc&quot;,
+        &quot;catalog_version&quot;: &quot;2026.11.05.1&quot;
       }
     ],
-    &quot;rules_sha256&quot;: &quot;84bf20919b949d4bb9141c0fb86710f5147ecd1e00116d18e9b0a7654936ff5e&quot;
+    &quot;rules_sha256&quot;: &quot;64f5de123ca9fb3a2bf2fe631926b3ded16231175dabcc19b0c6e8f45dcb6e07&quot;
   }
-}</pre></section><section><h2>Pluto</h2><p>UNKNOWN: Pluto no se ejecuta en modo offline.</p><pre></pre><pre></pre></section><section><h2>Hallazgos globales</h2><details open><summary><b>RULE-COVERAGE</b> <span class='UNKNOWN'>UNKNOWN / INFO</span></summary><p>Cobertura documental del trayecto solicitado; el alcance se limita a las categorías registradas.</p><p>rules · documented · static</p><pre>{
+}</pre></section><section><h2>Pluto</h2><p>UNKNOWN: Pluto no se ejecuta en modo offline.</p><p>Pluto exit: No ejecutado / no disponible</p><pre></pre><pre></pre></section><section><h2>Hallazgos globales</h2><details open><summary><b>RULE-COVERAGE</b> <span class='UNKNOWN'>UNKNOWN / INFO</span></summary><p>Cobertura documental del trayecto solicitado; el alcance se limita a las categorías registradas.</p><p>rules · documented · static</p><pre>{
   &quot;catalog_version&quot;: &quot;2026.11.04.1&quot;,
   &quot;sha256&quot;: &quot;01c7959a428e1d9bd32229cc54106f3c99561db1d83601b8558cb8108c6b16fb&quot;,
   &quot;reviews&quot;: [
@@ -378,13 +449,18 @@ details{background:white;border:1px solid #bccbdb;border-radius:6px;margin:12px 
       &quot;revision&quot;: null,
       &quot;identity_basis&quot;: &quot;catalog_repository&quot;,
       &quot;confidence&quot;: &quot;image_tag&quot;,
+      &quot;activity&quot;: &quot;active&quot;,
+      &quot;observed_status&quot;: {},
+      &quot;version_label&quot;: null,
       &quot;version_basis&quot;: &quot;workload_template_image_tag&quot;
     },
     {
       &quot;from&quot;: &quot;Helm&quot;,
       &quot;name&quot;: &quot;argo-cd&quot;,
       &quot;chart&quot;: &quot;argo-cd-8.3.0&quot;,
-      &quot;app_version&quot;: &quot;3.2.0&quot;
+      &quot;app_version&quot;: &quot;3.2.0&quot;,
+      &quot;activity&quot;: &quot;active&quot;,
+      &quot;release_status&quot;: null
     }
   ],
   &quot;resolution_sources&quot;: [
@@ -456,6 +532,9 @@ details{background:white;border:1px solid #bccbdb;border-radius:6px;margin:12px 
       &quot;revision&quot;: &quot;old&quot;,
       &quot;identity_basis&quot;: &quot;catalog_repository&quot;,
       &quot;confidence&quot;: &quot;image_tag&quot;,
+      &quot;activity&quot;: &quot;active&quot;,
+      &quot;observed_status&quot;: {},
+      &quot;version_label&quot;: null,
       &quot;version_basis&quot;: &quot;workload_template_image_tag&quot;
     }
   ],
@@ -527,6 +606,9 @@ details{background:white;border:1px solid #bccbdb;border-radius:6px;margin:12px 
       &quot;revision&quot;: &quot;old&quot;,
       &quot;identity_basis&quot;: &quot;catalog_repository&quot;,
       &quot;confidence&quot;: &quot;image_tag&quot;,
+      &quot;activity&quot;: &quot;active&quot;,
+      &quot;observed_status&quot;: {},
+      &quot;version_label&quot;: null,
       &quot;version_basis&quot;: &quot;workload_template_image_tag&quot;
     }
   ],
@@ -575,6 +657,9 @@ details{background:white;border:1px solid #bccbdb;border-radius:6px;margin:12px 
       &quot;revision&quot;: null,
       &quot;identity_basis&quot;: &quot;catalog_repository&quot;,
       &quot;confidence&quot;: &quot;image_tag&quot;,
+      &quot;activity&quot;: &quot;active&quot;,
+      &quot;observed_status&quot;: {},
+      &quot;version_label&quot;: null,
       &quot;version_basis&quot;: &quot;workload_template_image_tag&quot;
     }
   ],
@@ -589,6 +674,58 @@ details{background:white;border:1px solid #bccbdb;border-radius:6px;margin:12px 
   ]
 }</pre><p><b>Recomendación:</b> Revisar la matriz oficial y actualizar el componente o completar evidencia antes del upgrade.</p><p><a href='https://github.com/open-policy-agent/gatekeeper/blob/master/docs/Release_Management.md' rel='noreferrer'>Fuente técnica</a></p></details><details open><summary><b>PLATFORM-DISCOVERY</b> <span class='PASS'>PASS / INFO</span></summary><p>Cobertura del descubrimiento de plataformas.</p><p>operator_compatibility · tested · snapshot</p><pre>{
   &quot;errors&quot;: [],
+  &quot;required_errors&quot;: [],
+  &quot;detector_errors&quot;: [],
+  &quot;inventory_sources&quot;: [
+    {
+      &quot;source&quot;: &quot;deployments.apps&quot;,
+      &quot;completed&quot;: true,
+      &quot;authorized&quot;: true,
+      &quot;error&quot;: null,
+      &quot;items_scanned&quot;: 3,
+      &quot;required&quot;: true
+    },
+    {
+      &quot;source&quot;: &quot;daemonsets.apps&quot;,
+      &quot;completed&quot;: true,
+      &quot;authorized&quot;: true,
+      &quot;error&quot;: null,
+      &quot;items_scanned&quot;: 0,
+      &quot;required&quot;: true
+    },
+    {
+      &quot;source&quot;: &quot;statefulsets.apps&quot;,
+      &quot;completed&quot;: true,
+      &quot;authorized&quot;: true,
+      &quot;error&quot;: null,
+      &quot;items_scanned&quot;: 0,
+      &quot;required&quot;: true
+    },
+    {
+      &quot;source&quot;: &quot;pods&quot;,
+      &quot;completed&quot;: true,
+      &quot;authorized&quot;: true,
+      &quot;error&quot;: null,
+      &quot;items_scanned&quot;: 0,
+      &quot;required&quot;: true
+    },
+    {
+      &quot;source&quot;: &quot;nodes&quot;,
+      &quot;completed&quot;: true,
+      &quot;authorized&quot;: true,
+      &quot;error&quot;: null,
+      &quot;items_scanned&quot;: 0,
+      &quot;required&quot;: true
+    },
+    {
+      &quot;source&quot;: &quot;Helm&quot;,
+      &quot;completed&quot;: true,
+      &quot;authorized&quot;: true,
+      &quot;error&quot;: null,
+      &quot;items_scanned&quot;: 1,
+      &quot;required&quot;: false
+    }
+  ],
   &quot;products_detected&quot;: 3
 }</pre><p><b>Recomendación:</b> Revisar la evidencia antes del upgrade.</p><p><a href='https://v1-35.docs.kubernetes.io/docs/tasks/extend-kubernetes/custom-resources/custom-resource-definitions/' rel='noreferrer'>Fuente técnica</a></p><p class='limit'>Límite: Detectores por repositorios y charts conocidos. Mirrors privados, productos no catalogados y planos administrados pueden no ser visibles.</p><p class='limit'>Límite: La versión de tag/Helm es evidencia declarada, no una verificación del binario por digest.</p><p class='limit'>Límite: Las listas de workloads se descargan completas dentro del timeout y se examinan hasta el límite configurado.</p></details><details open><summary><b>PLUTO-SCAN</b> <span class='UNKNOWN'>UNKNOWN / INFO</span></summary><p>Pluto no se ejecuta en modo offline.</p><p>native_api_deprecations · limitation · external_tool</p><pre>{
   &quot;exit_code&quot;: null,
@@ -611,7 +748,7 @@ details{background:white;border:1px solid #bccbdb;border-radius:6px;margin:12px 
     &quot;crosses&quot;: &quot;1.35.0&quot;
   },
   &quot;condition_matched&quot;: true
-}</pre><p><b>Recomendación:</b> Revisar deserializadores estrictos en clientes propios que consuman condiciones de CRDs.</p><p><a href='https://github.com/kubernetes/kubernetes/blob/master/CHANGELOG/CHANGELOG-1.35.md' rel='noreferrer'>Fuente técnica</a></p><p class='limit'>Límite: No se inspecciona el cÃ³digo del operador; este cambio no es un bloqueo por sÃ­ mismo.</p></details><details open><summary><b>INSTANCES-NOT-REQUESTED</b> <span class='UNKNOWN'>UNKNOWN / INFO</span></summary><p>Instancias no inspeccionadas; usar --include-instances para lectura limitada.</p><p>instances · limitation · static</p><pre>{}</pre><p><b>Recomendación:</b> Revisar la evidencia antes del upgrade.</p><p><a href='https://v1-35.docs.kubernetes.io/docs/tasks/extend-kubernetes/custom-resources/custom-resource-definitions/' rel='noreferrer'>Fuente técnica</a></p></details></section><section><h2>broken-schemas.example.com</h2><details open><summary><b>STRUCTURE-BASIC</b> <span class='PASS'>PASS / INFO</span></summary><p>Identidad, scope, nombres y versiones con estructura válida.</p><p>structure · preexisting · static</p><pre>{}</pre><p><b>Recomendación:</b> Revisar la evidencia antes del upgrade.</p><p><a href='https://v1-35.docs.kubernetes.io/docs/tasks/extend-kubernetes/custom-resources/custom-resource-definitions/' rel='noreferrer'>Fuente técnica</a></p></details><details open><summary><b>STORAGE-CONSISTENT</b> <span class='PASS'>PASS / INFO</span></summary><p>Declaraciones served, storage y storedVersions coherentes.</p><p>storage · preexisting · static</p><pre>{
+}</pre><p><b>Recomendación:</b> Revisar deserializadores estrictos en clientes propios que consuman condiciones de CRDs.</p><p><a href='https://github.com/kubernetes/kubernetes/blob/master/CHANGELOG/CHANGELOG-1.35.md' rel='noreferrer'>Fuente técnica</a></p><p class='limit'>Límite: No se inspecciona el código del operador; este cambio no es un bloqueo por sí mismo.</p></details><details open><summary><b>INSTANCES-NOT-REQUESTED</b> <span class='UNKNOWN'>UNKNOWN / INFO</span></summary><p>Instancias no inspeccionadas; usar --include-instances para lectura limitada.</p><p>instances · limitation · static</p><pre>{}</pre><p><b>Recomendación:</b> Revisar la evidencia antes del upgrade.</p><p><a href='https://v1-35.docs.kubernetes.io/docs/tasks/extend-kubernetes/custom-resources/custom-resource-definitions/' rel='noreferrer'>Fuente técnica</a></p></details></section><section><h2>broken-schemas.example.com</h2><details open><summary><b>STRUCTURE-BASIC</b> <span class='PASS'>PASS / INFO</span></summary><p>Identidad, scope, nombres y versiones con estructura válida.</p><p>structure · preexisting · static</p><pre>{}</pre><p><b>Recomendación:</b> Revisar la evidencia antes del upgrade.</p><p><a href='https://v1-35.docs.kubernetes.io/docs/tasks/extend-kubernetes/custom-resources/custom-resource-definitions/' rel='noreferrer'>Fuente técnica</a></p></details><details open><summary><b>STORAGE-CONSISTENT</b> <span class='PASS'>PASS / INFO</span></summary><p>Declaraciones served, storage y storedVersions coherentes.</p><p>storage · preexisting · static</p><pre>{
   &quot;served&quot;: [
     &quot;v1alpha1&quot;
   ],
@@ -629,7 +766,7 @@ details{background:white;border:1px solid #bccbdb;border-radius:6px;margin:12px 
     &quot;crosses&quot;: &quot;1.35.0&quot;
   },
   &quot;condition_matched&quot;: true
-}</pre><p><b>Recomendación:</b> Revisar deserializadores estrictos en clientes propios que consuman condiciones de CRDs.</p><p><a href='https://github.com/kubernetes/kubernetes/blob/master/CHANGELOG/CHANGELOG-1.35.md' rel='noreferrer'>Fuente técnica</a></p><p class='limit'>Límite: No se inspecciona el cÃ³digo del operador; este cambio no es un bloqueo por sÃ­ mismo.</p></details><details open><summary><b>INSTANCES-NOT-REQUESTED</b> <span class='UNKNOWN'>UNKNOWN / INFO</span></summary><p>Instancias no inspeccionadas; usar --include-instances para lectura limitada.</p><p>instances · limitation · static</p><pre>{}</pre><p><b>Recomendación:</b> Revisar la evidencia antes del upgrade.</p><p><a href='https://v1-35.docs.kubernetes.io/docs/tasks/extend-kubernetes/custom-resources/custom-resource-definitions/' rel='noreferrer'>Fuente técnica</a></p></details></section><section><h2>retired-versions.example.com</h2><details open><summary><b>STRUCTURE-BASIC</b> <span class='PASS'>PASS / INFO</span></summary><p>Identidad, scope, nombres y versiones con estructura válida.</p><p>structure · preexisting · static</p><pre>{}</pre><p><b>Recomendación:</b> Revisar la evidencia antes del upgrade.</p><p><a href='https://v1-35.docs.kubernetes.io/docs/tasks/extend-kubernetes/custom-resources/custom-resource-definitions/' rel='noreferrer'>Fuente técnica</a></p></details><details open><summary><b>STORED-INCONSISTENT</b> <span class='FAIL'>FAIL / HIGH</span></summary><p>Versiones persistidas y declaradas inconsistentes.</p><p>storage · preexisting · static</p><pre>{
+}</pre><p><b>Recomendación:</b> Revisar deserializadores estrictos en clientes propios que consuman condiciones de CRDs.</p><p><a href='https://github.com/kubernetes/kubernetes/blob/master/CHANGELOG/CHANGELOG-1.35.md' rel='noreferrer'>Fuente técnica</a></p><p class='limit'>Límite: No se inspecciona el código del operador; este cambio no es un bloqueo por sí mismo.</p></details><details open><summary><b>INSTANCES-NOT-REQUESTED</b> <span class='UNKNOWN'>UNKNOWN / INFO</span></summary><p>Instancias no inspeccionadas; usar --include-instances para lectura limitada.</p><p>instances · limitation · static</p><pre>{}</pre><p><b>Recomendación:</b> Revisar la evidencia antes del upgrade.</p><p><a href='https://v1-35.docs.kubernetes.io/docs/tasks/extend-kubernetes/custom-resources/custom-resource-definitions/' rel='noreferrer'>Fuente técnica</a></p></details></section><section><h2>retired-versions.example.com</h2><details open><summary><b>STRUCTURE-BASIC</b> <span class='PASS'>PASS / INFO</span></summary><p>Identidad, scope, nombres y versiones con estructura válida.</p><p>structure · preexisting · static</p><pre>{}</pre><p><b>Recomendación:</b> Revisar la evidencia antes del upgrade.</p><p><a href='https://v1-35.docs.kubernetes.io/docs/tasks/extend-kubernetes/custom-resources/custom-resource-definitions/' rel='noreferrer'>Fuente técnica</a></p></details><details open><summary><b>STORED-INCONSISTENT</b> <span class='FAIL'>FAIL / HIGH</span></summary><p>Versiones persistidas y declaradas inconsistentes.</p><p>storage · preexisting · static</p><pre>{
   &quot;stored_versions&quot;: [
     &quot;v1alpha1&quot;,
     &quot;retired&quot;
@@ -653,7 +790,7 @@ details{background:white;border:1px solid #bccbdb;border-radius:6px;margin:12px 
     &quot;crosses&quot;: &quot;1.35.0&quot;
   },
   &quot;condition_matched&quot;: true
-}</pre><p><b>Recomendación:</b> Revisar deserializadores estrictos en clientes propios que consuman condiciones de CRDs.</p><p><a href='https://github.com/kubernetes/kubernetes/blob/master/CHANGELOG/CHANGELOG-1.35.md' rel='noreferrer'>Fuente técnica</a></p><p class='limit'>Límite: No se inspecciona el cÃ³digo del operador; este cambio no es un bloqueo por sÃ­ mismo.</p></details><details open><summary><b>INSTANCES-NOT-REQUESTED</b> <span class='UNKNOWN'>UNKNOWN / INFO</span></summary><p>Instancias no inspeccionadas; usar --include-instances para lectura limitada.</p><p>instances · limitation · static</p><pre>{}</pre><p><b>Recomendación:</b> Revisar la evidencia antes del upgrade.</p><p><a href='https://v1-35.docs.kubernetes.io/docs/tasks/extend-kubernetes/custom-resources/custom-resource-definitions/' rel='noreferrer'>Fuente técnica</a></p></details></section><section><h2>broken-webhooks.example.com</h2><details open><summary><b>STRUCTURE-BASIC</b> <span class='PASS'>PASS / INFO</span></summary><p>Identidad, scope, nombres y versiones con estructura válida.</p><p>structure · preexisting · static</p><pre>{}</pre><p><b>Recomendación:</b> Revisar la evidencia antes del upgrade.</p><p><a href='https://v1-35.docs.kubernetes.io/docs/tasks/extend-kubernetes/custom-resources/custom-resource-definitions/' rel='noreferrer'>Fuente técnica</a></p></details><details open><summary><b>STORAGE-CONSISTENT</b> <span class='PASS'>PASS / INFO</span></summary><p>Declaraciones served, storage y storedVersions coherentes.</p><p>storage · preexisting · static</p><pre>{
+}</pre><p><b>Recomendación:</b> Revisar deserializadores estrictos en clientes propios que consuman condiciones de CRDs.</p><p><a href='https://github.com/kubernetes/kubernetes/blob/master/CHANGELOG/CHANGELOG-1.35.md' rel='noreferrer'>Fuente técnica</a></p><p class='limit'>Límite: No se inspecciona el código del operador; este cambio no es un bloqueo por sí mismo.</p></details><details open><summary><b>INSTANCES-NOT-REQUESTED</b> <span class='UNKNOWN'>UNKNOWN / INFO</span></summary><p>Instancias no inspeccionadas; usar --include-instances para lectura limitada.</p><p>instances · limitation · static</p><pre>{}</pre><p><b>Recomendación:</b> Revisar la evidencia antes del upgrade.</p><p><a href='https://v1-35.docs.kubernetes.io/docs/tasks/extend-kubernetes/custom-resources/custom-resource-definitions/' rel='noreferrer'>Fuente técnica</a></p></details></section><section><h2>broken-webhooks.example.com</h2><details open><summary><b>STRUCTURE-BASIC</b> <span class='PASS'>PASS / INFO</span></summary><p>Identidad, scope, nombres y versiones con estructura válida.</p><p>structure · preexisting · static</p><pre>{}</pre><p><b>Recomendación:</b> Revisar la evidencia antes del upgrade.</p><p><a href='https://v1-35.docs.kubernetes.io/docs/tasks/extend-kubernetes/custom-resources/custom-resource-definitions/' rel='noreferrer'>Fuente técnica</a></p></details><details open><summary><b>STORAGE-CONSISTENT</b> <span class='PASS'>PASS / INFO</span></summary><p>Declaraciones served, storage y storedVersions coherentes.</p><p>storage · preexisting · static</p><pre>{
   &quot;served&quot;: [
     &quot;v1alpha1&quot;
   ],
@@ -679,7 +816,7 @@ details{background:white;border:1px solid #bccbdb;border-radius:6px;margin:12px 
     &quot;crosses&quot;: &quot;1.35.0&quot;
   },
   &quot;condition_matched&quot;: true
-}</pre><p><b>Recomendación:</b> Revisar deserializadores estrictos en clientes propios que consuman condiciones de CRDs.</p><p><a href='https://github.com/kubernetes/kubernetes/blob/master/CHANGELOG/CHANGELOG-1.35.md' rel='noreferrer'>Fuente técnica</a></p><p class='limit'>Límite: No se inspecciona el cÃ³digo del operador; este cambio no es un bloqueo por sÃ­ mismo.</p></details><details open><summary><b>INSTANCES-NOT-REQUESTED</b> <span class='UNKNOWN'>UNKNOWN / INFO</span></summary><p>Instancias no inspeccionadas; usar --include-instances para lectura limitada.</p><p>instances · limitation · static</p><pre>{}</pre><p><b>Recomendación:</b> Revisar la evidencia antes del upgrade.</p><p><a href='https://v1-35.docs.kubernetes.io/docs/tasks/extend-kubernetes/custom-resources/custom-resource-definitions/' rel='noreferrer'>Fuente técnica</a></p></details></section><section><h2>cel-widgets.example.com</h2><details open><summary><b>STRUCTURE-BASIC</b> <span class='PASS'>PASS / INFO</span></summary><p>Identidad, scope, nombres y versiones con estructura válida.</p><p>structure · preexisting · static</p><pre>{}</pre><p><b>Recomendación:</b> Revisar la evidencia antes del upgrade.</p><p><a href='https://v1-35.docs.kubernetes.io/docs/tasks/extend-kubernetes/custom-resources/custom-resource-definitions/' rel='noreferrer'>Fuente técnica</a></p></details><details open><summary><b>STORAGE-CONSISTENT</b> <span class='PASS'>PASS / INFO</span></summary><p>Declaraciones served, storage y storedVersions coherentes.</p><p>storage · preexisting · static</p><pre>{
+}</pre><p><b>Recomendación:</b> Revisar deserializadores estrictos en clientes propios que consuman condiciones de CRDs.</p><p><a href='https://github.com/kubernetes/kubernetes/blob/master/CHANGELOG/CHANGELOG-1.35.md' rel='noreferrer'>Fuente técnica</a></p><p class='limit'>Límite: No se inspecciona el código del operador; este cambio no es un bloqueo por sí mismo.</p></details><details open><summary><b>INSTANCES-NOT-REQUESTED</b> <span class='UNKNOWN'>UNKNOWN / INFO</span></summary><p>Instancias no inspeccionadas; usar --include-instances para lectura limitada.</p><p>instances · limitation · static</p><pre>{}</pre><p><b>Recomendación:</b> Revisar la evidencia antes del upgrade.</p><p><a href='https://v1-35.docs.kubernetes.io/docs/tasks/extend-kubernetes/custom-resources/custom-resource-definitions/' rel='noreferrer'>Fuente técnica</a></p></details></section><section><h2>cel-widgets.example.com</h2><details open><summary><b>STRUCTURE-BASIC</b> <span class='PASS'>PASS / INFO</span></summary><p>Identidad, scope, nombres y versiones con estructura válida.</p><p>structure · preexisting · static</p><pre>{}</pre><p><b>Recomendación:</b> Revisar la evidencia antes del upgrade.</p><p><a href='https://v1-35.docs.kubernetes.io/docs/tasks/extend-kubernetes/custom-resources/custom-resource-definitions/' rel='noreferrer'>Fuente técnica</a></p></details><details open><summary><b>STORAGE-CONSISTENT</b> <span class='PASS'>PASS / INFO</span></summary><p>Declaraciones served, storage y storedVersions coherentes.</p><p>storage · preexisting · static</p><pre>{
   &quot;served&quot;: [
     &quot;v1alpha1&quot;
   ],
@@ -691,19 +828,19 @@ details{background:white;border:1px solid #bccbdb;border-radius:6px;margin:12px 
   ]
 }</pre><p><b>Recomendación:</b> Revisar la evidencia antes del upgrade.</p><p><a href='https://v1-35.docs.kubernetes.io/docs/tasks/extend-kubernetes/custom-resources/custom-resource-definition-versioning/' rel='noreferrer'>Fuente técnica</a></p></details><details open><summary><b>SCHEMA-CEL-UNVERIFIED</b> <span class='UNKNOWN'>UNKNOWN / INFO</span></summary><p>CEL detectado; compilación, coste y transición no verificados.</p><p>schema · limitation · static</p><pre>{
   &quot;path&quot;: &quot;spec.versions[v1alpha1].schema.openAPIV3Schema.properties.spec&quot;
-}</pre><p><b>Recomendación:</b> Probar creación y actualización de objetos representativos en el API Server objetivo.</p><p><a href='https://v1-35.docs.kubernetes.io/docs/tasks/extend-kubernetes/custom-resources/custom-resource-definitions/' rel='noreferrer'>Fuente técnica</a></p><p class='limit'>Límite: No se ejecuta CEL ni se publican expresiones o valores de recursos.</p></details><details open><summary><b>CONVERSION-NONE</b> <span class='PASS'>PASS / INFO</span></summary><p>Conversión None: no hay dependencia de un webhook.</p><p>conversion_webhook · preexisting · static</p><pre>{}</pre><p><b>Recomendación:</b> Revisar la evidencia antes del upgrade.</p><p><a href='https://v1-35.docs.kubernetes.io/docs/tasks/extend-kubernetes/custom-resources/custom-resource-definition-versioning/' rel='noreferrer'>Fuente técnica</a></p></details><details open><summary><b>NO_PRODUCT_OWNER</b> <span class='UNKNOWN'>UNKNOWN / INFO</span></summary><p>No existe una asociación explícita entre este CRD y un producto detectado.</p><p>operator · limitation · static</p><pre>{}</pre><p><b>Recomendación:</b> Registrar ownership documentado y detectar la versión del producto; no inferirla por labels o por la existencia del CRD.</p><p><a href='https://v1-35.docs.kubernetes.io/docs/tasks/extend-kubernetes/custom-resources/custom-resource-definitions/' rel='noreferrer'>Fuente técnica</a></p></details><details open><summary><b>K135-CEL-ERROR-VALUES</b> <span class='WARN'>WARN / LOW</span></summary><p>Kubernetes 1.35 puede incluir valores simples en errores de validaciÃ³n CEL.</p><p>schema · upgrade · static</p><pre>{
-  &quot;basis&quot;: &quot;PR 132798 modifica los errores CEL; la definiciÃ³n contiene reglas CEL.&quot;,
+}</pre><p><b>Recomendación:</b> Probar creación y actualización de objetos representativos en el API Server objetivo.</p><p><a href='https://v1-35.docs.kubernetes.io/docs/tasks/extend-kubernetes/custom-resources/custom-resource-definitions/' rel='noreferrer'>Fuente técnica</a></p><p class='limit'>Límite: No se ejecuta CEL ni se publican expresiones o valores de recursos.</p></details><details open><summary><b>CONVERSION-NONE</b> <span class='PASS'>PASS / INFO</span></summary><p>Conversión None: no hay dependencia de un webhook.</p><p>conversion_webhook · preexisting · static</p><pre>{}</pre><p><b>Recomendación:</b> Revisar la evidencia antes del upgrade.</p><p><a href='https://v1-35.docs.kubernetes.io/docs/tasks/extend-kubernetes/custom-resources/custom-resource-definition-versioning/' rel='noreferrer'>Fuente técnica</a></p></details><details open><summary><b>NO_PRODUCT_OWNER</b> <span class='UNKNOWN'>UNKNOWN / INFO</span></summary><p>No existe una asociación explícita entre este CRD y un producto detectado.</p><p>operator · limitation · static</p><pre>{}</pre><p><b>Recomendación:</b> Registrar ownership documentado y detectar la versión del producto; no inferirla por labels o por la existencia del CRD.</p><p><a href='https://v1-35.docs.kubernetes.io/docs/tasks/extend-kubernetes/custom-resources/custom-resource-definitions/' rel='noreferrer'>Fuente técnica</a></p></details><details open><summary><b>K135-CEL-ERROR-VALUES</b> <span class='WARN'>WARN / LOW</span></summary><p>Kubernetes 1.35 puede incluir valores simples en errores de validación CEL.</p><p>schema · upgrade · static</p><pre>{
+  &quot;basis&quot;: &quot;PR 132798 modifica los errores CEL; la definición contiene reglas CEL.&quot;,
   &quot;applicability&quot;: {
     &quot;crosses&quot;: &quot;1.35.0&quot;
   },
   &quot;condition_matched&quot;: true
-}</pre><p><b>Recomendación:</b> Revisar consumidores que comparen mensajes textuales y la redacciÃ³n de datos sensibles en logs.</p><p><a href='https://github.com/kubernetes/kubernetes/pull/132798' rel='noreferrer'>Fuente técnica</a></p><p class='limit'>Límite: Es un cambio de diagnÃ³stico, no una incompatibilidad de la expresiÃ³n CEL demostrada.</p></details><details open><summary><b>K135-CONDITION-GENERATION</b> <span class='PASS'>PASS / INFO</span></summary><p>1.35 incorpora observedGeneration en condiciones de CRDs.</p><p>structure · release_change · static</p><pre>{
+}</pre><p><b>Recomendación:</b> Revisar consumidores que comparen mensajes textuales y la redacción de datos sensibles en logs.</p><p><a href='https://github.com/kubernetes/kubernetes/pull/132798' rel='noreferrer'>Fuente técnica</a></p><p class='limit'>Límite: Es un cambio de diagnóstico, no una incompatibilidad de la expresión CEL demostrada.</p></details><details open><summary><b>K135-CONDITION-GENERATION</b> <span class='PASS'>PASS / INFO</span></summary><p>1.35 incorpora observedGeneration en condiciones de CRDs.</p><p>structure · release_change · static</p><pre>{
   &quot;basis&quot;: &quot;Cambio aditivo documentado en las notas 1.35, PR 134984.&quot;,
   &quot;applicability&quot;: {
     &quot;crosses&quot;: &quot;1.35.0&quot;
   },
   &quot;condition_matched&quot;: true
-}</pre><p><b>Recomendación:</b> Revisar deserializadores estrictos en clientes propios que consuman condiciones de CRDs.</p><p><a href='https://github.com/kubernetes/kubernetes/blob/master/CHANGELOG/CHANGELOG-1.35.md' rel='noreferrer'>Fuente técnica</a></p><p class='limit'>Límite: No se inspecciona el cÃ³digo del operador; este cambio no es un bloqueo por sÃ­ mismo.</p></details><details open><summary><b>INSTANCES-NOT-REQUESTED</b> <span class='UNKNOWN'>UNKNOWN / INFO</span></summary><p>Instancias no inspeccionadas; usar --include-instances para lectura limitada.</p><p>instances · limitation · static</p><pre>{}</pre><p><b>Recomendación:</b> Revisar la evidencia antes del upgrade.</p><p><a href='https://v1-35.docs.kubernetes.io/docs/tasks/extend-kubernetes/custom-resources/custom-resource-definitions/' rel='noreferrer'>Fuente técnica</a></p></details></section><section><h2>migrating-widgets.example.com</h2><details open><summary><b>STRUCTURE-BASIC</b> <span class='PASS'>PASS / INFO</span></summary><p>Identidad, scope, nombres y versiones con estructura válida.</p><p>structure · preexisting · static</p><pre>{}</pre><p><b>Recomendación:</b> Revisar la evidencia antes del upgrade.</p><p><a href='https://v1-35.docs.kubernetes.io/docs/tasks/extend-kubernetes/custom-resources/custom-resource-definitions/' rel='noreferrer'>Fuente técnica</a></p></details><details open><summary><b>STORED-MIGRATION</b> <span class='WARN'>WARN / MEDIUM</span></summary><p>El status conserva varias versiones de almacenamiento.</p><p>storage · preexisting · static</p><pre>{
+}</pre><p><b>Recomendación:</b> Revisar deserializadores estrictos en clientes propios que consuman condiciones de CRDs.</p><p><a href='https://github.com/kubernetes/kubernetes/blob/master/CHANGELOG/CHANGELOG-1.35.md' rel='noreferrer'>Fuente técnica</a></p><p class='limit'>Límite: No se inspecciona el código del operador; este cambio no es un bloqueo por sí mismo.</p></details><details open><summary><b>INSTANCES-NOT-REQUESTED</b> <span class='UNKNOWN'>UNKNOWN / INFO</span></summary><p>Instancias no inspeccionadas; usar --include-instances para lectura limitada.</p><p>instances · limitation · static</p><pre>{}</pre><p><b>Recomendación:</b> Revisar la evidencia antes del upgrade.</p><p><a href='https://v1-35.docs.kubernetes.io/docs/tasks/extend-kubernetes/custom-resources/custom-resource-definitions/' rel='noreferrer'>Fuente técnica</a></p></details></section><section><h2>migrating-widgets.example.com</h2><details open><summary><b>STRUCTURE-BASIC</b> <span class='PASS'>PASS / INFO</span></summary><p>Identidad, scope, nombres y versiones con estructura válida.</p><p>structure · preexisting · static</p><pre>{}</pre><p><b>Recomendación:</b> Revisar la evidencia antes del upgrade.</p><p><a href='https://v1-35.docs.kubernetes.io/docs/tasks/extend-kubernetes/custom-resources/custom-resource-definitions/' rel='noreferrer'>Fuente técnica</a></p></details><details open><summary><b>STORED-MIGRATION</b> <span class='WARN'>WARN / MEDIUM</span></summary><p>El status conserva varias versiones de almacenamiento.</p><p>storage · preexisting · static</p><pre>{
   &quot;stored_versions&quot;: [
     &quot;v1alpha1&quot;,
     &quot;v1&quot;
@@ -718,4 +855,4 @@ details{background:white;border:1px solid #bccbdb;border-radius:6px;margin:12px 
     &quot;crosses&quot;: &quot;1.35.0&quot;
   },
   &quot;condition_matched&quot;: true
-}</pre><p><b>Recomendación:</b> Revisar deserializadores estrictos en clientes propios que consuman condiciones de CRDs.</p><p><a href='https://github.com/kubernetes/kubernetes/blob/master/CHANGELOG/CHANGELOG-1.35.md' rel='noreferrer'>Fuente técnica</a></p><p class='limit'>Límite: No se inspecciona el cÃ³digo del operador; este cambio no es un bloqueo por sÃ­ mismo.</p></details><details open><summary><b>INSTANCES-NOT-REQUESTED</b> <span class='UNKNOWN'>UNKNOWN / INFO</span></summary><p>Instancias no inspeccionadas; usar --include-instances para lectura limitada.</p><p>instances · limitation · static</p><pre>{}</pre><p><b>Recomendación:</b> Revisar la evidencia antes del upgrade.</p><p><a href='https://v1-35.docs.kubernetes.io/docs/tasks/extend-kubernetes/custom-resources/custom-resource-definitions/' rel='noreferrer'>Fuente técnica</a></p></details></section></main></html>
+}</pre><p><b>Recomendación:</b> Revisar deserializadores estrictos en clientes propios que consuman condiciones de CRDs.</p><p><a href='https://github.com/kubernetes/kubernetes/blob/master/CHANGELOG/CHANGELOG-1.35.md' rel='noreferrer'>Fuente técnica</a></p><p class='limit'>Límite: No se inspecciona el código del operador; este cambio no es un bloqueo por sí mismo.</p></details><details open><summary><b>INSTANCES-NOT-REQUESTED</b> <span class='UNKNOWN'>UNKNOWN / INFO</span></summary><p>Instancias no inspeccionadas; usar --include-instances para lectura limitada.</p><p>instances · limitation · static</p><pre>{}</pre><p><b>Recomendación:</b> Revisar la evidencia antes del upgrade.</p><p><a href='https://v1-35.docs.kubernetes.io/docs/tasks/extend-kubernetes/custom-resources/custom-resource-definitions/' rel='noreferrer'>Fuente técnica</a></p></details></section></main></html>

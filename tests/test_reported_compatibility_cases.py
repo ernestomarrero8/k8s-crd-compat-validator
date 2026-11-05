@@ -133,11 +133,11 @@ def test_partial_evidence_no_longer_erases_category_and_blockers_still_gate():
     failed = score(report(["PASS", "FAIL"]))
     passed = score(report(["PASS", "PASS"]))
     assert unknown["categories"]["operators"]["earned_points"] == 20
-    assert unknown["decision"] == "ATTENTION REQUIRED"
+    assert unknown["decision"] == "INCOMPLETE"
     assert failed["decision"] == "BLOCKED"
     assert failed["evidence_coverage"] > unknown["evidence_coverage"]
     assert failed["assessed_compatibility_score"] < unknown["assessed_compatibility_score"]
-    assert passed["score"] > unknown["score"] and passed["decision"] == "READY"
+    assert passed["evidence_coverage"] > unknown["evidence_coverage"] and passed["decision"] == "READY"
 
 
 def test_dns_failure_is_unreachable_not_proof_of_deleted_cluster():

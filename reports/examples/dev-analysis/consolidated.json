@@ -1,0 +1,268 @@
+{
+  "clusters": [
+    {
+      "cluster_identity": "/subscriptions/synthetic/resourcegroups/demo/providers/microsoft.containerservice/managedclusters/dev",
+      "primary_context": "demo-dev",
+      "contexts": [
+        "demo-dev",
+        "demo-dev-admin"
+      ],
+      "data_mismatch": false,
+      "current_version": "1.34.8",
+      "target_version": "1.35.9",
+      "pluto": {
+        "status": "UNKNOWN",
+        "exit_code": null,
+        "exit_code_origin": "unavailable"
+      },
+      "validator": {
+        "status": "FAIL",
+        "exit_code": 1,
+        "exit_code_origin": "validator_process"
+      },
+      "compatibility_score": 75.8,
+      "evidence_coverage": 50.0,
+      "decision": "BLOCKED",
+      "products_fail": [
+        "Istio"
+      ],
+      "products_unknown": [
+        "Gatekeeper",
+        "Azure Disk CSI Driver",
+        "Azure File CSI Driver"
+      ],
+      "blocking_reasons": [
+        {
+          "rule_id": "NOT_COMPATIBLE",
+          "status": "FAIL",
+          "severity": "HIGH",
+          "description": "Istio 1.24.1 — Objetivo fuera del rango de soporte explícito del proveedor; no se recomienda este upgrade con la versión instalada."
+        },
+        {
+          "rule_id": "VERSION_EOL",
+          "status": "WARN",
+          "severity": "MEDIUM",
+          "description": "Istio 1.24.1 — Versión fuera de mantenimiento según la evidencia oficial registrada."
+        },
+        {
+          "rule_id": "RULE-COVERAGE",
+          "status": "UNKNOWN",
+          "severity": "INFO",
+          "description": "Cobertura documental del trayecto solicitado; el alcance se limita a las categorías registradas."
+        },
+        {
+          "rule_id": "NO_SUPPORT_DATA",
+          "status": "UNKNOWN",
+          "severity": "INFO",
+          "description": "Gatekeeper 3.18.0 — No existe una única fila de matriz oficial revisada para esta versión."
+        },
+        {
+          "rule_id": "NO_SUPPORT_DATA",
+          "status": "UNKNOWN",
+          "severity": "INFO",
+          "description": "Azure Disk CSI Driver v1.34.7-7 — No existe una única fila de matriz oficial revisada para esta versión."
+        },
+        {
+          "rule_id": "NO_SUPPORT_DATA",
+          "status": "UNKNOWN",
+          "severity": "INFO",
+          "description": "Azure File CSI Driver v1.35.11-6 — No existe una única fila de matriz oficial revisada para esta versión."
+        },
+        {
+          "rule_id": "PLUTO-SCAN",
+          "status": "UNKNOWN",
+          "severity": "INFO",
+          "description": "Pluto no se ejecuta en modo offline."
+        },
+        {
+          "rule_id": "NO_PRODUCT_OWNER",
+          "status": "UNKNOWN",
+          "severity": "INFO",
+          "description": "widgets.example.com — No existe una asociación explícita entre este CRD y un producto detectado."
+        },
+        {
+          "rule_id": "INSTANCES-NOT-REQUESTED",
+          "status": "UNKNOWN",
+          "severity": "INFO",
+          "description": "widgets.example.com — Instancias no inspeccionadas; usar --include-instances para lectura limitada."
+        }
+      ],
+      "context_results": [
+        {
+          "context": "demo-dev",
+          "validator_exit": 1,
+          "pluto": {
+            "executed": false,
+            "command": [],
+            "context": "offline:valid-crds.json",
+            "target_version": "1.35.9",
+            "exit_code": null,
+            "stdout": "",
+            "stderr_omitted": true,
+            "limitations": [
+              "Pluto tiene su propio catálogo de APIs; un resultado limpio no prueba cobertura de versiones futuras.",
+              "La detección depende de los objetos y metadatos disponibles para Pluto."
+            ],
+            "status": "UNKNOWN",
+            "message": "Pluto no se ejecuta en modo offline."
+          }
+        },
+        {
+          "context": "demo-dev-admin",
+          "validator_exit": 1,
+          "pluto": {
+            "executed": false,
+            "command": [],
+            "context": "offline:valid-crds.json",
+            "target_version": "1.35.9",
+            "exit_code": null,
+            "stdout": "",
+            "stderr_omitted": true,
+            "limitations": [
+              "Pluto tiene su propio catálogo de APIs; un resultado limpio no prueba cobertura de versiones futuras.",
+              "La detección depende de los objetos y metadatos disponibles para Pluto."
+            ],
+            "status": "UNKNOWN",
+            "message": "Pluto no se ejecuta en modo offline."
+          }
+        }
+      ]
+    },
+    {
+      "cluster_identity": "/subscriptions/synthetic/resourcegroups/demo/providers/microsoft.containerservice/managedclusters/mismatch",
+      "primary_context": "demo-mismatch",
+      "contexts": [
+        "demo-mismatch",
+        "demo-mismatch-admin"
+      ],
+      "data_mismatch": true,
+      "current_version": "1.34.8",
+      "target_version": "1.35.9",
+      "pluto": {
+        "status": "UNKNOWN",
+        "exit_code": null,
+        "exit_code_origin": "unavailable"
+      },
+      "validator": {
+        "status": "ERROR",
+        "exit_code": 2,
+        "exit_code_origin": "consolidation"
+      },
+      "compatibility_score": 75.8,
+      "evidence_coverage": 50.0,
+      "decision": "BLOCKED",
+      "products_fail": [
+        "Istio"
+      ],
+      "products_unknown": [
+        "Gatekeeper",
+        "Azure Disk CSI Driver",
+        "Azure File CSI Driver"
+      ],
+      "blocking_reasons": [
+        {
+          "rule_id": "NOT_COMPATIBLE",
+          "status": "FAIL",
+          "severity": "HIGH",
+          "description": "Istio 1.24.1 — Objetivo fuera del rango de soporte explícito del proveedor; no se recomienda este upgrade con la versión instalada."
+        },
+        {
+          "rule_id": "CONTEXT_DATA_MISMATCH",
+          "status": "ERROR",
+          "severity": "HIGH",
+          "description": "CONTEXT_DATA_MISMATCH: datos distintos entre contextos de una misma identidad; revisar todos los detalles."
+        },
+        {
+          "rule_id": "VERSION_EOL",
+          "status": "WARN",
+          "severity": "MEDIUM",
+          "description": "Istio 1.24.1 — Versión fuera de mantenimiento según la evidencia oficial registrada."
+        },
+        {
+          "rule_id": "RULE-COVERAGE",
+          "status": "UNKNOWN",
+          "severity": "INFO",
+          "description": "Cobertura documental del trayecto solicitado; el alcance se limita a las categorías registradas."
+        },
+        {
+          "rule_id": "NO_SUPPORT_DATA",
+          "status": "UNKNOWN",
+          "severity": "INFO",
+          "description": "Gatekeeper 3.18.0 — No existe una única fila de matriz oficial revisada para esta versión."
+        },
+        {
+          "rule_id": "NO_SUPPORT_DATA",
+          "status": "UNKNOWN",
+          "severity": "INFO",
+          "description": "Azure Disk CSI Driver v1.34.7-7 — No existe una única fila de matriz oficial revisada para esta versión."
+        },
+        {
+          "rule_id": "NO_SUPPORT_DATA",
+          "status": "UNKNOWN",
+          "severity": "INFO",
+          "description": "Azure File CSI Driver v1.35.11-6 — No existe una única fila de matriz oficial revisada para esta versión."
+        },
+        {
+          "rule_id": "PLUTO-SCAN",
+          "status": "UNKNOWN",
+          "severity": "INFO",
+          "description": "Pluto no se ejecuta en modo offline."
+        },
+        {
+          "rule_id": "NO_PRODUCT_OWNER",
+          "status": "UNKNOWN",
+          "severity": "INFO",
+          "description": "widgets.example.com — No existe una asociación explícita entre este CRD y un producto detectado."
+        },
+        {
+          "rule_id": "INSTANCES-NOT-REQUESTED",
+          "status": "UNKNOWN",
+          "severity": "INFO",
+          "description": "widgets.example.com — Instancias no inspeccionadas; usar --include-instances para lectura limitada."
+        }
+      ],
+      "context_results": [
+        {
+          "context": "demo-mismatch",
+          "validator_exit": 1,
+          "pluto": {
+            "executed": false,
+            "command": [],
+            "context": "offline:valid-crds.json",
+            "target_version": "1.35.9",
+            "exit_code": null,
+            "stdout": "",
+            "stderr_omitted": true,
+            "limitations": [
+              "Pluto tiene su propio catálogo de APIs; un resultado limpio no prueba cobertura de versiones futuras.",
+              "La detección depende de los objetos y metadatos disponibles para Pluto."
+            ],
+            "status": "UNKNOWN",
+            "message": "Pluto no se ejecuta en modo offline."
+          }
+        },
+        {
+          "context": "demo-mismatch-admin",
+          "validator_exit": 1,
+          "pluto": {
+            "executed": false,
+            "command": [],
+            "context": "offline:valid-crds.json",
+            "target_version": "1.35.9",
+            "exit_code": null,
+            "stdout": "",
+            "stderr_omitted": true,
+            "limitations": [
+              "Pluto tiene su propio catálogo de APIs; un resultado limpio no prueba cobertura de versiones futuras.",
+              "La detección depende de los objetos y metadatos disponibles para Pluto."
+            ],
+            "status": "UNKNOWN",
+            "message": "Pluto no se ejecuta en modo offline."
+          }
+        }
+      ]
+    }
+  ],
+  "contexts": 4,
+  "overall_status": "ERROR"
+}

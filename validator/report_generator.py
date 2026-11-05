@@ -16,7 +16,7 @@ def build_report(cluster, current, target, path, crds, global_findings, queries=
     counts = Counter(c["status"] for c in crds)
     risk_counts = Counter(f["severity"] for f in all_findings if f["status"] in ("WARN", "FAIL", "ERROR"))
     states = [f["status"] for f in all_findings]
-    return {"schema_version": "1.4", "tool": "k8s-crd-compat-validator", "tool_version": __version__,
+    return {"schema_version": "1.5", "tool": "k8s-crd-compat-validator", "tool_version": __version__,
             "analyzed_at": datetime.now(timezone.utc).isoformat(), "cluster": cluster,
             "current_version": str(current), "target_version": str(target), "upgrade_path": path,
             "target_context": target_context, "read_only": True, "kubectl_queries": queries,
@@ -76,7 +76,9 @@ def html(report):
     risks = " · ".join(f"{s}: {n}" for s, n in report["summary"]["risks_by_severity"].items())
     scan = report.get("pluto", {})
     content = ["<section><h2>Catálogos utilizados</h2><pre>" + esc(json.dumps(report.get("knowledge", {}), ensure_ascii=False, indent=2)) + "</pre></section>",
-               "<section><h2>Pluto</h2><p>" + esc(scan.get("status", "UNKNOWN")) + ": " + esc(scan.get("message", "Sin resultado")) + "</p><pre>" + esc(" ".join(scan.get("command", []))) + "</pre><pre>" + esc(scan.get("stdout", "")) + "</pre></section>"]
+               "<section><h2>Pluto</h2><p>" + esc(scan.get("status", "UNKNOWN")) + ": " + esc(scan.get("message", "Sin resultado")) + "</p><p>Pluto exit: " + esc(scan.get("exit_code") if scan.get("exit_code") is not None else "No ejecutado / no disponible") + "</p><pre>" + esc(" ".join(scan.get("command", []))) + "</pre><pre>" + esc(scan.get("stdout", "")) + "</pre></section>"]
+    if "validator" in report:
+        content.insert(0, "<section><h2>Validador</h2><pre>" + esc(json.dumps(report["validator"], ensure_ascii=False, indent=2)) + "</pre></section>")
     groups = [("Hallazgos globales", report["global_findings"])] + [(c["name"], c["findings"]) for c in report["crds"]]
     for title, findings in groups:
         content.append(f"<section><h2>{esc(title)}</h2>")
@@ -114,6 +116,6 @@ def write_reports(report, directory, format_="all"):
         ext = "md" if fmt == "markdown" else fmt
         target = path / f"report.{ext}"
         content = json.dumps(report, ensure_ascii=False, indent=2) + "\n" if fmt == "json" else markdown(report) if fmt == "markdown" else html(report)
-        target.write_text(content, encoding="utf-8")
+        target.write_text(content, encoding="utf-8", newline="\n")
         written.append(target)
     return written

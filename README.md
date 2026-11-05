@@ -2,6 +2,8 @@
 
 CLI de solo lectura para evaluar CRDs y sus dependencias antes de un upgrade Kubernetes. Python 3.12+, Windows y Linux; biblioteca estándar en ejecución. No instala servicios, no modifica el clúster. En LIVE también ejecuta Pluto como detector externo de APIs deprecadas.
 
+La versión de desarrollo actual es **0.5.1**, en la rama **dev**. Los merges a main quedan a cargo del usuario. Consultar [la entrega incremental](docs/dev-fix-delivery.md) para los cambios de detección, cobertura, decisión y exit codes; esas semánticas reemplazan las descripciones históricas de v0.4/v0.5 incluidas más abajo.
+
 Desde v0.3 también descubre plataformas/operadores mediante Helm, workloads, pods y CRDs; evalúa matrices oficiales curadas y muestra un resumen ejecutivo con Upgrade Readiness Score. El mismo análisis se incorpora al HTML consolidado de varios contextos.
 
 El repositorio incluye validaciones estáticas, consultas LIVE acotadas, un motor de reglas JSON, reportes JSON/Markdown/HTML y pruebas con kubectl simulado. La transición revisada inicialmente es **1.34 → 1.35**. Los números de parche se comparan, pero el catálogo no promete cubrir todos los cambios de cada parche o distribución, incluido AKS.
@@ -572,3 +574,42 @@ python main.py --input fixtures/valid-crds.json --platform-input fixtures/report
 Es un fixture sintético: Istio FAIL, Calico PASS, versiones completas de Azure CSI con soporte pendiente y diagnóstico de Argo CD no detectado. El comando devuelve 1 por el bloqueo documentado de Istio. No son datos de producción.
 
 Verificación de v0.5: **194 pruebas aprobadas**, incluidos los tags reportados, la selección de matrices por familia/patch, la precedencia de builds explícitos, el descubrimiento de Gatekeeper y Argo CD, la separación entre versiones de componentes y producto, el score con cobertura parcial y los contextos inaccesibles. Los ejemplos HTML individuales y el consolidado se regeneraron con esta versión; el consolidado de demostración utiliza `reported-cases/report.json`.
+
+## v0.5.1 en dev: correcciones incrementales
+
+El descubrimiento publica `detection_status`, `detected`, `active_controller_confirmed` y el estado previo `legacy_status`. Diferencia DETECTED_ACTIVE, DETECTED_INACTIVE, ARTIFACTS_ONLY, NOT_DETECTED, INVENTORY_INCOMPLETE y DETECTION_ERROR. Un CRD residual no confirma un controlador; workloads/Pods, Helm, metadata propia y webhooks con backend verificado aportan evidencia independiente de compatibilidad. Un estado activo nunca acredita por sí solo soporte de Kubernetes.
+
+Cada fuente registra `completed`, `authorized`, `error`, `items_scanned` y `required`. Los workloads/Pods/nodos son obligatorios; Helm, la CLI de Istio y las consultas complementarias de webhooks/APIService son alternativas opcionales. `authorized: null` indica que un fallo distinto de RBAC no permitió confirmar autorización. Helm ausente no convierte un inventario Kubernetes completo en incompleto. Si una fuente obligatoria falla, `detection_status` es INVENTORY_INCOMPLETE; `presence_status` conserva la actividad ya observada.
+
+Driver Secrets Store y proveedor Azure son productos separados, al igual que Snapshot Controller y CSI Snapshotter sidecar. `azure-keyvault` conserva su ID y expone el nombre anterior como `legacy_product`; los catálogos personalizados con ese nombre continúan funcionando. Calico y Tigera Operator tampoco comparten automáticamente versión. Un Snapshot Controller habilitado en metadata AKS, sin versión expuesta, muestra MANAGED / MANAGED_BY_AKS con soporte UNKNOWN.
+
+El consolidado agrupa por identidad estable, no por sufijos del contexto. Orden: Resource ID AKS, combinación subscription/resourceGroup/name, UID de kube-system, URL normalizada del API Server. Si ninguna está disponible, conserva los contextos separados. Se evalúan todos los contextos: diferencias de datos o códigos generan CONTEXT_DATA_MISMATCH y conservan todos los detalles. `consolidated.json` expone identidades, contexto principal, contextos asociados y resultados de cada ejecución.
+
+`PRODUCT_SUPPORT` conserva hallazgos y evidencia, pero añade `score_weight: 0`, `counted_in` y `product_ref`; no participa de la unidad técnica de CRDs. El score 2.1 conserva los pesos 40/25/15/10/10 y calcula compatibilidad sólo sobre unidades PASS/WARN/FAIL. La cobertura pública es unidades evaluables / unidades aplicables, sin ponderación; la cobertura ponderada anterior queda en `weighted_evidence_coverage` y los puntos de preparación anteriores en `verified_readiness_score`. No se debe comparar directamente el score 2.0 con 2.1.
+
+La decisión distingue BLOCKED por FAIL confirmado, INCOMPLETE por error/fuente obligatoria/umbral de cobertura, ATTENTION_REQUIRED por avisos o evidencia pendiente y READY con cobertura completa y sin bloqueos aplicables. Se conserva `decision_legacy` con espacios para consumidores históricos. UNKNOWN no se convierte en incompatibilidad demostrada y un score alto no autoriza un upgrade con evidencia pendiente.
+
+Configuración conservadora, opcional y aditiva:
+
+```sh
+python main.py --context production --target-version 1.35.9 --readiness-config readiness.example.yaml
+bash crd-compat-validator.sh --target-version 1.35.9 --readiness-config readiness.example.yaml
+```
+
+Se admite JSON `{"readiness": {...}}` o el mapping YAML de tres escalares de `readiness.example.yaml`, sin dependencias externas, etiquetas YAML ni código ejecutable. `unknown_blocks_ready: false` no elimina el requisito de cobertura completa para READY. `warning_blocks_ready: false` permite tratar WARN evaluados como no bloqueantes; los valores predeterminados son true.
+
+Exit codes del validador: **0** evaluación completa sin bloqueos de su política, **1** bloqueos confirmados de una evaluación completada, **2** error/evaluación incompleta. `--fail-on` sigue disponible para bloqueos adicionales; no oculta errores ni fuentes obligatorias ausentes. La decisión BLOCKED puede coexistir con exit 2 si además faltan fuentes obligatorias. La falta de una matriz es evidencia pendiente, no por sí misma un error técnico; la cobertura puede hacer que la decisión sea INCOMPLETE cuando no hay FAIL.
+
+Pluto conserva su código real en `pluto.exit_code`; el proceso del validador publica `validator.exit_code`. Un timeout del runner conserva 124 en `contexts.json` y se normaliza a 2 en el resumen del validador. Una discrepancia entre contextos también produce 2 en el consolidado, conservando los códigos individuales y su origen. El esquema JSON del reporte pasa a 1.5 de forma aditiva.
+
+Los textos dañados de `rules/kubernetes.json` se restauraron en UTF-8 en el archivo fuente. Sus IDs, condiciones, estados y fuentes no cambian. No hay reparaciones heurísticas de texto en el renderer. Python y los logs del batch fijan UTF-8; JSON conserva caracteres y los reportes usan saltos LF.
+
+Reproducción sin clúster (el primer comando devuelve 1 por el FAIL documentado de Istio):
+
+```sh
+python main.py --input fixtures/valid-crds.json --platform-input fixtures/reported-platform-cases.json --current 1.34.8 --target-version 1.35.9 --output reports/examples/reported-cases --format all
+python fixtures/generate_dev_example.py
+python -m pytest -q --tb=short
+```
+
+El [consolidado sintético de dev](reports/examples/dev-analysis/consolidated.html) muestra cuatro contextos agrupados en dos identidades, una de ellas con discrepancia explícita. No representa observaciones de producción ni ejecuciones reales de Pluto.

@@ -18,6 +18,7 @@ def product_finding(product):
                   "resolved_versions": product.get("resolved_versions", []), "resolution_sources": product.get("resolution_sources", []),
                   "reviewed_on": sorted({f["evidence"]["reviewed_on"] for f in product["findings"] if f["evidence"].get("reviewed_on")}),
                   "target": product["findings"][0]["evidence"].get("target"), "product_registry_ref": product["id"],
+                  "score_weight": 0, "counted_in": {"aks": "aks_addons", "storage": "storage"}.get(product.get("category"), "operators"),
                   "support_status": product["status"], "support_findings": [f["rule_id"] for f in product["findings"]]},
         recommendation="Consultar el detalle único de la matriz del producto; resolver por separado los defectos técnicos del CRD.",
         limitations=["El soporte del producto no prueba que la definición, conversión o datos persistidos del CRD sean correctos."])

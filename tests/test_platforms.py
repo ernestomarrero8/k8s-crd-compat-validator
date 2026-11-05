@@ -92,7 +92,8 @@ def test_inventory_forbidden_is_unknown_not_absence(catalog):
     from unittest.mock import patch
     with patch("validator.platform_discovery.command_json", return_value=(None, "binary_missing")):
         inventory = collect(Denied(), [])
-    assert len(inventory["discovery_errors"]) == 6
+    assert sum(s["required"] and not s["completed"] for s in inventory["inventory_sources"]) == 5
+    assert {e["source"] for e in inventory["discovery_errors"]} >= {"deployments.apps", "daemonsets.apps", "statefulsets.apps", "pods", "nodes", "Helm"}
     platform, findings = analyze(None, [], "1.34.8", "1.35.9", catalog)
     assert platform["discovery"]["status"] == "UNKNOWN"
 
@@ -132,7 +133,7 @@ def test_score_weights_unknowns_and_blockers_are_not_diluted():
     report["crds"] = [{"findings": [{"category": "schema", "status": "PASS"}]}]
     assert score(report)["score"] == 100
     report["global_findings"] = [{"status": "UNKNOWN"}]
-    assert score(report)["decision"] == "ATTENTION REQUIRED"
+    assert score(report)["decision"] == "ATTENTION_REQUIRED"
     report["platform"]["products"] = [{"category": "operator", "findings": [{"status": "PASS"}] * 100 + [{"status": "FAIL"}]}]
     report["global_findings"] = [{"status": "FAIL"}]
     result = score(report)
@@ -206,7 +207,7 @@ def test_inventory_limit_and_unknown_versions_lower_score(catalog):
     report["platform"] = platform
     report["global_findings"] = [f.to_dict() for f in findings]
     result = score(report)
-    assert result["decision"] == "ATTENTION REQUIRED" and result["score"] < 100
+    assert result["decision"] == "INCOMPLETE" and result["evidence_coverage"] < 100
 
 
 def test_snapshot_context_mismatch_cannot_evaluate_another_live_cluster(catalog):

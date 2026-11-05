@@ -1,0 +1,4 @@
+readiness:
+  minimum_evidence_coverage: 90
+  unknown_blocks_ready: true
+  warning_blocks_ready: true

@@ -3,6 +3,7 @@ import argparse
 from datetime import datetime, timezone
 import hashlib
 import json
+import os
 from pathlib import Path
 import re
 import subprocess
@@ -24,7 +25,7 @@ def main(argv=None):
     args, forwarded = parser.parse_known_args(argv)
     # Explicit allowlist of main.py options: callers cannot redirect or reuse reports.
     allowed = {"--include-instances": 0, "--verbose": 0, "--verify-sources": 0,
-               "--platform-catalog": 1, "--support-catalog": 1, "--platform-limit": 1, "--detectors-path": 1,
+               "--platform-catalog": 1, "--support-catalog": 1, "--platform-limit": 1, "--detectors-path": 1, "--readiness-config": 1,
                "--rules-path": 1, "--coverage-path": 1, "--operator-catalog": 1,
                "--timeout": 1, "--pluto-timeout": 1, "--max-queries": 1, "--page-size": 1,
                "--max-pages": 1, "--max-instances": 1, "--fail-on": 1}
@@ -57,11 +58,17 @@ def main(argv=None):
             command = [sys.executable, str(Path(__file__).resolve().with_name("main.py")), "--context", context,
                        "--target", target, "--output", str(directory.resolve()), "--format", "all"] + forwarded
             try:
-                with (directory / "console.txt").open("w", encoding="utf-8") as log:
-                    result = subprocess.run(command, stdout=log, stderr=subprocess.STDOUT,
-                                            timeout=args.context_timeout, check=False, shell=False)
+                env = dict(os.environ, PYTHONIOENCODING="utf-8", PYTHONUTF8="1")
+                result = subprocess.run(command, stdout=subprocess.PIPE, stderr=subprocess.STDOUT,
+                    text=True, encoding="utf-8", errors="replace", env=env,
+                    timeout=args.context_timeout, check=False, shell=False)
+                (directory / "console.txt").write_text(getattr(result, "stdout", "") or "", encoding="utf-8", newline="\n")
                 code = result.returncode
-            except subprocess.TimeoutExpired:
+            except subprocess.TimeoutExpired as exc:
+                partial = exc.stdout or ""
+                if isinstance(partial, bytes):
+                    partial = partial.decode("utf-8", errors="replace")
+                (directory / "console.txt").write_text(partial + "\nTimeout del contexto; evaluación incompleta.\n", encoding="utf-8", newline="\n")
                 code = 124
             except OSError:
                 code = 2
@@ -71,7 +78,7 @@ def main(argv=None):
         state = consolidate(entries, run_dir / "consolidated.html")
         # Portable index for traceability; paths are relative to this run directory.
         manifest = [e | {"report_path": str(Path(e["report_path"]).relative_to(run_dir))} for e in entries]
-        (run_dir / "contexts.json").write_text(json.dumps(manifest, ensure_ascii=False, indent=2), encoding="utf-8")
+        (run_dir / "contexts.json").write_text(json.dumps(manifest, ensure_ascii=False, indent=2), encoding="utf-8", newline="\n")
         print(f"Consolidado: {(run_dir / 'consolidated.html').resolve()} · {state}")
         return 2 if state == "ERROR" else 1 if any(e["exit_code"] == 1 for e in entries) else 0
     except (ValueError, OSError, subprocess.TimeoutExpired):

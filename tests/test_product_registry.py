@@ -77,7 +77,8 @@ def test_cli_reuses_support_without_hiding_storage_defects(tmp_path, monkeypatch
     inventory = tmp_path / "inventory.json"
     inventory.write_text(json.dumps(snapshot()), encoding="utf-8")
     output = tmp_path / "reports"
-    assert main(["--input", str(input_), "--platform-input", str(inventory), "--current", "1.34.8", "--target", "1.35.9", "--output", str(output)]) == (1 if defect else 0)
+    # No Pluto scan offline: incomplete coverage (2) unless a documented FAIL determines BLOCKED (1).
+    assert main(["--input", str(input_), "--platform-input", str(inventory), "--current", "1.34.8", "--target", "1.35.9", "--output", str(output)]) == (1 if defect else 2)
     report = read_json(output / "report.json")
     result = report["crds"][0]
     assert result["product_compatibility"]["status"] == "PASS"

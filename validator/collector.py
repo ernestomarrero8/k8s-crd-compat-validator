@@ -6,6 +6,8 @@ from urllib.parse import urlencode, quote
 
 from .version import Version
 
+SERVER_CONFIG = ["config", "view", "--minify", "-o", "jsonpath={.clusters[0].cluster.server}"]
+
 
 class CollectionError(Exception):
     def __init__(self, code):
@@ -58,7 +60,7 @@ class Collector:
         self.cache = {}
 
     def _run(self, args, json_output=True):
-        if not args or args[0] not in ("get", "version", "config") or (args[0] == "config" and args != ["config", "current-context"]):
+        if not args or args[0] not in ("get", "version", "config") or (args[0] == "config" and args not in (["config", "current-context"], SERVER_CONFIG)):
             raise ValueError("El colector solo admite lecturas get/version y config current-context.")
         if self.queries >= self.max_queries:
             raise CollectionError("query_limit")
@@ -107,6 +109,10 @@ class Collector:
             return Version.parse(data["serverVersion"]["gitVersion"])
         except (KeyError, TypeError, ValueError) as exc:
             raise CollectionError("invalid_response") from exc
+
+    def api_server(self):
+        # Project only the endpoint, never export credentials or a kubeconfig body.
+        return self._run(SERVER_CONFIG, json_output=False)
 
     def crds(self):
         return crd_items(self._run(["get", "crds", "-o", "json"]))

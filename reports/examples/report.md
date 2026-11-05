@@ -2,7 +2,7 @@
 
 Clúster: offline:mixed\-crds\.json · 1\.34\.8 → 1\.35\.9
 
-Fecha UTC: 2026\-11\-04T20:12:18\.224724\+00:00 · Estado general: **FAIL**
+Fecha UTC: 2026\-11\-05T14:51:23\.137352\+00:00 · Estado general: **FAIL**
 
 CRDs: 6 · Consultas kubectl: 0
 
@@ -24,13 +24,13 @@ CRDs: 6 · Consultas kubectl: 0
 
 ## Upgrade Readiness Score
 
-22.2/100 · BLOCKED
+45.3/100 · BLOCKED
 
-Worst finding per product/CRD, then average units within each weighted category\. PASS=100%, WARN=50%, UNKNOWN/FAIL/ERROR=0%; N/A excluded\. Evidence coverage and compatibility of assessed units reported separately\.
+One unit per product/technical CRD/storage CRD and one Pluto unit\. Weighted compatibility over evaluated PASS=100%, WARN=50%, FAIL=0% units only; UNKNOWN/ERROR excluded from compatibility, retained in coverage\. Evidence coverage = evaluated/applicable units\. PRODUCT\_SUPPORT references have zero additional weight\.
 
 El score es una ayuda de revisión; READY exige ausencia de bloqueos, avisos y evidencia pendiente en todo el informe\.
 
-Cobertura de evidencia: 49.1% · Compatibilidad de unidades evaluadas: 45.3/100
+Cobertura de evidencia: 75.0% · Compatibilidad de unidades evaluadas: 45.3/100
 
 
 ## Cluster Platform Compatibility — OPERATOR COMPATIBILITY ANALYSIS
@@ -63,7 +63,7 @@ AKS: \{"detected": false, "target\_version": "1\.35\.9", "current\_version": nul
 
 ## Catálogos utilizados
 
-\{"coverage\_catalog\_version": "2026\.11\.04\.1", "coverage\_sha256": "01c7959a428e1d9bd32229cc54106f3c99561db1d83601b8558cb8108c6b16fb", "rule\_catalogs": \{"files": \[\{"file": "kubernetes\.json", "sha256": "cce532134940543b129e563ec8b27f20a2fea82d72553738d4193731bd9fca78", "catalog\_version": "2026\.11\.04\.1"\}\], "rules\_sha256": "84bf20919b949d4bb9141c0fb86710f5147ecd1e00116d18e9b0a7654936ff5e"\}\}
+\{"coverage\_catalog\_version": "2026\.11\.04\.1", "coverage\_sha256": "01c7959a428e1d9bd32229cc54106f3c99561db1d83601b8558cb8108c6b16fb", "rule\_catalogs": \{"files": \[\{"file": "kubernetes\.json", "sha256": "84fb46082fe596ffab851a394a6a45db6ff757f8247a3fb7a4a4135df3dd0dbc", "catalog\_version": "2026\.11\.05\.1"\}\], "rules\_sha256": "64f5de123ca9fb3a2bf2fe631926b3ded16231175dabcc19b0c6e8f45dcb6e07"\}\}
 
 ## Pluto
 
@@ -95,7 +95,7 @@ Objetivo fuera de las versiones probadas; esto no demuestra incompatibilidad\.
 
 Categoría: operator\_compatibility · Relación: documented · Método: static
 
-Evidencia: \{"product": "Argo CD", "installed\_version": "3\.2\.0", "target": "1\.35\.9", "matrix": \{"version": "3\.2\.x", "min\_kubernetes": "1\.31\.0", "max\_kubernetes": "1\.34\.x", "matrix\_type": "tested", "exclusive": false, "source": "https://argo\-cd\.readthedocs\.io/en/release\-3\.2/operator\-manual/tested\-kubernetes\-versions/", "reviewed\_on": "2026\-11\-04", "valid\_until": "2027\-02\-02", "evidence": "La tabla de la rama release\-3\.2 enumera Kubernetes 1\.31 a 1\.34 como probados\. Fuera de esa lista no se acredita incompatibilidad ni soporte\.", "support\_state": "supported"\}, "detected\_version": "3\.2\.0", "version\_confidence": "helm\_app\_version", "catalog\_lookup": \{"catalog\_present": true, "files": \["argocd\.json"\], "paths": \["catalogs/support/argocd\.json"\], "available\_selectors": \["3\.2\.x"\], "matched\_selectors": \["3\.2\.x"\], "selected\_selector": "3\.2\.x", "normalized\_version": "3\.2\.0", "reason": "matched"\}, "distribution\_revision": null, "reviewed\_on": "2026\-11\-04", "catalog\_limitations": \[\], "detection\_sources": \[\{"from": "deployments\.apps", "namespace": "argocd", "name": "argocd\-server", "repository": "quay\.io/argoproj/argocd", "declared\_tag": "v3\.2\.0", "revision": null, "identity\_basis": "catalog\_repository", "confidence": "image\_tag", "version\_basis": "workload\_template\_image\_tag"\}, \{"from": "Helm", "name": "argo\-cd", "chart": "argo\-cd\-8\.3\.0", "app\_version": "3\.2\.0"\}\], "resolution\_sources": \["Helm"\], "resolved\_versions": \["3\.2\.0"\], "raw\_detected\_versions": \["3\.2\.0", "v3\.2\.0"\]\}
+Evidencia: \{"product": "Argo CD", "installed\_version": "3\.2\.0", "target": "1\.35\.9", "matrix": \{"version": "3\.2\.x", "min\_kubernetes": "1\.31\.0", "max\_kubernetes": "1\.34\.x", "matrix\_type": "tested", "exclusive": false, "source": "https://argo\-cd\.readthedocs\.io/en/release\-3\.2/operator\-manual/tested\-kubernetes\-versions/", "reviewed\_on": "2026\-11\-04", "valid\_until": "2027\-02\-02", "evidence": "La tabla de la rama release\-3\.2 enumera Kubernetes 1\.31 a 1\.34 como probados\. Fuera de esa lista no se acredita incompatibilidad ni soporte\.", "support\_state": "supported"\}, "detected\_version": "3\.2\.0", "version\_confidence": "helm\_app\_version", "catalog\_lookup": \{"catalog\_present": true, "files": \["argocd\.json"\], "paths": \["catalogs/support/argocd\.json"\], "available\_selectors": \["3\.2\.x"\], "matched\_selectors": \["3\.2\.x"\], "selected\_selector": "3\.2\.x", "normalized\_version": "3\.2\.0", "reason": "matched"\}, "distribution\_revision": null, "reviewed\_on": "2026\-11\-04", "catalog\_limitations": \[\], "detection\_sources": \[\{"from": "deployments\.apps", "namespace": "argocd", "name": "argocd\-server", "repository": "quay\.io/argoproj/argocd", "declared\_tag": "v3\.2\.0", "revision": null, "identity\_basis": "catalog\_repository", "confidence": "image\_tag", "activity": "active", "observed\_status": \{\}, "version\_label": null, "version\_basis": "workload\_template\_image\_tag"\}, \{"from": "Helm", "name": "argo\-cd", "chart": "argo\-cd\-8\.3\.0", "app\_version": "3\.2\.0", "activity": "active", "release\_status": null\}\], "resolution\_sources": \["Helm"\], "resolved\_versions": \["3\.2\.0"\], "raw\_detected\_versions": \["3\.2\.0", "v3\.2\.0"\]\}
 
 Recomendación: Revisar la matriz oficial y actualizar el componente o completar evidencia antes del upgrade\.
 
@@ -107,7 +107,7 @@ Versión fuera de mantenimiento según la evidencia oficial registrada\.
 
 Categoría: operator\_compatibility · Relación: documented · Método: static
 
-Evidencia: \{"product": "Istio", "installed\_version": "1\.21\.1", "target": "1\.35\.9", "matrix": \{"version": "1\.21\.x", "min\_kubernetes": "1\.26\.0", "max\_kubernetes": "1\.29\.x", "matrix\_type": "supported", "exclusive": true, "end\_of\_support": "2024\-09\-27", "source": "https://istio\.io/latest/docs/releases/supported\-releases/", "reviewed\_on": "2026\-11\-04", "valid\_until": "2027\-02\-02", "evidence": "Fila 1\.21: Kubernetes soportados 1\.26 a 1\.29; EOL 27 septiembre 2024\.", "support\_state": "supported"\}, "detected\_version": "1\.21\.1", "version\_confidence": "image\_tag", "catalog\_lookup": \{"catalog\_present": true, "files": \["istio\.json"\], "paths": \["catalogs/support/istio\.json"\], "available\_selectors": \["1\.30\.x", "1\.29\.x", "1\.28\.x", "1\.27\.x", "1\.26\.x", "1\.25\.x", "1\.24\.x", "1\.23\.x", "1\.22\.x", "1\.21\.x"\], "matched\_selectors": \["1\.21\.x"\], "selected\_selector": "1\.21\.x", "normalized\_version": "1\.21\.1", "reason": "matched"\}, "distribution\_revision": null, "reviewed\_on": "2026\-11\-04", "catalog\_limitations": \[\], "detection\_sources": \[\{"from": "deployments\.apps", "namespace": "istio\-system", "name": "istiod", "repository": "docker\.io/istio/pilot", "declared\_tag": "1\.21\.1", "revision": "old", "identity\_basis": "catalog\_repository", "confidence": "image\_tag", "version\_basis": "workload\_template\_image\_tag"\}\], "resolution\_sources": \["deployments\.apps"\], "resolved\_versions": \["1\.21\.1"\], "raw\_detected\_versions": \["1\.21\.1"\]\}
+Evidencia: \{"product": "Istio", "installed\_version": "1\.21\.1", "target": "1\.35\.9", "matrix": \{"version": "1\.21\.x", "min\_kubernetes": "1\.26\.0", "max\_kubernetes": "1\.29\.x", "matrix\_type": "supported", "exclusive": true, "end\_of\_support": "2024\-09\-27", "source": "https://istio\.io/latest/docs/releases/supported\-releases/", "reviewed\_on": "2026\-11\-04", "valid\_until": "2027\-02\-02", "evidence": "Fila 1\.21: Kubernetes soportados 1\.26 a 1\.29; EOL 27 septiembre 2024\.", "support\_state": "supported"\}, "detected\_version": "1\.21\.1", "version\_confidence": "image\_tag", "catalog\_lookup": \{"catalog\_present": true, "files": \["istio\.json"\], "paths": \["catalogs/support/istio\.json"\], "available\_selectors": \["1\.30\.x", "1\.29\.x", "1\.28\.x", "1\.27\.x", "1\.26\.x", "1\.25\.x", "1\.24\.x", "1\.23\.x", "1\.22\.x", "1\.21\.x"\], "matched\_selectors": \["1\.21\.x"\], "selected\_selector": "1\.21\.x", "normalized\_version": "1\.21\.1", "reason": "matched"\}, "distribution\_revision": null, "reviewed\_on": "2026\-11\-04", "catalog\_limitations": \[\], "detection\_sources": \[\{"from": "deployments\.apps", "namespace": "istio\-system", "name": "istiod", "repository": "docker\.io/istio/pilot", "declared\_tag": "1\.21\.1", "revision": "old", "identity\_basis": "catalog\_repository", "confidence": "image\_tag", "activity": "active", "observed\_status": \{\}, "version\_label": null, "version\_basis": "workload\_template\_image\_tag"\}\], "resolution\_sources": \["deployments\.apps"\], "resolved\_versions": \["1\.21\.1"\], "raw\_detected\_versions": \["1\.21\.1"\]\}
 
 Recomendación: Revisar la matriz oficial y actualizar el componente o completar evidencia antes del upgrade\.
 
@@ -119,7 +119,7 @@ Objetivo fuera del rango de soporte explícito del proveedor; no se recomienda e
 
 Categoría: operator\_compatibility · Relación: documented · Método: static
 
-Evidencia: \{"product": "Istio", "installed\_version": "1\.21\.1", "target": "1\.35\.9", "matrix": \{"version": "1\.21\.x", "min\_kubernetes": "1\.26\.0", "max\_kubernetes": "1\.29\.x", "matrix\_type": "supported", "exclusive": true, "end\_of\_support": "2024\-09\-27", "source": "https://istio\.io/latest/docs/releases/supported\-releases/", "reviewed\_on": "2026\-11\-04", "valid\_until": "2027\-02\-02", "evidence": "Fila 1\.21: Kubernetes soportados 1\.26 a 1\.29; EOL 27 septiembre 2024\.", "support\_state": "supported"\}, "detected\_version": "1\.21\.1", "version\_confidence": "image\_tag", "catalog\_lookup": \{"catalog\_present": true, "files": \["istio\.json"\], "paths": \["catalogs/support/istio\.json"\], "available\_selectors": \["1\.30\.x", "1\.29\.x", "1\.28\.x", "1\.27\.x", "1\.26\.x", "1\.25\.x", "1\.24\.x", "1\.23\.x", "1\.22\.x", "1\.21\.x"\], "matched\_selectors": \["1\.21\.x"\], "selected\_selector": "1\.21\.x", "normalized\_version": "1\.21\.1", "reason": "matched"\}, "distribution\_revision": null, "reviewed\_on": "2026\-11\-04", "catalog\_limitations": \[\], "detection\_sources": \[\{"from": "deployments\.apps", "namespace": "istio\-system", "name": "istiod", "repository": "docker\.io/istio/pilot", "declared\_tag": "1\.21\.1", "revision": "old", "identity\_basis": "catalog\_repository", "confidence": "image\_tag", "version\_basis": "workload\_template\_image\_tag"\}\], "resolution\_sources": \["deployments\.apps"\], "resolved\_versions": \["1\.21\.1"\], "raw\_detected\_versions": \["1\.21\.1"\]\}
+Evidencia: \{"product": "Istio", "installed\_version": "1\.21\.1", "target": "1\.35\.9", "matrix": \{"version": "1\.21\.x", "min\_kubernetes": "1\.26\.0", "max\_kubernetes": "1\.29\.x", "matrix\_type": "supported", "exclusive": true, "end\_of\_support": "2024\-09\-27", "source": "https://istio\.io/latest/docs/releases/supported\-releases/", "reviewed\_on": "2026\-11\-04", "valid\_until": "2027\-02\-02", "evidence": "Fila 1\.21: Kubernetes soportados 1\.26 a 1\.29; EOL 27 septiembre 2024\.", "support\_state": "supported"\}, "detected\_version": "1\.21\.1", "version\_confidence": "image\_tag", "catalog\_lookup": \{"catalog\_present": true, "files": \["istio\.json"\], "paths": \["catalogs/support/istio\.json"\], "available\_selectors": \["1\.30\.x", "1\.29\.x", "1\.28\.x", "1\.27\.x", "1\.26\.x", "1\.25\.x", "1\.24\.x", "1\.23\.x", "1\.22\.x", "1\.21\.x"\], "matched\_selectors": \["1\.21\.x"\], "selected\_selector": "1\.21\.x", "normalized\_version": "1\.21\.1", "reason": "matched"\}, "distribution\_revision": null, "reviewed\_on": "2026\-11\-04", "catalog\_limitations": \[\], "detection\_sources": \[\{"from": "deployments\.apps", "namespace": "istio\-system", "name": "istiod", "repository": "docker\.io/istio/pilot", "declared\_tag": "1\.21\.1", "revision": "old", "identity\_basis": "catalog\_repository", "confidence": "image\_tag", "activity": "active", "observed\_status": \{\}, "version\_label": null, "version\_basis": "workload\_template\_image\_tag"\}\], "resolution\_sources": \["deployments\.apps"\], "resolved\_versions": \["1\.21\.1"\], "raw\_detected\_versions": \["1\.21\.1"\]\}
 
 Recomendación: Revisar la matriz oficial y actualizar el componente o completar evidencia antes del upgrade\.
 
@@ -131,7 +131,7 @@ No existe una única fila de matriz oficial revisada para esta versión\.
 
 Categoría: operator\_compatibility · Relación: limitation · Método: static
 
-Evidencia: \{"product": "Gatekeeper", "installed\_version": "3\.17\.0", "target": "1\.35\.9", "matrix": \{\}, "detected\_version": "3\.17\.0", "version\_confidence": "image\_tag", "catalog\_lookup": \{"catalog\_present": true, "files": \["gatekeeper\.json"\], "paths": \["catalogs/support/gatekeeper\.json"\], "available\_selectors": \[\], "matched\_selectors": \[\], "selected\_selector": null, "normalized\_version": "3\.17\.0", "reason": "no\_numeric\_rows"\}, "distribution\_revision": null, "reviewed\_on": null, "catalog\_limitations": \["La política general de versiones soportadas no prueba una matriz de cada binario antiguo\. Sin fila revisada se informa UNKNOWN\."\], "detection\_sources": \[\{"from": "deployments\.apps", "namespace": "gatekeeper\-system", "name": "gatekeeper", "repository": "openpolicyagent/gatekeeper", "declared\_tag": "v3\.17\.0", "revision": null, "identity\_basis": "catalog\_repository", "confidence": "image\_tag", "version\_basis": "workload\_template\_image\_tag"\}\], "resolution\_sources": \["deployments\.apps"\], "resolved\_versions": \["3\.17\.0"\], "raw\_detected\_versions": \["v3\.17\.0"\]\}
+Evidencia: \{"product": "Gatekeeper", "installed\_version": "3\.17\.0", "target": "1\.35\.9", "matrix": \{\}, "detected\_version": "3\.17\.0", "version\_confidence": "image\_tag", "catalog\_lookup": \{"catalog\_present": true, "files": \["gatekeeper\.json"\], "paths": \["catalogs/support/gatekeeper\.json"\], "available\_selectors": \[\], "matched\_selectors": \[\], "selected\_selector": null, "normalized\_version": "3\.17\.0", "reason": "no\_numeric\_rows"\}, "distribution\_revision": null, "reviewed\_on": null, "catalog\_limitations": \["La política general de versiones soportadas no prueba una matriz de cada binario antiguo\. Sin fila revisada se informa UNKNOWN\."\], "detection\_sources": \[\{"from": "deployments\.apps", "namespace": "gatekeeper\-system", "name": "gatekeeper", "repository": "openpolicyagent/gatekeeper", "declared\_tag": "v3\.17\.0", "revision": null, "identity\_basis": "catalog\_repository", "confidence": "image\_tag", "activity": "active", "observed\_status": \{\}, "version\_label": null, "version\_basis": "workload\_template\_image\_tag"\}\], "resolution\_sources": \["deployments\.apps"\], "resolved\_versions": \["3\.17\.0"\], "raw\_detected\_versions": \["v3\.17\.0"\]\}
 
 Recomendación: Revisar la matriz oficial y actualizar el componente o completar evidencia antes del upgrade\.
 
@@ -143,7 +143,7 @@ Cobertura del descubrimiento de plataformas\.
 
 Categoría: operator\_compatibility · Relación: tested · Método: snapshot
 
-Evidencia: \{"errors": \[\], "products\_detected": 3\}
+Evidencia: \{"errors": \[\], "required\_errors": \[\], "detector\_errors": \[\], "inventory\_sources": \[\{"source": "deployments\.apps", "completed": true, "authorized": true, "error": null, "items\_scanned": 3, "required": true\}, \{"source": "daemonsets\.apps", "completed": true, "authorized": true, "error": null, "items\_scanned": 0, "required": true\}, \{"source": "statefulsets\.apps", "completed": true, "authorized": true, "error": null, "items\_scanned": 0, "required": true\}, \{"source": "pods", "completed": true, "authorized": true, "error": null, "items\_scanned": 0, "required": true\}, \{"source": "nodes", "completed": true, "authorized": true, "error": null, "items\_scanned": 0, "required": true\}, \{"source": "Helm", "completed": true, "authorized": true, "error": null, "items\_scanned": 1, "required": false\}\], "products\_detected": 3\}
 
 Recomendación: Revisar la evidencia antes del upgrade\.
 
@@ -242,7 +242,7 @@ Recomendación: Revisar deserializadores estrictos en clientes propios que consu
 
 Fuente: [Referencia técnica](<https://github.com/kubernetes/kubernetes/blob/master/CHANGELOG/CHANGELOG-1.35.md>)
 
-- Límite: No se inspecciona el cÃ³digo del operador; este cambio no es un bloqueo por sÃ­ mismo\.
+- Límite: No se inspecciona el código del operador; este cambio no es un bloqueo por sí mismo\.
 ### INSTANCES\-NOT\-REQUESTED · UNKNOWN · INFO
 
 Instancias no inspeccionadas; usar \-\-include\-instances para lectura limitada\.
@@ -330,7 +330,7 @@ Recomendación: Revisar deserializadores estrictos en clientes propios que consu
 
 Fuente: [Referencia técnica](<https://github.com/kubernetes/kubernetes/blob/master/CHANGELOG/CHANGELOG-1.35.md>)
 
-- Límite: No se inspecciona el cÃ³digo del operador; este cambio no es un bloqueo por sÃ­ mismo\.
+- Límite: No se inspecciona el código del operador; este cambio no es un bloqueo por sí mismo\.
 ### INSTANCES\-NOT\-REQUESTED · UNKNOWN · INFO
 
 Instancias no inspeccionadas; usar \-\-include\-instances para lectura limitada\.
@@ -432,7 +432,7 @@ Recomendación: Revisar deserializadores estrictos en clientes propios que consu
 
 Fuente: [Referencia técnica](<https://github.com/kubernetes/kubernetes/blob/master/CHANGELOG/CHANGELOG-1.35.md>)
 
-- Límite: No se inspecciona el cÃ³digo del operador; este cambio no es un bloqueo por sÃ­ mismo\.
+- Límite: No se inspecciona el código del operador; este cambio no es un bloqueo por sí mismo\.
 ### INSTANCES\-NOT\-REQUESTED · UNKNOWN · INFO
 
 Instancias no inspeccionadas; usar \-\-include\-instances para lectura limitada\.
@@ -558,7 +558,7 @@ Recomendación: Revisar deserializadores estrictos en clientes propios que consu
 
 Fuente: [Referencia técnica](<https://github.com/kubernetes/kubernetes/blob/master/CHANGELOG/CHANGELOG-1.35.md>)
 
-- Límite: No se inspecciona el cÃ³digo del operador; este cambio no es un bloqueo por sÃ­ mismo\.
+- Límite: No se inspecciona el código del operador; este cambio no es un bloqueo por sí mismo\.
 ### INSTANCES\-NOT\-REQUESTED · UNKNOWN · INFO
 
 Instancias no inspeccionadas; usar \-\-include\-instances para lectura limitada\.
@@ -637,17 +637,17 @@ Fuente: [Referencia técnica](<https://v1-35.docs.kubernetes.io/docs/tasks/exten
 
 ### K135\-CEL\-ERROR\-VALUES · WARN · LOW
 
-Kubernetes 1\.35 puede incluir valores simples en errores de validaciÃ³n CEL\.
+Kubernetes 1\.35 puede incluir valores simples en errores de validación CEL\.
 
 Categoría: schema · Relación: upgrade · Método: static
 
-Evidencia: \{"basis": "PR 132798 modifica los errores CEL; la definiciÃ³n contiene reglas CEL\.", "applicability": \{"crosses": "1\.35\.0"\}, "condition\_matched": true\}
+Evidencia: \{"basis": "PR 132798 modifica los errores CEL; la definición contiene reglas CEL\.", "applicability": \{"crosses": "1\.35\.0"\}, "condition\_matched": true\}
 
-Recomendación: Revisar consumidores que comparen mensajes textuales y la redacciÃ³n de datos sensibles en logs\.
+Recomendación: Revisar consumidores que comparen mensajes textuales y la redacción de datos sensibles en logs\.
 
 Fuente: [Referencia técnica](<https://github.com/kubernetes/kubernetes/pull/132798>)
 
-- Límite: Es un cambio de diagnÃ³stico, no una incompatibilidad de la expresiÃ³n CEL demostrada\.
+- Límite: Es un cambio de diagnóstico, no una incompatibilidad de la expresión CEL demostrada\.
 ### K135\-CONDITION\-GENERATION · PASS · INFO
 
 1\.35 incorpora observedGeneration en condiciones de CRDs\.
@@ -660,7 +660,7 @@ Recomendación: Revisar deserializadores estrictos en clientes propios que consu
 
 Fuente: [Referencia técnica](<https://github.com/kubernetes/kubernetes/blob/master/CHANGELOG/CHANGELOG-1.35.md>)
 
-- Límite: No se inspecciona el cÃ³digo del operador; este cambio no es un bloqueo por sÃ­ mismo\.
+- Límite: No se inspecciona el código del operador; este cambio no es un bloqueo por sí mismo\.
 ### INSTANCES\-NOT\-REQUESTED · UNKNOWN · INFO
 
 Instancias no inspeccionadas; usar \-\-include\-instances para lectura limitada\.
@@ -763,7 +763,7 @@ Recomendación: Revisar deserializadores estrictos en clientes propios que consu
 
 Fuente: [Referencia técnica](<https://github.com/kubernetes/kubernetes/blob/master/CHANGELOG/CHANGELOG-1.35.md>)
 
-- Límite: No se inspecciona el cÃ³digo del operador; este cambio no es un bloqueo por sÃ­ mismo\.
+- Límite: No se inspecciona el código del operador; este cambio no es un bloqueo por sí mismo\.
 ### INSTANCES\-NOT\-REQUESTED · UNKNOWN · INFO
 
 Instancias no inspeccionadas; usar \-\-include\-instances para lectura limitada\.

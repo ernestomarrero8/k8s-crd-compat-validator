@@ -6,6 +6,19 @@ PRIORITY = {"istioctl control plane": 0, "istioctl data plane": 0, "Helm": 1,
             "Calico ClusterInformation": 3}
 
 
+def source_rank(candidate, product_id):
+    if product_id == "gatekeeper":
+        if candidate["from"] == "Helm":
+            return 1
+        if candidate.get("version_basis") == "version_label":
+            return 6
+        if candidate["from"] == "deployments.apps":
+            return {"gatekeeper-controller-manager": 2, "gatekeeper-audit": 3}.get(candidate.get("name"), 4)
+        if candidate["from"] == "pods":
+            return 5
+    return PRIORITY.get(candidate["from"], 99)
+
+
 def resolve(rows):
     registry = {}
     for row in rows:
@@ -17,12 +30,13 @@ def resolve(rows):
         product["detected_versions"] = sorted(set(product["detected_versions"]) | set(row.get("detected_versions", [])))
     for row in registry.values():
         candidates = [c for c in row["version_candidates"] if release(c["version"], row["product"])]
-        rank = min((PRIORITY.get(c["from"], 99) for c in candidates), default=99)
+        rank = min((source_rank(c, row["id"]) for c in candidates), default=99)
         canonical = lambda c: c["version"] if release(c["version"]) is None else ".".join(map(str, release(c["version"])))
-        row["resolved_versions"] = sorted({canonical(c) for c in candidates if PRIORITY.get(c["from"], 99) == rank})
+        row["resolved_versions"] = sorted({canonical(c) for c in candidates if source_rank(c, row["id"]) == rank})
         # Keep known older versions: precedence must not conceal an incompatible data plane or rollout.
         row["versions"] = sorted({canonical(c) for c in candidates})
-        row["resolution_sources"] = sorted({c["from"] for c in candidates if PRIORITY.get(c["from"], 99) == rank})
+        row["resolution_sources"] = sorted({c["from"] for c in candidates if source_rank(c, row["id"]) == rank})
+        row["resolution_confidences"] = sorted({c["confidence"] for c in candidates if source_rank(c, row["id"]) == rank and c.get("confidence")})
         row["unknown_version"] = not bool(candidates)
         row["version_conflict"] = len(set(row["versions"])) > 1
         row["normalized_versions"] = sorted({".".join(map(str, release(c["version"], row["product"]))) for c in candidates})
